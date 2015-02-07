@@ -24,9 +24,9 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 E0 = 9000.
 rSample = 100.
 f = 500.
-r0 = 0.1
-wall = 0.02
-layers = 30 # number of hexagonal layers
+r0 = 0.51
+wall = 0.1
+layers = 3 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12
 xzPrimeMax = 3.
@@ -195,8 +195,8 @@ def main():
     plot.baseName = 'NCapillaries-a-FSM1Cat'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=1000*2, beamLine=beamLine,
-                         processes=1)
+    xrtr.run_ray_tracing(plots, repeats=1000, beamLine=beamLine,
+                         processes=2)
 
 #    for i in beamLine.firstInLayer:
 #   capillariesToShow = 0, (layers-1)/2, layers-1    
