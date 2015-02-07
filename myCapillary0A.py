@@ -26,7 +26,7 @@ rSample = 100.
 f = 1500. # y length in mm from foucs to the end of the lens
 r0 = 0.1
 wall = 0.05
-layers = 4 # number of hexagonal layers
+layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12
 xzPrimeMax = 3.
@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * s**2 + self.b0 + np.sin(s/16)/8 # funky sin shape add
+        return self.a0 * s**2/2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
