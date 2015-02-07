@@ -23,10 +23,10 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 E0 = 9000.
 rSample = 100.
-f = 500.
-r0 = 0.51
-wall = 0.1
-layers = 3 # number of hexagonal layers
+f = 1500. # y length in mm from foucs to the end of the lens
+r0 = 0.1
+wall = 0.05
+layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12
 xzPrimeMax = 3.
@@ -41,7 +41,7 @@ class BentCapillary(roe.OE):
         roe.OE.__init__(self, *args, **kwargs)
 
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
-        self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
+        self.a0 = -np.tan(self.entranceAlpha) / 4 / s0
         self.b0 = self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0**2
