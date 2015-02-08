@@ -26,7 +26,7 @@ rSample = 100.
 f = 1500. # y length in mm from foucs to the end of the lens
 r0 = 0.1
 wall = 0.05
-layers = 7 # number of hexagonal layers
+layers = 4 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12
 xzPrimeMax = 3.
@@ -114,7 +114,7 @@ def build_beamline(nrays=1000):
                 roll = roll1 + i*np.pi/3.
                 capillary = BentCapillary(
                     beamLine, 'BentCapillary', [0, 0, 0], roll=roll,
-                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
+                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f*4/5],
                     f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0)
                 beamLine.capillaries.append(capillary)
                 if beamLine.xzMax < capillary.b0:
@@ -126,7 +126,7 @@ def build_beamline(nrays=1000):
 #    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
 #        np.arcsin((2*n+1) * (r0+wall) / rSample))
 #    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, 16*f, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f, 0))
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
