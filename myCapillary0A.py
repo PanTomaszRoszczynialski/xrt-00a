@@ -23,9 +23,9 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 E0 = 9000.
 rSample = 100.
-f = 1500. # y length in mm from foucs to the end of the lens
+f = 500. # y length in mm from foucs to the end of the lens
 r0 = 0.1
-wall = 0.05
+wall = 0.02
 layers = 4 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12
@@ -36,8 +36,8 @@ class BentCapillary(roe.OE):
         self.rSample = kwargs.pop('rSample')
         self.entranceAlpha = kwargs.pop('entranceAlpha')
         self.f = kwargs.pop('f')
-        self.r0in = kwargs.pop('rIn')*2
-        self.r0out = kwargs.pop('rOut')/2
+        self.r0in = kwargs.pop('rIn')
+        self.r0out = kwargs.pop('rOut')
         roe.OE.__init__(self, *args, **kwargs)
 
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * s**2 + self.b0
+        return self.a0 * (s-240)**2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
