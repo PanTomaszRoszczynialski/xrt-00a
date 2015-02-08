@@ -126,7 +126,7 @@ def build_beamline(nrays=1000):
 #    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
 #        np.arcsin((2*n+1) * (r0+wall) / rSample))
 #    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+400, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f*20, 0))
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
@@ -188,7 +188,7 @@ def main():
     PlotClass = xrtp.XYCPlot
 
     plot = xrtp.XYCPlot(
-        'beamFSM1', (1, 3, -1),
+        'beamFSM2', (1, 3, -1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2),
         caxis='category', beamState='beamFSM2', title='FSM1_Cat')
