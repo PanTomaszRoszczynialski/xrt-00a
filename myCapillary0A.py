@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * (s+20)**2 + self.b0
+        return self.a0 * (s+0)**2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
@@ -94,7 +94,7 @@ def build_beamline(nrays=1000):
         beamLine, 'GeometricSource', (0, 0, 0), nrays=nrays,
         dx=0., dz=0., distxprime='annulus',
         distE='lines', energies=(E0,), polarization='horizontal')
-    beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0, rSample, 0))
+    beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0, 5*rSample, 0))
     beamLine.capillaries = []
     beamLine.firstInLayer = []
     beamLine.xzMax = 0
