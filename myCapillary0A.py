@@ -126,7 +126,7 @@ def build_beamline(nrays=1000):
 #    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
 #        np.arcsin((2*n+1) * (r0+wall) / rSample))
 #    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+50, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+100, 0))
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
@@ -195,7 +195,7 @@ def main():
     plot.baseName = 'NCapillaries-a-FSM1Cat'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=1000, beamLine=beamLine,
+    xrtr.run_ray_tracing(plots, repeats=100, beamLine=beamLine,
                          processes=2)
 
 #    for i in beamLine.firstInLayer:
