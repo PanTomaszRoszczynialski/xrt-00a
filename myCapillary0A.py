@@ -114,7 +114,7 @@ def build_beamline(nrays=1000):
                 roll = roll1 + i*np.pi/3.
                 capillary = BentCapillary(
                     beamLine, 'BentCapillary', [0, 0, 0], roll=roll,
-                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f*4/5],
+                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f*14/5],
                     f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0)
                 beamLine.capillaries.append(capillary)
                 if beamLine.xzMax < capillary.b0:
