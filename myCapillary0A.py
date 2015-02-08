@@ -27,8 +27,8 @@ f = 500. # y length in mm from foucs to the end of the lens
 r0 = 0.1
 wall = 0.02
 layers = 4 # number of hexagonal layers
-nRefl = 12
-nReflDisp = 12
+nRefl = 3
+nReflDisp = 12 # unused
 xzPrimeMax = 3.
 
 class BentCapillary(roe.OE):
@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * (s+0)**2 + self.b0
+        return self.a0 * (s-20)**2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
@@ -126,7 +126,7 @@ def build_beamline(nrays=1000):
 #    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
 #        np.arcsin((2*n+1) * (r0+wall) / rSample))
 #    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+100, 0))
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
@@ -191,7 +191,7 @@ def main():
         'beamFSM1', (1, 3, -1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2),
-        caxis='category', beamState='beamFSM1', title='FSM1_Cat')
+        caxis='category', beamState='beamFSM2', title='FSM1_Cat')
     plot.baseName = 'NCapillaries-a-FSM1Cat'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
