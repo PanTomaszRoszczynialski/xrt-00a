@@ -191,7 +191,7 @@ def main():
         'beamFSM1', (1, 3, -1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2),
-        caxis='category', beamState='beamFSM2', title='FSM1_Cat')
+        caxis='category', beamState='beamFSM1', title='FSM1_Cat')
     plot.baseName = 'NCapillaries-a-FSM1Cat'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
