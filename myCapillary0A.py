@@ -34,10 +34,10 @@ xzPrimeMax = 3.
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
         self.rSample = kwargs.pop('rSample')
-        self.entranceAlpha = kwargs.pop('entranceAlpha')*2
+        self.entranceAlpha = kwargs.pop('entranceAlpha')
         self.f = kwargs.pop('f')
-        self.r0in = kwargs.pop('rIn')/2
-        self.r0out = kwargs.pop('rOut')*4
+        self.r0in = kwargs.pop('rIn')*2
+        self.r0out = kwargs.pop('rOut')/2
         roe.OE.__init__(self, *args, **kwargs)
 
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
