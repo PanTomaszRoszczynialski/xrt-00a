@@ -27,7 +27,7 @@ f = 500. # y length in mm from foucs to the end of the lens
 r0 = 0.1
 wall = 0.02
 layers = 4 # number of hexagonal layers
-nRefl = 3
+nRefl = 12
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 
@@ -114,7 +114,7 @@ def build_beamline(nrays=1000):
                 roll = roll1 + i*np.pi/3.
                 capillary = BentCapillary(
                     beamLine, 'BentCapillary', [0, 0, 0], roll=roll,
-                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f*14/5],
+                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
                     f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0)
                 beamLine.capillaries.append(capillary)
                 if beamLine.xzMax < capillary.b0:
