@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * (s-20)**2 + self.b0
+        return self.a0 * (s+20)**2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
