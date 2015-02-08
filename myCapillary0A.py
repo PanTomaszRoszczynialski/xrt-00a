@@ -26,7 +26,7 @@ rSample = 100.
 f = 1500. # y length in mm from foucs to the end of the lens
 r0 = 0.1
 wall = 0.05
-layers = 10 # number of hexagonal layers
+layers = 7 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12
 xzPrimeMax = 3.
@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * s**2/2 + self.b0
+        return self.a0 * s**2 + self.b0 + np.abs(s)/1000
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
@@ -175,7 +175,7 @@ def plot2D():
         line[0].set_dashes(seq)
         ax1.plot(f-s, x-r, 'r-', lw=2)
         ax1.plot(f-s, x+r, 'r-', lw=2)
-    ax1.set_xlim(0, f)
+    ax1.set_xlim(0, 2*f)
     ax1.set_ylim(-2*capillary.r0in, capillary.local_x0(0) + 2*capillary.r0out)
     fig1.savefig('PolycapillaryZ0crosssection.png')
     plt.show()
