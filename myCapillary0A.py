@@ -24,9 +24,9 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 E0 = 9000.
 rSample = 100.
 f = 500. # y length in mm from foucs to the end of the lens
-r0 = 0.1
+r0 = 0.01
 wall = 0.02
-layers = 4 # number of hexagonal layers
+layers = 13 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * (s-150)**2 + self.b0
+        return self.a0 * (s-0)**2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
