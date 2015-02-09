@@ -22,7 +22,7 @@ import xrt.backends.raycing.screens as rsc
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 E0 = 9000.
-rSample = 100.
+rSample = 100. # starting position of the lens
 f = 500. # y length in mm from foucs to the end of the lens
 r0 = 0.01
 wall = 0.02
@@ -126,7 +126,7 @@ def build_beamline(nrays=1000):
 #    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
 #        np.arcsin((2*n+1) * (r0+wall) / rSample))
 #    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+25, 0))
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
