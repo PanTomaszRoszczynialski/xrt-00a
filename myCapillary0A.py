@@ -126,7 +126,7 @@ def build_beamline(nrays=1000):
 #    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
 #        np.arcsin((2*n+1) * (r0+wall) / rSample))
 #    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+425, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f+450, 0))
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
@@ -189,8 +189,8 @@ def main():
 
     plot = xrtp.XYCPlot(
         'beamFSM2', (1, 3),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2),
-        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=[-3.5,3.5]),
+        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=[-3.5,3.5]),
         caxis='category', beamState='beamFSM2', title='FSM1_Cat')
     plot.baseName = 'NCapillaries-a-FSM1Cat'
     plot.saveName = plot.baseName + '.png'
