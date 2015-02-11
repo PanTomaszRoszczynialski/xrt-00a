@@ -24,9 +24,9 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 500. # y length in mm from foucs to the end of the lens
-r0 = 0.01
+r0 = 0.0051
 wall = 0.02
-layers = 13 # number of hexagonal layers
+layers = 20 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
@@ -49,7 +49,7 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * (s-0)**2 + self.b0
+        return self.a0 * (s)**2 + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s
@@ -187,10 +187,11 @@ def main():
 #    PlotClass = xrtp.XYCPlotWithNumerOfReflections
     PlotClass = xrtp.XYCPlot
 
+    limits = [-3,3]
     plot = xrtp.XYCPlot(
         'beamFSM2', (1, 3),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=[-3.5,3.5]),
-        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=[-3.5,3.5]),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
+        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
         caxis='category', beamState='beamFSM2', title='FSM1_Cat')
     plot.baseName = 'NCapillaries-a-FSM1Cat'
     plot.saveName = plot.baseName + '.png'
