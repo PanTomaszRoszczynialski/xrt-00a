@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Fri Feb 06 16:26:54 2015
+Created on Thu Feb 19 17:52:40 2015
 
 @author: Vladimir Putin
 """
@@ -23,15 +23,15 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 E0 = 9000.
 rSample = 100. # starting position of the lens
-f = 500. # y length in mm from foucs to the end of the lens
-r0 = 0.0030
+f = 250. # y length in mm from foucs to the end of the lens
+r0 = 0.03
 wall = 0.02
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 
-class BentCapillary(roe.OE):
+class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
         self.rSample = kwargs.pop('rSample')
         self.entranceAlpha = kwargs.pop('entranceAlpha')
@@ -42,17 +42,18 @@ class BentCapillary(roe.OE):
 
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
-        self.b0 = self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
+        self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
+        self.b0 = 0.1
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0**2
         self.br = self.r0in
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.a0 * (s-0)**2 + self.b0
+        return 0*self.a0 * (s-0)**2 + self.b0
 
     def local_x0Prime(self, s):
-        return 2 * self.a0 * s 
+        return 2 * self.a0 * s * 0
 
     def local_r0(self, s):  # radius of capillary (s)
         return self.ar * (s-self.s0)**2 + self.br
@@ -86,53 +87,64 @@ class BentCapillary(roe.OE):
         y = self.f - s
         z = r * np.cos(phi)
         return x, y, z
-
-
+        
 def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
-        beamLine, 'GeometricSource', (0, 0, 0), nrays=nrays,
-        dx=0., dz=0., distxprime='annulus',
-        distE='lines', energies=(E0,), polarization='horizontal')
-    beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0, rSample, 0))
+        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
+        dx=0, dz=0, distxprime='annulus',
+        distE='lines', energies=(E0,), polarization='horizontal')        
+        
+    beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,rSample,0))
+    
+    # try to remove superflous container
     beamLine.capillaries = []
-    beamLine.firstInLayer = []
-    beamLine.xzMax = 0
-    for n in range(layers):
-        if n > 0:
-            ms = range(n)
-            i6 = range(6)
-        else:
-            ms = 0,
-            i6 = 0,
-        beamLine.firstInLayer.append(len(beamLine.capillaries))
-        for i in i6:
-            for m in ms:
-                x = 2 * (r0+wall) * (n**2 + m**2 - n*m)**0.5
-                alpha = np.arcsin(x / rSample)
-                roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
-                roll = roll1 + i*np.pi/3.
-                capillary = BentCapillary(
-                    beamLine, 'BentCapillary', [0, 0, 0], roll=roll,
-                    material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-                    f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0)
-                beamLine.capillaries.append(capillary)
-                if beamLine.xzMax < capillary.b0:
-                    beamLine.xzMax = capillary.b0
-    print 'max divergence =', alpha
-    beamLine.xzMax += 2 * r0
-    print len(beamLine.capillaries)
+    beamLine.xzMax = 0 # no ide what this does
+    # this parameter should be @line 8
+    alpha = 0.0005 # hopefully milliradian
+    roll = 0 # test if this rotates whole object
+    capillary = StraightCapillary(
+        beamLine, 'StraightCapillary', [0,0,0], roll=roll,
+        material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
+        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0)
+    beamLine.capillaries.append(capillary)         
+    
+    if beamLine.xzMax < capillary.b0:
+        beamLine.xzMax = capillary.b0
+    beamLine.xzMax += 2*r0
+    
+    n=1     # one layer..
     beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
-#    beamLine.sources[0].dxprime = (np.arcsin((2*n-3) * (r0+wall) / rSample),
-#        np.arcsin((2*n+1) * (r0+wall) / rSample))
-#    beamLine.sources[0].dxprime = 0, np.arcsin(r0 / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine, 'DiamondFSM2', (0, f, 0))
+    beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,f+300,0))
     return beamLine
-
+    
+    
+# function for showing the capillary in some relevant frame    
+def plot2D():
+    beamLine = build_beamline()
+    fig1 = plt.figure(1, figsize=(8,6))    
+    ax1 = plt.subplot(111,aspect=800, label='1')
+    ax1.set_title('Cross-section of polycapillary at $z$=0')
+    ax1.set_xlabel(r'$y$ (mm)', fontsize=14)
+    ax1.set_ylabel(r'$x$ (mm)', fontsize=14)
+    
+    capillary = beamLine.capillaries[0]
+    s = np.linspace(0,capillary.s0,200)
+    x = capillary.local_x0(s)
+    r = capillary.local_r0(s)
+    ax1.plot([0,f-s[-1]],[0,x[-1]],'k-', lw=0.5)
+    line = ax1.plot(f-s, x, 'k-.', lw=0.5)
+    line[0].set_dashes([2,5,12,5])
+    ax1.plot(f-s, x-r, 'r-', lw=2)
+    ax1.plot(f-s, x+r, 'r-', lw=2)
+    
+    ax1.set_xlim(0,f)
+    ax1.set_ylim(0,0.2)
+    
+# some important function
 def run_process(beamLine, shineOnly1stSource=False):
     beamSource = beamLine.sources[0].shine()
-#    raycing.rotate_beam(
-#        beamSource, yaw=-beamLine.capillaries[0].entranceAlpha)
+    # at the entrance
     beamFSM1 = beamLine.fsm1.expose(beamSource)
     outDict = {'beamSource': beamSource, 'beamFSM1': beamFSM1}
     beamCapillaryGlobalTotal = None
@@ -148,60 +160,28 @@ def run_process(beamLine, shineOnly1stSource=False):
             rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
                          good, includeState=True)
         outDict['beamCapillaryLocalN{0:02d}'.format(i)] = beamCapillaryLocalN
-    outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal
-    beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
-    outDict['beamFSM2'] = beamFSM2
-    return outDict
-rr.run_process = run_process
-
-
-def plot2D():
-    beamLine = build_beamline()
-    fig1 = plt.figure(1, figsize=(8, 6))
-#    ax1 = plt.subplot(111, aspect='equal', label='1')
-    ax1 = plt.subplot(111, aspect=50, label='1')
-    ax1.set_title('Cross-section of polycapillary at $z$=0')
-    ax1.set_xlabel(r'$y$ (mm)', fontsize=14)
-    ax1.set_ylabel(r'$x$ (mm)', fontsize=14)
-    seq = [2, 5, 12, 5]
-    for i in beamLine.firstInLayer:
-        capillary = beamLine.capillaries[i]
-        print str(i) + ' ' + str(capillary.br)
-        s = np.linspace(0, capillary.s0, 200)
-        x = capillary.local_x0(s)
-        r = capillary.local_r0(s)
-        ax1.plot([0, f-s[-1]], [0, x[-1]], 'k-', lw=0.5)
-        line = ax1.plot(f-s, x, 'k-.', lw=0.5)
-        line[0].set_dashes(seq)
-        ax1.plot(f-s, x-r, 'r-', lw=2)
-        ax1.plot(f-s, x+r, 'r-', lw=2)
-    ax1.set_xlim(0, f)
-    ax1.set_ylim(-2*capillary.r0in, capillary.local_x0(0) + 2*capillary.r0out)
-    fig1.savefig('PolycapillaryZ0crosssection.png')
-    plt.show()
+        outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal  
+        beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
+        outDict['beamFSM2'] = beamFSM2
+        return outDict
+rr.run_process = run_process                      
     
 def main():
     beamLine = build_beamline()
-    fwhmFormatStr3 = '%.3f'
     plots = []
-#    PlotClass = xrtp.XYCPlotWithNumerOfReflections
-    PlotClass = xrtp.XYCPlot
-
-    limits = [-3,3]
-    plot = xrtp.XYCPlot(
-        'beamFSM2', (1, 3),
+    
+    limits = [-0.5, 0.5]
+    # at the entrance
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
         caxis='category', beamState='beamFSM2', title='FSM1_Cat')
-    plot.baseName = 'NCapillaries-a-FSM1Cat'
+    plot.baseName = 'one_capillary_tilt'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=322, beamLine=beamLine,
-                         processes=2)
-
-#    for i in beamLine.firstInLayer:
-#   capillariesToShow = 0, (layers-1)/2, layers-1    
+    xrtr.run_ray_tracing(plots, repeats=1000, beamLine=beamLine, processes=1)
+    
     
 if __name__ == '__main__':
-#    main()
-    plot2D()
+    plot2D()    
+    main()
