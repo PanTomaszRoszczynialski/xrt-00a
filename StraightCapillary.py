@@ -106,7 +106,7 @@ def build_beamline(nrays=1000):
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
         material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0/2)
+        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0*2)
     beamLine.capillaries.append(capillary)         
     
     if beamLine.xzMax < capillary.b0:
@@ -186,4 +186,4 @@ def main():
     
 if __name__ == '__main__':
     plot2D()    
-#    main()
+    main()
