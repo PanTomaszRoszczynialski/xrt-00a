@@ -43,7 +43,7 @@ class StraightCapillary(roe.OE):
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
-        self.b0 = 0.175
+        self.b0 = 0.
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0**2
         self.br = self.r0in
@@ -139,7 +139,7 @@ def plot2D():
     ax1.plot(f-s, x+r, 'r-', lw=2)
     
     ax1.set_xlim(0,f)
-    ax1.set_ylim(0,0.4)
+    ax1.set_ylim(-0.4,0.4)
     # always save
     fig1.savefig('MonoCapillaryZ0crosssection.png')
     
