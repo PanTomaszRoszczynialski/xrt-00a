@@ -106,7 +106,7 @@ def build_beamline(nrays=1000):
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
         material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0)
+        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0/2)
     beamLine.capillaries.append(capillary)         
     
     if beamLine.xzMax < capillary.b0:
@@ -140,6 +140,8 @@ def plot2D():
     
     ax1.set_xlim(0,f)
     ax1.set_ylim(0,0.2)
+    # always save
+    fig1.savefig('MonoCapillaryZ0crosssection.png')
     
 # some important function
 def run_process(beamLine, shineOnly1stSource=False):
@@ -170,7 +172,7 @@ def main():
     beamLine = build_beamline()
     plots = []
     
-    limits = [-0.5, 0.5]
+    limits = [-1, 1]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
@@ -184,4 +186,4 @@ def main():
     
 if __name__ == '__main__':
     plot2D()    
-    main()
+#    main()
