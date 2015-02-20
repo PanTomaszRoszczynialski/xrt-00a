@@ -56,7 +56,8 @@ class StraightCapillary(roe.OE):
         return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
-        return 2 * self.a0 * s * 0
+#        return 2 * self.a0 * s * 0
+        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
         return self.ar * (s-self.s0)**2 + self.br
