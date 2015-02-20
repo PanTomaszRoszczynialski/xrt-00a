@@ -21,14 +21,14 @@ import xrt.backends.raycing.screens as rsc
 
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
-repeats = 1000 # number of ray traycing iterations
+repeats = 3000 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 330. # y length in mm from foucs to the end of the lens
-r0 = 0.021
-rOut = 0.022
+r0 = 0.071
+rOut = 0.012
 wall = 0.02
-plot2D_yLim = [0, 0.2]
+plot2D_yLim = [-0.20, 0.4]
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
@@ -48,7 +48,7 @@ class StraightCapillary(roe.OE):
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
         self.b0 = 0.1
         self.s0 = s0
-        self.ar = (self.r0out-self.r0in) / s0**2
+        self.ar = (self.r0out-self.r0in) / s0
         self.br = self.r0in
         self.isParametric = True
 
@@ -62,11 +62,11 @@ class StraightCapillary(roe.OE):
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
-        return self.br
+        return -self.ar *(s-self.s0) + self.br
 
     def local_r0Prime(self, s):
 #        return self.ar * 2 * (s-self.s0)
-        return 0
+        return -self.ar
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
