@@ -21,6 +21,7 @@ import xrt.backends.raycing.screens as rsc
 
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
+repeats = 1000 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 330. # y length in mm from foucs to the end of the lens
@@ -60,10 +61,12 @@ class StraightCapillary(roe.OE):
         return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
-        return self.ar * (s-self.s0)**2 + self.br
+#        return self.ar * (s-self.s0)**2 + self.br
+        return self.br
 
     def local_r0Prime(self, s):
-        return self.ar * 2 * (s-self.s0)
+#        return self.ar * 2 * (s-self.s0)
+        return 0
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
@@ -185,7 +188,7 @@ def main():
     plot.baseName = 'one_capillary_tilt'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=1000, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     
 if __name__ == '__main__':
