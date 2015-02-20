@@ -24,9 +24,10 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 330. # y length in mm from foucs to the end of the lens
-r0 = 0.07
-rOut = 0.012
+r0 = 0.021
+rOut = 0.022
 wall = 0.02
+plot2D_yLim = [0, 0.2]
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
@@ -44,14 +45,15 @@ class StraightCapillary(roe.OE):
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
-        self.b0 = 0.
+        self.b0 = 0.1
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0**2
         self.br = self.r0in
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0
+#        return 0*self.a0 * (s-0)**2 + self.b0
+        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
         return 2 * self.a0 * s * 0
@@ -140,7 +142,7 @@ def plot2D():
     ax1.plot(f-s, x+r, 'r-', lw=2)
     
     ax1.set_xlim(0,f)
-    ax1.set_ylim(-0.4,0.4)
+    ax1.set_ylim(plot2D_yLim)
     # always save
     fig1.savefig('MonoCapillaryZ0crosssection.png')
     
