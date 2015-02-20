@@ -23,8 +23,9 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 E0 = 9000.
 rSample = 100. # starting position of the lens
-f = 250. # y length in mm from foucs to the end of the lens
-r0 = 0.03
+f = 330. # y length in mm from foucs to the end of the lens
+r0 = 0.07
+rOut = 0.012
 wall = 0.02
 layers = 10 # number of hexagonal layers
 nRefl = 12
@@ -106,7 +107,7 @@ def build_beamline(nrays=1000):
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
         material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=r0/2)
+        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
     beamLine.capillaries.append(capillary)         
     
     if beamLine.xzMax < capillary.b0:
@@ -115,7 +116,7 @@ def build_beamline(nrays=1000):
     
     n=1     # one layer..
     beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,f+300,0))
+    beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,f+110,0))
     return beamLine
     
     
