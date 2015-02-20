@@ -25,6 +25,7 @@ repeats = 3000 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 330. # y length in mm from foucs to the end of the lens
+screen2_pos = f + 50
 r0 = 0.071
 rOut = 0.012
 wall = 0.02
@@ -122,7 +123,7 @@ def build_beamline(nrays=1000):
     
     n=1     # one layer..
     beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
-    beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,f+110,0))
+    beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     return beamLine
     
     
