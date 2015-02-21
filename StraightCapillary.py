@@ -21,7 +21,7 @@ import xrt.backends.raycing.screens as rsc
 
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
-repeats = 3000 # number of ray traycing iterations
+repeats = 1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 330. # y length in mm from foucs to the end of the lens
@@ -47,7 +47,7 @@ class StraightCapillary(roe.OE):
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
-        self.b0 = 0.13
+        self.b0 = 0.14
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0
         self.br = self.r0in
