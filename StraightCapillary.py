@@ -25,7 +25,7 @@ repeats = 3000 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 330. # y length in mm from foucs to the end of the lens
-screen2_pos = f + 10
+screen2_pos = f + 500
 r0 = 0.071
 rOut = 0.012
 wall = 0.02
@@ -180,7 +180,8 @@ def main():
     beamLine = build_beamline()
     plots = []
     
-    limits = [-1, 1]
+    lim_ = 6
+    limits = [-lim_, lim_]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
