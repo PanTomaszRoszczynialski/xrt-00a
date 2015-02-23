@@ -24,10 +24,10 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
-f = 330. # y length in mm from foucs to the end of the lens
+f = 1330. # y length in mm from foucs to the end of the lens
 screen2_pos = f + 500
 r0 = 0.071
-rOut = 0.012
+rOut = 0.0012
 wall = 0.02
 plot2D_yLim = [-0.20, 0.4]
 layers = 10 # number of hexagonal layers
