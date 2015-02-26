@@ -30,7 +30,8 @@ screen2_pos = f + 100
 r0 = 0.03
 rOut = 0.03
 wall = 0.02
-plot2D_yLim = [-0.04, 0.04]
+plot2D_yLim = [-0.05, 0.05]
+plot_main_lim = 0.1
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
@@ -180,9 +181,8 @@ rr.run_process = run_process
 def main():
     beamLine = build_beamline()
     plots = []
-    
-    lim_ = 0.2
-    limits = [-lim_, lim_]
+
+    limits = [-plot_main_lim, plot_main_lim]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
