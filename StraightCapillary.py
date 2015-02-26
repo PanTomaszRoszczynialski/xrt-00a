@@ -4,6 +4,7 @@ Created on Thu Feb 19 17:52:40 2015
 
 @author: Vladimir Putin
 """
+""" rozmiar zrodla - najlepiej ~50um"""
 
 import numpy as np
 import matplotlib as mpl
@@ -24,12 +25,12 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
-f = 1330. # y length in mm from foucs to the end of the lens
-screen2_pos = f + 500
-r0 = 0.071
-rOut = 0.0012
+f = 250. # y length in mm from foucs to the end of the lens
+screen2_pos = f + 100
+r0 = 0.03
+rOut = 0.03
 wall = 0.02
-plot2D_yLim = [-0.20, 0.4]
+plot2D_yLim = [-0.04, 0.04]
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
@@ -114,7 +115,7 @@ def build_beamline(nrays=1000):
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
         material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-        f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
+        order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
     beamLine.capillaries.append(capillary)         
     
     if beamLine.xzMax < capillary.b0:
@@ -180,7 +181,7 @@ def main():
     beamLine = build_beamline()
     plots = []
     
-    lim_ = 6
+    lim_ = 0.2
     limits = [-lim_, lim_]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
