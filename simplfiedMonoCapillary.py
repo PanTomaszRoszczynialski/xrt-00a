@@ -34,7 +34,7 @@ wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.55 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 0 # number of reflections
+nRefl = 1 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 
