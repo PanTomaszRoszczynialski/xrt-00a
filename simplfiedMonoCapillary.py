@@ -32,7 +32,7 @@ r0 = 0.07
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.12
+plot_main_lim = 0.15 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
@@ -130,7 +130,7 @@ def build_beamline(nrays=1000):
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
     for it in range(0,max_plots):
-        beamLine.myFsms.append(rsc.Screen(beamLine,'myScreen{0:02d}'.format(it),(0,screen2_pos-10*it,0)))
+        beamLine.myFsms.append(rsc.Screen(beamLine,'myScreen{0:02d}'.format(it),(0,rSample+12*it,0)))
 
     return beamLine
          
