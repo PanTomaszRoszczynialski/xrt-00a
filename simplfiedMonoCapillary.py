@@ -26,15 +26,15 @@ E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 250. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
-screen2_pos = f
-max_plots = 12
+screen2_pos = f + 20
+max_plots = 0
 r0 = 0.07
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.15 # min 2*r0 for capillary entrance imaging
+plot_main_lim = 0.25 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 12
+nRefl = 0
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 
@@ -130,7 +130,7 @@ def build_beamline(nrays=1000):
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
     for it in range(0,max_plots):
-        beamLine.myFsms.append(rsc.Screen(beamLine,'myScreen{0:02d}'.format(it),(0,rSample+12*it,0)))
+        beamLine.myFsms.append(rsc.Screen(beamLine,'myScreen{0:02d}'.format(it),(0,rSample+145*it,0)))
 
     return beamLine
          
@@ -154,7 +154,7 @@ def run_process(beamLine, shineOnly1stSource=False):
     outDict['myBeam_after_local'] = beamCapillaryLocalN
     outDict['myBeam_after_global'] = beamCapillaryGlobalTotal
 
-    # Create second screem
+    # Create second screen
     beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
     outDict['beamFSM2'] = beamFSM2
     beamFsms = []
@@ -171,7 +171,7 @@ def main():
 
     limits = [-plot_main_lim, plot_main_lim]
     # at the entrance
-    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3,-1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
         caxis='category', beamState='beamFSM2', title='FSM2_Cat')
