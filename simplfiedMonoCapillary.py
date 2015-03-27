@@ -34,7 +34,7 @@ wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.25 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 0
+nRefl = 0 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 
@@ -171,7 +171,7 @@ def main():
 
     limits = [-plot_main_lim, plot_main_lim]
     # at the entrance
-    plot = xrtp.XYCPlot('beamFSM2', (1,3,-1),
+    plot = xrtp.XYCPlot('beamFSM2', (1,2,3,4,-1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
         caxis='category', beamState='beamFSM2', title='FSM2_Cat')
