@@ -32,7 +32,7 @@ r0 = 0.07
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.55 # min 2*r0 for capillary entrance imaging
+plot_main_lim = 0.05 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
 nRefl = 4 # number of reflections
 nReflDisp = 12 # unused
@@ -170,10 +170,11 @@ def main():
     plots = []
 
     limits = [-plot_main_lim, plot_main_lim]
+    limits2 = [-0.1, 0.1]
     # at the entrance
-    plot = xrtp.XYCPlot('beamFSM2', (1,3,-1),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
-        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', bins=256, ppb=2, limits=limits),
+        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', bins=256, ppb=2, limits=limits2),
         caxis='category', beamState='beamFSM2', title='FSM2_Cat')
     plot.baseName = 'taperedCapillary'
     plot.saveName = plot.baseName + '.png'
