@@ -26,13 +26,13 @@ E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 250. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
-screen2_pos = f + 20
+screen2_pos = f + 120
 max_plots = 0
 r0 = 0.07
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.25 # min 2*r0 for capillary entrance imaging
+plot_main_lim = 0.55 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
 nRefl = 0 # number of reflections
 nReflDisp = 12 # unused
@@ -171,11 +171,11 @@ def main():
 
     limits = [-plot_main_lim, plot_main_lim]
     # at the entrance
-    plot = xrtp.XYCPlot('beamFSM2', (1,2,3,4,-1),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3,-1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
         caxis='category', beamState='beamFSM2', title='FSM2_Cat')
-    plot.baseName = 'one_capillary_tilt'
+    plot.baseName = 'taperedCapillary'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
     for it in range(0,max_plots):
