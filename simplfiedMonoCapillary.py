@@ -32,7 +32,7 @@ r0 = 0.07
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.05 # min 2*r0 for capillary entrance imaging
+plot_main_lim = 0.4 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
 nRefl = 4 # number of reflections
 nReflDisp = 12 # unused
@@ -169,20 +169,20 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limits = [-plot_main_lim, plot_main_lim]
+    limits1 = [-plot_main_lim, plot_main_lim]
     limits2 = [-0.1, 0.1]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r"$x$", 'mm', bins=256, ppb=2, limits=limits),
-        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', bins=256, ppb=2, limits=limits2),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', bins=256, ppb=2, limits=limits1),
+        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', bins=256, ppb=2, limits=None),
         caxis='category', beamState='beamFSM2', title='FSM2_Cat')
     plot.baseName = 'taperedCapillary'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
     for it in range(0,max_plots):
         plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
-            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
-            yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
+            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits1),
+            yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits1),
             caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
         plot.baseName = 'inside_one_capillary_multiple_screens' + str(100+it)
         plot.saveName = plot.baseName + '.png'
