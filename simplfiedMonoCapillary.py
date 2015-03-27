@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 19 17:52:40 2015
+Created on Fri Mar 27 10:51:55 2015
 
 @author: Vladimir Putin
 """
-""" rozmiar zrodla - najlepiej ~50um"""
 
 import numpy as np
 import matplotlib as mpl
@@ -25,13 +24,15 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
-f = 450. # y length in mm from foucs to the end of the lens
-screen2_pos = f + 400
+f = 250. # y length in mm from foucs to the end of the lens
+screen1_pos = rSample + 200
+screen2_pos = f
+max_plots = 12
 r0 = 0.07
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 1.5
+plot_main_lim = 0.12
 layers = 10 # number of hexagonal layers
 nRefl = 12
 nReflDisp = 12 # unused
@@ -104,11 +105,11 @@ def build_beamline(nrays=1000):
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
         dx=0, dz=0, distxprime='annulus',
         distE='lines', energies=(E0,), polarization='horizontal')        
-        
-    beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,rSample + 200,0))
+    # yo    
+    beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
     # try to remove superflous container
-    beamLine.capillaries = []
+    #beamLine.capillaries = []
     beamLine.xzMax = 0 # no ide what this does
     # this parameter should be @line 8
     alpha = 0.0005 # hopefully milliradian
@@ -117,7 +118,8 @@ def build_beamline(nrays=1000):
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
         material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
         order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
-    beamLine.capillaries.append(capillary)         
+    beamLine.capillary = capillary         
+#    beamLine.capillaries.append(capillary)         
     
     if beamLine.xzMax < capillary.b0:
         beamLine.xzMax = capillary.b0
@@ -126,73 +128,64 @@ def build_beamline(nrays=1000):
     n=1     # one layer..
     beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
+    beamLine.myFsms = []
+    for it in range(0,max_plots):
+        beamLine.myFsms.append(rsc.Screen(beamLine,'myScreen{0:02d}'.format(it),(0,screen2_pos-10*it,0)))
+
     return beamLine
-    
-    
-# function for showing the capillary in some relevant frame    
-def plot2D():
-    beamLine = build_beamline()
-    fig1 = plt.figure(1, figsize=(8,6))    
-    ax1 = plt.subplot(111,aspect=800, label='1')
-    ax1.set_title('Cross-section of polycapillary at $z$=0')
-    ax1.set_xlabel(r'$y$ (mm)', fontsize=14)
-    ax1.set_ylabel(r'$x$ (mm)', fontsize=14)
-    
-    capillary = beamLine.capillaries[0]
-    s = np.linspace(0,capillary.s0,200)
-    x = capillary.local_x0(s)
-    r = capillary.local_r0(s)
-    ax1.plot([0,f-s[-1]],[0,x[-1]],'k-', lw=0.5)
-    line = ax1.plot(f-s, x, 'k-.', lw=0.5)
-    line[0].set_dashes([2,5,12,5])
-    ax1.plot(f-s, x-r, 'r-', lw=2)
-    ax1.plot(f-s, x+r, 'r-', lw=2)
-    
-    ax1.set_xlim(0,f)
-    ax1.set_ylim(plot2D_yLim)
-    # always save
-    fig1.savefig('MonoCapillaryZ0crosssection.png')
-    
-# some important function
+         
 def run_process(beamLine, shineOnly1stSource=False):
     beamSource = beamLine.sources[0].shine()
     # at the entrance
     beamFSM1 = beamLine.fsm1.expose(beamSource)
     outDict = {'beamSource': beamSource, 'beamFSM1': beamFSM1}
     beamCapillaryGlobalTotal = None
-    for i, capillary in enumerate(beamLine.capillaries):
-        beamCapillaryGlobal, beamCapillaryLocalN =\
-            capillary.multiple_reflect(beamSource, maxReflections=nRefl)
-        beamCapillaryLocalN.phi /= np.pi
-        if beamCapillaryGlobalTotal is None:
-            beamCapillaryGlobalTotal = beamCapillaryGlobal
-        else:
-            good = ((beamCapillaryGlobal.state == 1) |
-                    (beamCapillaryGlobal.state == 3))
-            rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
-                         good, includeState=True)
-        outDict['beamCapillaryLocalN{0:02d}'.format(i)] = beamCapillaryLocalN
-        outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal  
-        beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
-        outDict['beamFSM2'] = beamFSM2
-        return outDict
-rr.run_process = run_process                      
-    
+    capillary = beamLine.capillary
+    beamCapillaryGlobal, beamCapillaryLocalN =\
+        capillary.multiple_reflect(beamSource, maxReflections=nRefl)
+    beamCapillaryLocalN.phi /= np.pi
+    if beamCapillaryGlobalTotal is None:
+        beamCapillaryGlobalTotal = beamCapillaryGlobal 
+    else:
+        good = ((beamCapillaryGlobal.state == 1) |
+                (beamCapillaryGlobal.state == 3))
+        rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
+                     good, includeState=True)
+    outDict['myBeam_after_local'] = beamCapillaryLocalN
+    outDict['myBeam_after_global'] = beamCapillaryGlobalTotal
+
+    # Create second screem
+    beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
+    outDict['beamFSM2'] = beamFSM2
+    beamFsms = []
+    for it in range(0,max_plots):
+        beamFsms.append(beamLine.myFsms[it].expose(beamCapillaryGlobalTotal))
+        outDict['myExposedScreen{0:02d}'.format(it)] = beamFsms[it]
+    return outDict
+rr.run_process = run_process  
+
+
 def main():
     beamLine = build_beamline()
     plots = []
 
     limits = [-plot_main_lim, plot_main_lim]
     # at the entrance
-    plot = xrtp.XYCPlot('beamFSM1', (1,3),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
-#        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2),
-#        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', bins=256, ppb=2),
-        caxis='category', beamState='beamFSM1', title='FSM1_Cat')
+        caxis='category', beamState='beamFSM2', title='FSM2_Cat')
     plot.baseName = 'one_capillary_tilt'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
+    for it in range(0,max_plots):
+        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
+            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
+            yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
+            caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
+        plot.baseName = 'inside_one_capillary_multiple_screens' + str(100+it)
+        plot.saveName = plot.baseName + '.png'
+        plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     
