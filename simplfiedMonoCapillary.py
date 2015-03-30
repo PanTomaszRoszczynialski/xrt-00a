@@ -28,11 +28,11 @@ f = 250. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
 screen2_pos = f + 120
 max_plots = 0
-r0 = 0.04
+r0 = 0.02
 rOut = 0.02
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.5 # min 2*r0 for capillary entrance imaging
+plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
 nRefl = 4 # number of reflections
 nReflDisp = 12 # unused
@@ -50,7 +50,7 @@ class StraightCapillary(roe.OE):
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
-        self.b0 = 0.05
+        self.b0 = 0.1
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0
         self.br = self.r0in
@@ -169,14 +169,14 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limits1 = [-plot_main_lim, plot_main_lim]
-    limits2 = [-2.3, 2.3]
+    limits1 = [-0.3, 0.3]
+    limits2 = [-0.2, 0.2]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2),
-        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits = None),
+        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', bins=256, ppb=2, limits = None),
         caxis='category', beamState='beamFSM2', title='FSM2_Cat')
-    plot.baseName = 'taperedCapillary'
+    plot.baseName = 'phaseSearch'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
 #    for it in range(0,max_plots):
