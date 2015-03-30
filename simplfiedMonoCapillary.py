@@ -21,7 +21,7 @@ import xrt.backends.raycing.screens as rsc
 
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
-repeats = 2*1500 # number of ray traycing iterations
+repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 100. # starting position of the lens
 f = 250. # y length in mm from foucs to the end of the lens
