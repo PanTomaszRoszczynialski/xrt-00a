@@ -170,12 +170,12 @@ def main():
     plots = []
 
     limits1 = [-0.3, 0.3]
-    limits2 = [-0.2, 0.2]
+    limits2 = [-1.3, 0.9]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits = None),
-        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', bins=256, ppb=2, limits = None),
-        caxis='category', beamState='beamFSM2', title='FSM2_Cat')
+        xaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits = limits1),
+        yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', bins=256, ppb=2, limits = limits2),
+        caxis='category', beamState='beamFSM2', title='FSM2_Cat', aspect='auto')
     plot.baseName = 'phaseSearch'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
