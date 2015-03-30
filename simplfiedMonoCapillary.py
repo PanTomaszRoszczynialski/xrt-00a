@@ -20,7 +20,7 @@ import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 
 # see XYCAxis constructor:
-from xrt.backends import raycing
+#from xrt.backends import raycing
 
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
@@ -179,7 +179,7 @@ def main():
         xaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z, bins=256, ppb=2, limits = None),
         yaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("incidence angle", 'dg',data=raycing.get_incidence_angle, bins=256, ppb=2),
+        caxis=xrtp.XYCAxis("zprime", 'mrad',data=raycing.get_zprime, bins=256, ppb=2),
         beamState='beamFSM2', title='FSM2_Cat', aspect='auto')
     plot.baseName = 'phaseSearch'
     plot.saveName = plot.baseName + '.png'
