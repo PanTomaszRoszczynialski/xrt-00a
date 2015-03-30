@@ -19,6 +19,9 @@ import xrt.plotter as xrtp
 import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 
+# see XYCAxis constructor:
+from xrt.backends import raycing
+
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
@@ -173,9 +176,11 @@ def main():
     limits2 = [-0.2, 0.2]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits = limits1),
-        yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', bins=256, ppb=2, limits = limits2),
-        caxis='category', beamState='beamFSM2', title='FSM2_Cat', aspect='auto')
+        xaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z, bins=256, ppb=2, limits = None),
+        yaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("TEST", 'mrad',data=raycing.get_phase_shift, bins=256, ppb=2),
+        beamState='beamFSM2', title='FSM2_Cat', aspect='auto')
     plot.baseName = 'phaseSearch'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
