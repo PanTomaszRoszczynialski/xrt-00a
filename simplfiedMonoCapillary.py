@@ -179,7 +179,7 @@ def main():
         xaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z, bins=256, ppb=2, limits = None),
         yaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("TEST", 'mrad',data=raycing.get_phase_shift, bins=256, ppb=2),
+        caxis=xrtp.XYCAxis("Energy", 'kEv',data=raycing.get_energy, bins=256, ppb=2),
         beamState='beamFSM2', title='FSM2_Cat', aspect='auto')
     plot.baseName = 'phaseSearch'
     plot.saveName = plot.baseName + '.png'
