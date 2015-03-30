@@ -176,7 +176,7 @@ def main():
     limits2 = [-0.2, 0.2]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z, bins=256, ppb=2, limits = None),
+        xaxis=xrtp.XYCAxis(r'$xPrime$', 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits = None),
         yaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
 #        caxis='category', 
         caxis=xrtp.XYCAxis("xprime", 'mrad',data=raycing.get_xprime, bins=256, ppb=2),
