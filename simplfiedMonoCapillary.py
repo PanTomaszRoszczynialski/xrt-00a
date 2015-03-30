@@ -169,8 +169,8 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limits1 = [-0.15, 0.15]
-    limits2 = [-0.9, 0.9]
+    limits1 = [-0.08, 0.08]
+    limits2 = [-0.2, 0.2]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits = limits1),
