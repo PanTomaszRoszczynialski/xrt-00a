@@ -22,6 +22,9 @@ import xrt.backends.raycing.screens as rsc
 # see XYCAxis constructor:
 #from xrt.backends import raycing
 
+# for saving into .mat file
+import scipy.io
+
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
@@ -53,7 +56,7 @@ class StraightCapillary(roe.OE):
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
-        self.b0 = 0.1
+        self.b0 = 0.0
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0
         self.br = self.r0in
@@ -176,11 +179,14 @@ def main():
     limits2 = [-0.2, 0.2]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r'$xPrime$', 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits = None),
-        yaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
+        yaxis=xrtp.XYCAxis(r'$xPrime$', 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits = None),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("xprime", 'mrad',data=raycing.get_xprime, bins=256, ppb=2),
-        beamState='beamFSM2', title='FSM2_Cat', aspect='auto')
+        caxis=xrtp.XYCAxis("Reflections", 'number',data=raycing.get_reflection_number, bins=256, ppb=2),
+        beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
+        persistentName='phase_space__reflections.pickle')
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
     plot.baseName = 'phaseSearch'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
@@ -193,6 +199,15 @@ def main():
 #        plot.saveName = plot.baseName + '.png'
 #        plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    
+    # savemat() takes a dict of names later loaded into matlab and objects
+    # we want to save,
+    scipy.io.savemat('xrt_data.mat',{'total2D_RGB':plot.total2D_RGB,
+                                 'total2D':plot.total2D,
+                                 'caxis_total':plot.caxis.total1D,
+                                 'caxis_total_RGB':plot.caxis.total1D_RGB})
+    # just for debug 
+    return plot                                 
     
     
 if __name__ == '__main__':
