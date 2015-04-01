@@ -29,7 +29,7 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 15000 # starting position of the lens
+rSample = 16000 # starting position of the lens
 f = rSample + 350. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
 screen2_pos = f + 120
