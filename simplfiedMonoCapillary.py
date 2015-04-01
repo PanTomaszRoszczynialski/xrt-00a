@@ -29,13 +29,13 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 100. # starting position of the lens
-f = 250. # y length in mm from foucs to the end of the lens
+rSample = 15000 # starting position of the lens
+f = rSample + 350. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
 screen2_pos = f + 120
 max_plots = 0
-r0 = 0.02
-rOut = 0.02
+r0 = 0.03
+rOut = 0.03
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
@@ -43,6 +43,8 @@ layers = 10 # number of hexagonal layers
 nRefl = 4 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
+# Pickle saving: None for no saving
+persistentName=None#'phase_space__energy.pickle'
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -56,7 +58,7 @@ class StraightCapillary(roe.OE):
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
-        self.b0 = 0.0
+        self.b0 = 0.
         self.s0 = s0
         self.ar = (self.r0out-self.r0in) / s0
         self.br = self.r0in
@@ -109,8 +111,8 @@ def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0, dz=0, distxprime='annulus',
-        distE='lines', energies=(E0,), polarization='horizontal')        
+        dx=0.01, dz=0.1, distxprime='annulus',
+        distE='normal', energies=(E0,20), polarization='horizontal')        
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
@@ -175,16 +177,18 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limits1 = [-0.08, 0.08]
-    limits2 = [-0.2, 0.2]
+    xLimits = [-0.065, 0.065]
+    yLimits = [-0.005, 0.005]
+#    yLimits=None
+    cLimits = [8900,9100]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        yaxis=xrtp.XYCAxis(r'$xPrime$', 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits = None),
-        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits = None),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits=yLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'number',data=raycing.get_reflection_number, bins=256, ppb=2),
+        caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
         beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
-        persistentName='phase_space__reflections.pickle')
+        persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
     plot.baseName = 'phaseSearch'
