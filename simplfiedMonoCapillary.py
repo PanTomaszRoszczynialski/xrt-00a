@@ -31,13 +31,13 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 15000 # starting position of the lens
+rSample = 10000 # starting position of the lens
 f = rSample + 150. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 100 # distance @vincze == 10cm
 max_plots = 0
-r0 = 0.03
-rOut = 0.03
+r0 = 0.015
+rOut = 0.015
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
@@ -67,7 +67,7 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0 + s/2500 - 0.06
+        return 0*self.a0 * (s-0)**2 + self.b0 + s/2500 - 0.075 # 0.5 mrad
 #        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
@@ -180,20 +180,20 @@ def main():
     plots = []
 
     xLimits = [-0.053, 0.053]
-    yLimits = [-0.005, 0.005]
+    yLimits = [-0.015, 0.01]
 #    yLimits=None
     cLimits = [8900,9100]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
-        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits=yLimits),
 #        caxis='category', 
         caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
         beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'realSpace'
+    plot.baseName = 'phaseSpace'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
 #    for it in range(0,max_plots):
