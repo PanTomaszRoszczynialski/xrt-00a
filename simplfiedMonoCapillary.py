@@ -31,7 +31,7 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 10000 # starting position of the lens
+rSample = 8000 # starting position of the lens
 f = rSample + 150. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 100 # distance @vincze == 10cm
@@ -67,11 +67,11 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0 + s/2500 - 0.075 # 0.5 mrad
+        return 0*self.a0 * (s-0)**2 + self.b0 + s*0.075/150 - 0.075 # 0.5 mrad
 #        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
-        return 2 * self.a0 * s * 0 + 1/2500
+        return 2 * self.a0 * s * 0 + 0.075/150
 #        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
@@ -179,21 +179,21 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.053, 0.053]
-    yLimits = [-0.015, 0.01]
+    xLimits = [-0.3, 0.0]
+    yLimits = [-0.15, 0.15]
 #    yLimits=None
     cLimits = [8900,9100]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
-        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits=yLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=yLimits),
 #        caxis='category', 
         caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
         beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'phaseSpace'
+    plot.baseName = 'realSpace'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
 #    for it in range(0,max_plots):

@@ -27,7 +27,7 @@ def plot2D(beamLine,f):
     line[0].set_dashes(seq)
     ax1.plot(f-s, x-r, 'r-', lw=2)
     ax1.plot(f-s, x+r, 'r-', lw=2)
-    ax1.set_xlim(0, f+20)
+    ax1.set_xlim(f-170, f+20)
     ax1.set_ylim(-2*capillary.r0in - 0.06, capillary.local_x0(0) + 2*capillary.r0out+0.06)
     ax1.set_aspect('auto')
     ax1.relim()
