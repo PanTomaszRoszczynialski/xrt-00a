@@ -34,7 +34,7 @@ E0 = 9000.
 rSample = 5000 # starting position of the lens
 f = rSample + 150. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
-screen2_pos = f + 100 # distance @vincze == 10cm
+screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
 r0 = 0.015
 rOut = 0.015
@@ -67,7 +67,7 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0 + s*0.075/150 - 0.075 # 0.5 mrad
+        return 0*self.a0 * (s-0)**2 + self.b0 + s*0.075/150 - 0.075/2 # 0.5 mrad
 #        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
@@ -179,9 +179,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.3, 0.0]
-    xpLimits = [-1,1]
-    zLimits = [-0.15, 0.15]
+    xLimits = [-0.1, 0.0]
+    xpLimits = [-0.7,0.7]
+    zLimits = [-0.025, 0.025]
 #    yLimits=None
     cLimits = [8900,9100]
     # at the entrance
@@ -217,14 +217,7 @@ def main():
     plot.saveName = plot.baseName + '.png'    
     plots.append(plot)
     
-#    for it in range(0,max_plots):
-#        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
-#            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits1),
-#            yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits1),
-#            caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
-#        plot.baseName = 'inside_one_capillary_multiple_screens' + str(100+it)
-#        plot.saveName = plot.baseName + '.png'
-#        plots.append(plot)
+    # ITERATING OVER PLOTS {}
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     # savemat() takes a dict of names later loaded into matlab and objects
