@@ -180,20 +180,20 @@ def main():
     plots = []
 
     xLimits = [-0.3, 0.0]
-    yLimits = [-0.15, 0.15]
+    yLimits = [-1.1, 0.1]
 #    yLimits=None
     cLimits = [8900,9100]
     # at the entrance
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
-        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=yLimits),
+        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits=yLimits),
 #        caxis='category', 
         caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
         beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'realSpace'
+    plot.baseName = 'phaseSpace'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
 #    for it in range(0,max_plots):
