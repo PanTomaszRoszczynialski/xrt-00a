@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+import PlotMono
+
 import xrt.backends.raycing as raycing
 import xrt.backends.raycing.sources as rs
 #import xrt.backends.raycing.apertures as ra
@@ -29,7 +31,7 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 10000 # starting position of the lens
+rSample = 100 # starting position of the lens
 f = rSample + 350. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
 screen2_pos = f + 120
@@ -215,5 +217,5 @@ def main():
     
     
 if __name__ == '__main__':
-#    plot2D()    
-    main()
+    PlotMono.plot2D(build_beamline(),f)
+#    main()
