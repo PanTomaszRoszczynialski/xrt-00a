@@ -31,7 +31,7 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 8000 # starting position of the lens
+rSample = 5000 # starting position of the lens
 f = rSample + 150. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 100 # distance @vincze == 10cm
@@ -180,22 +180,43 @@ def main():
     plots = []
 
     xLimits = [-0.3, 0.0]
-    yLimits = [-1.1, 0.1]
+    xpLimits = [-1,1]
+    zLimits = [-0.15, 0.15]
 #    yLimits=None
     cLimits = [8900,9100]
     # at the entrance
+    """
+    PHASE SPACE PLOT
+    """
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
-        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits=yLimits),
+        xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+        yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
-        beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
+        caxis=xrtp.XYCAxis("Energy", 'eV',data=raycing.get_energy, bins=256, ppb=2, limits=cLimits),
+        beamState='beamFSM2', title='Phase Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
     plot.baseName = 'phaseSpace'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
+    
+    """
+    REAL SPACE PLOT
+    """
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
+        beamState='beamFSM2', title='Real Space', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'realSpace'
+    plot.saveName = plot.baseName + '.png'    
+    plots.append(plot)
+    
 #    for it in range(0,max_plots):
 #        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
 #            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits1),
@@ -208,10 +229,14 @@ def main():
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
-    scipy.io.savemat('xrt_data.mat',{'total2D_RGB':plot.total2D_RGB,
-                                 'total2D':plot.total2D,
-                                 'caxis_total':plot.caxis.total1D,
-                                 'caxis_total_RGB':plot.caxis.total1D_RGB})
+    scipy.io.savemat('Phase_xrt_data.mat',{'Phase_total2D_RGB':plots[0].total2D_RGB,
+                                 'Phase_total2D':plots[0].total2D,
+                                 'Phase_caxis_total':plots[0].caxis.total1D,
+                                 'Phase_caxis_total_RGB':plots[0].caxis.total1D_RGB})
+    scipy.io.savemat('RSpace_xrt_data.mat',{'RSpace_total2D_RGB':plots[1].total2D_RGB,
+                                 'RSpace_total2D':plots[1].total2D,
+                                 'RSpace_caxis_total':plots[1].caxis.total1D,
+                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
     # just for debug 
     return plot                                 
     
