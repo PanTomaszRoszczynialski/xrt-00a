@@ -113,8 +113,8 @@ def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0.1, dz=0.1, distxprime='annulus',
-        distE='normal', energies=(E0,20), polarization='horizontal')        
+        dx=0.1, dz=0.1, distxprime='annulus', distzprime='annulus',
+        distE='normal', energies=(E0,20), polarization=None)        
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
