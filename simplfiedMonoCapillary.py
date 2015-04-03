@@ -34,7 +34,7 @@ E0 = 9000.
 rSample = 4000 # starting position of the lens
 f = rSample + 150. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
-screen2_pos = f + 5 # distance @vincze == 10cm
+screen2_pos = f + 3 # distance @vincze == 10cm
 max_plots = 0
 r0 = 0.015
 rOut = 0.015
@@ -42,7 +42,7 @@ wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 4 # number of reflections
+nRefl = 8 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 # Pickle saving: None for no saving
@@ -67,11 +67,11 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0 + s*0.15/150 - 0.15/2 # 0.5 mrad
+        return self.b0 + s*0.15/150 - 0.15/2 # 1 mrad
 #        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
-        return 2 * self.a0 * s * 0 + 0.15/150
+        return 0.15/150
 #        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
@@ -122,7 +122,7 @@ def build_beamline(nrays=1000):
     #beamLine.capillaries = []
     beamLine.xzMax = 0 # no ide what this does
     # this parameter should be @line 8
-    alpha = 0.0005 # hopefully milliradian
+    alpha = 0.000 # hopefully milliradian
     roll = 0 # test if this rotates whole object
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
@@ -179,9 +179,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.16, 0.0]
+    xLimits = [-0.11, -0.05]
     xpLimits = [-1.1,1.1]
-    zLimits = [-0.05, 0.05]
+    zLimits = [-0.021, 0.021]
 #    yLimits=None
     cLimits = None #[8900,9100]
     # at the entrance
