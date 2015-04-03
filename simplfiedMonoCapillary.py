@@ -9,6 +9,8 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
+import PlotMono
+
 import xrt.backends.raycing as raycing
 import xrt.backends.raycing.sources as rs
 #import xrt.backends.raycing.apertures as ra
@@ -24,27 +26,34 @@ import xrt.backends.raycing.screens as rsc
 
 # for saving into .mat file
 import scipy.io
-
+    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
+<<<<<<< HEAD
 rSample = 7000 # lens distance from the light source (max 16m?)
 f = rSample + 350. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 200
 screen2_pos = f + 120
+=======
+rSample = 4000 # starting position of the lens
+f = rSample + 150 # y length in mm from foucs to the end of the lens
+screen1_pos = rSample + 100 
+screen2_pos = f + 5 # distance @vincze == 10cm
+>>>>>>> CapillaryShape
 max_plots = 0
-r0 = 0.03
-rOut = 0.03
+r0 = 0.015
+rOut = 0.015
 wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 4 # number of reflections
+nRefl = 8 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 # Pickle saving: None for no saving
-persistentName=None#'phase_space__energy.pickle'
+persistentName=None #'phase_space__energy.pickle'
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -65,11 +74,12 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0
-#        return 0.0005*np.sin(s*2*np.pi) + self.b0
+        # s*0 is needed for this method to act as a function rather than variable?
+        return self.b0 +s*0# + s*0.15/150 - 0.15/2 # 1 mrad
+        
 
     def local_x0Prime(self, s):
-        return 2 * self.a0 * s * 0
+        return 0#0.15/150
 #        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
@@ -111,8 +121,8 @@ def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0.01, dz=0.1, distxprime='annulus',
-        distE='normal', energies=(E0,20), polarization='horizontal')        
+        dx=0.1, dz=0.1, distxprime='annulus', distzprime='annulus',
+        distE='normal', energies=(E0,20), polarization=None)        
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
@@ -120,7 +130,7 @@ def build_beamline(nrays=1000):
     #beamLine.capillaries = []
     beamLine.xzMax = 0 # no ide what this does
     # this parameter should be @line 8
-    alpha = 0.0005 # hopefully milliradian
+    alpha = 0.000 # hopefully milliradian
     roll = 0 # test if this rotates whole object
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
@@ -177,43 +187,61 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.065, 0.065]
-    yLimits = [-0.005, 0.005]
+    xLimits = [-0.02, 0.02]
+    xpLimits = [-0.03, 0.03]
+    zLimits = [-0.02, 0.02]
 #    yLimits=None
-    cLimits = [8900,9100]
+    cLimits = None #[8900,9100]
     # at the entrance
+    """
+    PHASE SPACE PLOT
+    """
     plot = xrtp.XYCPlot('beamFSM2', (1,3),
-        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
-        yaxis=xrtp.XYCAxis(r"$x'$", 'mrad', data=raycing.get_xprime, bins=256, ppb=2, limits=yLimits),
+        xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+        yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
-        beamState='beamFSM2', title='FSM2_Cat', aspect='auto',
+        caxis=xrtp.XYCAxis("Refletcions", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=cLimits),
+        beamState='beamFSM2', title='Phase Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'phaseSearch'
+    plot.baseName = 'phaseSpace'
     plot.saveName = plot.baseName + '.png'
     plots.append(plot)
-#    for it in range(0,max_plots):
-#        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
-#            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits1),
-#            yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits1),
-#            caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
-#        plot.baseName = 'inside_one_capillary_multiple_screens' + str(100+it)
-#        plot.saveName = plot.baseName + '.png'
-#        plots.append(plot)
+    
+    """
+    REAL SPACE PLOT
+    """
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[3800,4300]),
+        beamState='beamFSM2', title='Real Space', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'realSpace'
+    plot.saveName = plot.baseName + '.png'    
+    plots.append(plot)
+    
+    # ITERATING OVER PLOTS {}
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
-    scipy.io.savemat('xrt_data.mat',{'total2D_RGB':plot.total2D_RGB,
-                                 'total2D':plot.total2D,
-                                 'caxis_total':plot.caxis.total1D,
-                                 'caxis_total_RGB':plot.caxis.total1D_RGB})
+    scipy.io.savemat('Phase_xrt_data.mat',{'Phase_total2D_RGB':plots[0].total2D_RGB,
+                                 'Phase_total2D':plots[0].total2D,
+                                 'Phase_caxis_total':plots[0].caxis.total1D,
+                                 'Phase_caxis_total_RGB':plots[0].caxis.total1D_RGB})
+    scipy.io.savemat('RSpace_xrt_data.mat',{'RSpace_total2D_RGB':plots[1].total2D_RGB,
+                                 'RSpace_total2D':plots[1].total2D,
+                                 'RSpace_caxis_total':plots[1].caxis.total1D,
+                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
     # just for debug 
     return plot                                 
     
     
 if __name__ == '__main__':
-#    plot2D()    
+#    PlotMono.plot2D(build_beamline(),f)
     main()
