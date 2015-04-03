@@ -67,11 +67,11 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.b0 + s*0.15/150 - 0.15/2 # 1 mrad
+        return self.b0 # + s*0.15/150 - 0.15/2 # 1 mrad
 #        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
-        return 0.15/150
+        return 0#0.15/150
 #        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
@@ -179,9 +179,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.11, -0.05]
-    xpLimits = [-1.1,1.1]
-    zLimits = [-0.021, 0.021]
+    xLimits = [-0.02, 0.02]
+    xpLimits = [-0.03, 0.03]
+    zLimits = [-0.02, 0.02]
 #    yLimits=None
     cLimits = None #[8900,9100]
     # at the entrance
