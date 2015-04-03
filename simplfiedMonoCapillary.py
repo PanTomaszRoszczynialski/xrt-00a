@@ -32,9 +32,9 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 4000 # starting position of the lens
-f = rSample + 150. # y length in mm from foucs to the end of the lens
+f = rSample + 150 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
-screen2_pos = f + 3 # distance @vincze == 10cm
+screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
 r0 = 0.015
 rOut = 0.015
@@ -67,8 +67,9 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return self.b0 # + s*0.15/150 - 0.15/2 # 1 mrad
-#        return 0.0005*np.sin(s*2*np.pi) + self.b0
+        # s*0 is needed for this method to act as a function rather than variable?
+        return self.b0 +s*0# + s*0.15/150 - 0.15/2 # 1 mrad
+        
 
     def local_x0Prime(self, s):
         return 0#0.15/150
@@ -208,7 +209,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[4000,4300]),
+        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[3800,4300]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
