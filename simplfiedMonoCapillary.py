@@ -31,17 +31,10 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-<<<<<<< HEAD
-rSample = 7000 # lens distance from the light source (max 16m?)
-f = rSample + 350. # y length in mm from foucs to the end of the lens
-screen1_pos = rSample + 200
-screen2_pos = f + 120
-=======
 rSample = 4000 # starting position of the lens
 f = rSample + 150 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
-screen2_pos = f + 5 # distance @vincze == 10cm
->>>>>>> CapillaryShape
+screen2_pos = f + 1 # distance @vincze == 10cm
 max_plots = 0
 r0 = 0.015
 rOut = 0.015
@@ -49,11 +42,13 @@ wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 8 # number of reflections
+nRefl = 51 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
+# some fun parameter
+k_ = 2*np.pi/150 *0.3
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -75,12 +70,11 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return self.b0 +s*0# + s*0.15/150 - 0.15/2 # 1 mrad
+        return self.b0 + 0.1*np.sin(k_*s + np.pi/4) #+ s*0.075/150 - 0.075/2 # 1 mrad
         
 
     def local_x0Prime(self, s):
-        return 0#0.15/150
-#        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
+        return 0 + 0.1*k_*np.cos(k_*s + np.pi/4) #+ 0.075/150
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
@@ -187,11 +181,11 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.02, 0.02]
-    xpLimits = [-0.03, 0.03]
-    zLimits = [-0.02, 0.02]
+    xLimits = [-0.0, 0.1]
+    xpLimits = [-1, 1]
+    zLimits = [-0.03, 0.03]
 #    yLimits=None
-    cLimits = None #[8900,9100]
+    cLimits = [0,50] #[8900,9100]
     # at the entrance
     """
     PHASE SPACE PLOT
