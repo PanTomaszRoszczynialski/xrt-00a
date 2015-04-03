@@ -26,12 +26,12 @@ import xrt.backends.raycing.screens as rsc
 
 # for saving into .mat file
 import scipy.io
-
+    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 5000 # starting position of the lens
+rSample = 4000 # starting position of the lens
 f = rSample + 150. # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
@@ -67,11 +67,11 @@ class StraightCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):  # axis of capillary, x(s)
-        return 0*self.a0 * (s-0)**2 + self.b0 + s*0.075/150 - 0.075/2 # 0.5 mrad
+        return 0*self.a0 * (s-0)**2 + self.b0 + s*0.15/150 - 0.15/2 # 0.5 mrad
 #        return 0.0005*np.sin(s*2*np.pi) + self.b0
 
     def local_x0Prime(self, s):
-        return 2 * self.a0 * s * 0 + 0.075/150
+        return 2 * self.a0 * s * 0 + 0.15/150
 #        return 0.0005*np.cos(s*2*np.pi)*2*np.pi
 
     def local_r0(self, s):  # radius of capillary (s)
@@ -179,9 +179,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.1, 0.0]
-    xpLimits = [-0.7,0.7]
-    zLimits = [-0.025, 0.025]
+    xLimits = [-0.16, 0.0]
+    xpLimits = [-1.1,1.1]
+    zLimits = [-0.05, 0.05]
 #    yLimits=None
     cLimits = None #[8900,9100]
     # at the entrance
@@ -208,7 +208,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[5000,5300]),
+        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[4000,4300]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
