@@ -183,7 +183,7 @@ def main():
     xpLimits = [-0.7,0.7]
     zLimits = [-0.025, 0.025]
 #    yLimits=None
-    cLimits = [8900,9100]
+    cLimits = None #[8900,9100]
     # at the entrance
     """
     PHASE SPACE PLOT
@@ -192,7 +192,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
         yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Energy", 'eV',data=raycing.get_energy, bins=256, ppb=2, limits=cLimits),
+        caxis=xrtp.XYCAxis("Refletcions", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=cLimits),
         beamState='beamFSM2', title='Phase Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
@@ -208,7 +208,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'num. of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,7]),
+        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[5000,5300]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
