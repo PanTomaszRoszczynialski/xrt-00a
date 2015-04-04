@@ -48,7 +48,7 @@ xzPrimeMax = 3.
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 # some fun parameter
-k_ = 2*np.pi/150 *0.3
+k_ = 64.0
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -70,11 +70,11 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return self.b0 + 0.1*np.sin(k_*s + np.pi/4) #+ s*0.075/150 - 0.075/2 # 1 mrad
+        return k_*np.cosh((s-75.)/75./k_) - k_*np.cosh(1/k_)
         
 
     def local_x0Prime(self, s):
-        return 0 + 0.1*k_*np.cos(k_*s + np.pi/4) #+ 0.075/150
+        return 1/75.0 * np.sinh((s-75.0)/75.0/k_)
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
@@ -181,8 +181,8 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.0, 0.1]
-    xpLimits = [-1, 1]
+    xLimits = [-0.05, 0.05]
+    xpLimits = [-0.3, 0.3]
     zLimits = [-0.03, 0.03]
 #    yLimits=None
     cLimits = [0,50] #[8900,9100]
@@ -210,7 +210,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Path", 'mm',data=raycing.get_path, bins=256, ppb=2, limits=[3800,4300]),
+        caxis=xrtp.XYCAxis("Phase shift", 'mrad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=None),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
