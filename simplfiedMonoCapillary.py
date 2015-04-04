@@ -31,7 +31,7 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 100 # starting position of the lens
+rSample = 8000 # starting position of the lens
 f = rSample + 150 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
@@ -115,8 +115,8 @@ def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0., dz=0., distxprime='annulus',
-        distE='lines', energies=(E0,), polarization='horizontal')        
+        dx=0.1, dz=0.1, distxprime='annulus', distzprime='annulus',
+        distE='normal', energies=(E0,20), polarization=None)            
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
