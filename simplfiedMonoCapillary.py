@@ -31,10 +31,10 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 4000 # starting position of the lens
+rSample = 100 # starting position of the lens
 f = rSample + 150 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
-screen2_pos = f + 1 # distance @vincze == 10cm
+screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
 r0 = 0.015
 rOut = 0.015
@@ -42,7 +42,7 @@ wall = 0.02
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 51 # number of reflections
+nRefl = 11 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 # Pickle saving: None for no saving
@@ -70,11 +70,11 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return k_*np.cosh((s-75.)/75./k_) - k_*np.cosh(1/k_)
+        return -k_*np.cosh((s-75.)/75./k_) +  k_*np.cosh(1/k_) +0.03
         
 
     def local_x0Prime(self, s):
-        return 1/75.0 * np.sinh((s-75.0)/75.0/k_)
+        return -1.0/75.0 * np.sinh((s-75.0)/75.0/k_)
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
@@ -115,8 +115,8 @@ def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0.1, dz=0.1, distxprime='annulus', distzprime='annulus',
-        distE='normal', energies=(E0,20), polarization=None)        
+        dx=0., dz=0., distxprime='annulus',
+        distE='lines', energies=(E0,), polarization='horizontal')        
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
@@ -137,7 +137,7 @@ def build_beamline(nrays=1000):
         beamLine.xzMax = capillary.b0
     beamLine.xzMax += 2*r0
     
-    n=1     # one layer..
+    n=2    # one layer..
     beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
@@ -181,20 +181,20 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.05, 0.05]
-    xpLimits = [-0.3, 0.3]
+    xLimits = [0.02, 0.06]
+    xpLimits = [-0.6, 0.6]
     zLimits = [-0.03, 0.03]
 #    yLimits=None
-    cLimits = [0,50] #[8900,9100]
+    cLimits = None #[8900,9100]
     # at the entrance
     """
     PHASE SPACE PLOT
     """
-    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+    plot = xrtp.XYCPlot('beamFSM2', (1,),
         xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
         yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Refletcions", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=cLimits),
+        caxis=xrtp.XYCAxis("Phse shift", 'mrad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=cLimits),
         beamState='beamFSM2', title='Phase Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
@@ -206,11 +206,11 @@ def main():
     """
     REAL SPACE PLOT
     """
-    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+    plot = xrtp.XYCPlot('beamFSM2', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Phase shift", 'mrad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=None),
+        caxis=xrtp.XYCAxis("Reflections", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,10]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
