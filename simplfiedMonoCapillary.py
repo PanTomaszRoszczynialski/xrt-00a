@@ -31,14 +31,14 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 8000 # starting position of the lens
+rSample = 120 # starting position of the lens
 f = rSample + 150 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
-r0 = 0.015
-rOut = 0.015
-wall = 0.02
+r0 = 0.002
+rOut = 0.002
+wall = 0.0005
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
@@ -48,7 +48,7 @@ xzPrimeMax = 3.
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 # some fun parameter
-k_ = 64.0
+k_ = 256.0
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -70,7 +70,7 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -k_*np.cosh((s-75.)/75./k_) +  k_*np.cosh(1/k_) +0.03
+        return -k_*np.cosh((s-75.)/75./k_) +  k_*np.cosh(1/k_)
         
 
     def local_x0Prime(self, s):
@@ -115,8 +115,8 @@ def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=0)
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0.1, dz=0.1, distxprime='annulus', distzprime='annulus',
-        distE='normal', energies=(E0,20), polarization=None)            
+        dx=0., dz=0., distxprime='annulus',
+        distE='lines', energies=(E0,), polarization='horizontal')                 
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
@@ -181,9 +181,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [0.02, 0.06]
-    xpLimits = [-0.6, 0.6]
-    zLimits = [-0.03, 0.03]
+    xLimits = [-r0*1.4, 1.4*r0]
+    xpLimits = [-0.2, 0.2]
+    zLimits = [-r0*1.4, 1.4*r0]
 #    yLimits=None
     cLimits = None #[8900,9100]
     # at the entrance
