@@ -48,7 +48,7 @@ xzPrimeMax = 3.
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 # some fun parameter
-k_ = 256.0
+k_ = 128.0
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -185,7 +185,7 @@ def main():
     xpLimits = [-0.2, 0.2]
     zLimits = [-r0*1.4, 1.4*r0]
 #    yLimits=None
-    cLimits = None #[8900,9100]
+    cLimits = [-3,3] #[8900,9100]
     # at the entrance
     """
     PHASE SPACE PLOT
@@ -194,7 +194,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
         yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Phse shift", 'mrad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=cLimits),
+        caxis=xrtp.XYCAxis("Phse shift", 'rad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=cLimits),
         beamState='beamFSM2', title='Phase Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
@@ -224,14 +224,14 @@ def main():
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
-    scipy.io.savemat('Phase_xrt_data.mat',{'Phase_total2D_RGB':plots[0].total2D_RGB,
-                                 'Phase_total2D':plots[0].total2D,
-                                 'Phase_caxis_total':plots[0].caxis.total1D,
-                                 'Phase_caxis_total_RGB':plots[0].caxis.total1D_RGB})
-    scipy.io.savemat('RSpace_xrt_data.mat',{'RSpace_total2D_RGB':plots[1].total2D_RGB,
-                                 'RSpace_total2D':plots[1].total2D,
-                                 'RSpace_caxis_total':plots[1].caxis.total1D,
-                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
+#    scipy.io.savemat('Phase_xrt_data.mat',{'Phase_total2D_RGB':plots[0].total2D_RGB,
+#                                 'Phase_total2D':plots[0].total2D,
+#                                 'Phase_caxis_total':plots[0].caxis.total1D,
+#                                 'Phase_caxis_total_RGB':plots[0].caxis.total1D_RGB})
+#    scipy.io.savemat('RSpace_xrt_data.mat',{'RSpace_total2D_RGB':plots[1].total2D_RGB,
+#                                 'RSpace_total2D':plots[1].total2D,
+#                                 'RSpace_caxis_total':plots[1].caxis.total1D,
+#                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
     # just for debug 
     return plot                                 
     
