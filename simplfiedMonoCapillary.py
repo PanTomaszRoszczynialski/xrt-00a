@@ -31,24 +31,28 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
-rSample = 120 # starting position of the lens
-f = rSample + 150 # y length in mm from foucs to the end of the lens
+rSample = 120.0 # starting position of the lens
+f = rSample + 200 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
-r0 = 0.002
-rOut = 0.002
+r0 = 0.02
+rOut = 0.02
 wall = 0.0005
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
 layers = 10 # number of hexagonal layers
-nRefl = 11 # number of reflections
+nRefl = 50 # number of reflections
 nReflDisp = 12 # unused
 xzPrimeMax = 3.
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 # some fun parameter
-k_ = 128.0
+y_in    = 0.1
+rS      = float(rSample)
+# go to mathematica and solve for a in sinh(-1/a) == y_in/rS
+a_      = -100.0/np.arcsinh(-y_in/rS)
+print a_, y_in/rS
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -70,11 +74,11 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -k_*np.cosh((s-75.)/75./k_) +  k_*np.cosh(1/k_)
+        return -a_*np.cosh((s-100.0)/a_) +  a_*np.cosh(100.0/a_) + y_in
         
 
     def local_x0Prime(self, s):
-        return -1.0/75.0 * np.sinh((s-75.0)/75.0/k_)
+        return -np.sinh((s-100.0)/a_)
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
@@ -181,9 +185,10 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-r0*1.4, 1.4*r0]
-    xpLimits = [-0.2, 0.2]
-    zLimits = [-r0*1.4, 1.4*r0]
+    xLimits = [y_in-0.03,y_in+0.03]
+    xpLimits = [-0.5, 0.5]
+    zLimits = [-0.031,0.031]
+#    zLimits = [-r0*1.6, 1.6*r0]
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
     # at the entrance
@@ -210,7 +215,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,10]),
+        caxis=xrtp.XYCAxis("Reflections", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,20]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
