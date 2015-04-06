@@ -32,12 +32,12 @@ mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 6*1500 # number of ray traycing iterations
 E0 = 9000.
 rSample = 120.0 # starting position of the lens
-f = rSample + 200 # y length in mm from foucs to the end of the lens
+f = rSample + 400 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
-r0 = 0.02
-rOut = 0.02
+r0 = 0.002*10
+rOut = 0.002*10
 wall = 0.0005
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
@@ -51,7 +51,7 @@ persistentName=None #'phase_space__energy.pickle'
 y_in    = 0.1
 rS      = float(rSample)
 # go to mathematica and solve for a in sinh(-1/a) == y_in/rS
-a_      = -100.0/np.arcsinh(-y_in/rS)
+a_      = -200.0/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
 
 class StraightCapillary(roe.OE):
@@ -74,11 +74,11 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -a_*np.cosh((s-100.0)/a_) +  a_*np.cosh(100.0/a_) + y_in
+        return -a_*np.cosh((s-200.0)/a_) +  a_*np.cosh(200.0/a_) + y_in
         
 
     def local_x0Prime(self, s):
-        return -np.sinh((s-100.0)/a_)
+        return -np.sinh((s-200.0)/a_)
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
@@ -242,5 +242,5 @@ def main():
     
     
 if __name__ == '__main__':
-#    PlotMono.plot2D(build_beamline(),f)
-    main()
+    PlotMono.plot2D(build_beamline(),f)
+#    main()
