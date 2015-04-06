@@ -36,8 +36,8 @@ f = rSample + 400 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
-r0 = 0.002*10
-rOut = 0.002*10
+r0 = 0.002*5
+rOut = 0.002*5
 wall = 0.0005
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
@@ -141,7 +141,7 @@ def build_beamline(nrays=1000):
         beamLine.xzMax = capillary.b0
     beamLine.xzMax += 2*r0
     
-    n=2    # one layer..
+    n=8   # one layer..
     beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
@@ -185,9 +185,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [y_in-0.03,y_in+0.03]
+    xLimits = [y_in-0.015,y_in+0.015]
     xpLimits = [-0.5, 0.5]
-    zLimits = [-0.031,0.031]
+    zLimits = [-0.015,0.015]
 #    zLimits = [-r0*1.6, 1.6*r0]
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
@@ -242,5 +242,5 @@ def main():
     
     
 if __name__ == '__main__':
-    PlotMono.plot2D(build_beamline(),f)
-#    main()
+#    PlotMono.plot2D(build_beamline(),f)
+    main()
