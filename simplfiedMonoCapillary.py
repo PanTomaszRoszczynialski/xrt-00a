@@ -36,8 +36,8 @@ f = rSample + 400 # y length in mm from foucs to the end of the lens
 screen1_pos = rSample + 100 
 screen2_pos = f + 5 # distance @vincze == 10cm
 max_plots = 0
-r0 = 0.002*5
-rOut = 0.002*5
+r0 = 0.002*1
+rOut = 0.002*1
 wall = 0.0005
 plot2D_yLim = [-0.05, 0.05]
 plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
@@ -48,7 +48,7 @@ xzPrimeMax = 3.
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 # some fun parameter
-y_in    = 0.1
+y_in    = 0.01
 rS      = float(rSample)
 # go to mathematica and solve for a in sinh(-1/a) == y_in/rS
 a_      = -200.0/np.arcsinh(-y_in/rS)
@@ -185,9 +185,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [y_in-0.015,y_in+0.015]
-    xpLimits = [-0.5, 0.5]
-    zLimits = [-0.015,0.015]
+    xLimits = [y_in-0.003,y_in+0.003]
+    xpLimits = [-0.15, 0.15]
+    zLimits = [-0.003,0.003]
 #    zLimits = [-r0*1.6, 1.6*r0]
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
