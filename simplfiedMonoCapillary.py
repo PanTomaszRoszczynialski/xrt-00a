@@ -27,32 +27,35 @@ import xrt.backends.raycing.screens as rsc
 # for saving into .mat file
 import scipy.io
     
+# ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
+repeats = 6*1500    # number of ray traycing iterations
+E0 = 9000.          # energy in electronoVolts
+nRefl = 50          # number of reflections
 
-repeats = 6*1500 # number of ray traycing iterations
-E0 = 9000.
+# capillary shape parameters
 rSample = 120.0 # starting position of the lens
 f = rSample + 400 # y length in mm from foucs to the end of the lens
-screen1_pos = rSample + 100 
-screen2_pos = f + 5 # distance @vincze == 10cm
-max_plots = 0
 r0 = 0.002*1
 rOut = 0.002*1
 wall = 0.0005
-plot2D_yLim = [-0.05, 0.05]
-plot_main_lim = 0.45 # min 2*r0 for capillary entrance imaging
-layers = 10 # number of hexagonal layers
-nRefl = 50 # number of reflections
-nReflDisp = 12 # unused
-xzPrimeMax = 3.
-# Pickle saving: None for no saving
-persistentName=None #'phase_space__energy.pickle'
-# some fun parameter
-y_in    = 0.01
-rS      = float(rSample)
-# go to mathematica and solve for a in sinh(-1/a) == y_in/rS
+
+# parameters for local_x0 function for actual shape definition
+y_in    = 0.01              # entrance height
+rS      = float(rSample)    # light source - capillary distance 
+# Cosh parameter for tangential ray entrance
 a_      = -200.0/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
+
+# image acquisition
+screen1_pos = rSample + 100     # not really used
+screen2_pos = f + 1             # first image position outside capillary
+max_plots = 10                  # for imaging different position at once
+
+# Pickle saving: None for no saving
+persistentName=None #'phase_space__energy.pickle'
+
+
 
 class StraightCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -146,7 +149,9 @@ def build_beamline(nrays=1000):
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
     for it in range(0,max_plots):
-        beamLine.myFsms.append(rsc.Screen(beamLine,'myScreen{0:02d}'.format(it),(0,rSample+145*it,0)))
+        beamLine.myFsms.append(rsc.Screen(beamLine,
+                                          'myScreen{0:02d}'.format(it),
+                                          (0,f +rSample/10*it,0)))
 
     return beamLine
          
@@ -185,9 +190,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [y_in-0.003,y_in+0.003]
+    xLimits = [-0.015, 0.015]
     xpLimits = [-0.15, 0.15]
-    zLimits = [-0.003,0.003]
+    zLimits = xLimits
 #    zLimits = [-r0*1.6, 1.6*r0]
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
@@ -225,6 +230,14 @@ def main():
     plots.append(plot)
     
     # ITERATING OVER PLOTS {}
+    for it in range(0,max_plots):
+        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
+            xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=xLimits),
+            yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=zLimits),
+            caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
+        plot.baseName = 'thin_cap_dist_' + str(100+it)
+        plot.saveName = plot.baseName + '.png'
+        plots.append(plot)    
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     # savemat() takes a dict of names later loaded into matlab and objects
