@@ -151,7 +151,7 @@ def build_beamline(nrays=1000):
     for it in range(0,max_plots):
         beamLine.myFsms.append(rsc.Screen(beamLine,
                                           'myScreen{0:02d}'.format(it),
-                                          (0,f +rSample/10*it,0)))
+                                          (0,f +rSample + rSample/10*it,0)))
 
     return beamLine
          
@@ -235,7 +235,7 @@ def main():
             xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=xLimits),
             yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=zLimits),
             caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
-        plot.baseName = 'thin_cap_dist_' + str(100+it)
+        plot.baseName = 'thin_cap_dist_' + str(110+it)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)    
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
