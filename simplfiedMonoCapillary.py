@@ -41,7 +41,7 @@ rOut = 0.002*1
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.01              # entrance height
+y_in    = 0.04              # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -200.0/np.arcsinh(-y_in/rS)
@@ -50,7 +50,7 @@ print a_, y_in/rS
 # image acquisition
 screen1_pos = rSample + 100     # not really used
 screen2_pos = f + 1             # first image position outside capillary
-max_plots = 10                  # for imaging different position at once
+max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
@@ -190,10 +190,10 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [-0.015, 0.015]
+    xLimits = [y_in-0.005, y_in+0.005]
     xpLimits = [-0.15, 0.15]
-    zLimits = xLimits
-#    zLimits = [-r0*1.6, 1.6*r0]
+#    zLimits = xLimits
+    zLimits = [-r0*1.6, 1.6*r0]
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
     # at the entrance
