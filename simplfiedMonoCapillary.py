@@ -34,14 +34,14 @@ E0 = 9000.          # energy in electronoVolts
 nRefl = 50          # number of reflections
 
 # capillary shape parameters
-rSample = 120.0 # starting position of the lens
+rSample = 10.0 # starting position of the lens
 f = rSample + 400 # y length in mm from foucs to the end of the lens
 r0 = 0.002*1
 rOut = 0.002*1
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.04              # entrance height
+y_in    = 0.01             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -200.0/np.arcsinh(-y_in/rS)
@@ -220,7 +220,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,20]),
+        caxis=xrtp.XYCAxis("Reflections", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,nRefl]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
