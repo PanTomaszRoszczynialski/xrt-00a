@@ -34,14 +34,14 @@ E0 = 9000.          # energy in electronoVolts
 nRefl = 50          # number of reflections
 
 # capillary shape parameters
-rSample = 10.0 # starting position of the lens
+rSample = 180.0 # starting position of the lens
 f = rSample + 400 # y length in mm from foucs to the end of the lens
 r0 = 0.002*1
 rOut = 0.002*1
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.01             # entrance height
+y_in    = 0.03             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -200.0/np.arcsinh(-y_in/rS)
@@ -85,11 +85,11 @@ class StraightCapillary(roe.OE):
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
-        return -self.ar *(s-self.s0) + self.br
+        return -self.ar *(s-self.s0) + self.br*(1+np.cos(np.pi/2*(s-200.0)/200))
 
     def local_r0Prime(self, s):
 #        return self.ar * 2 * (s-self.s0)
-        return -self.ar
+        return -self.ar + self.br * ( -np.sin(np.pi/2*(s-200.0)/200))*np.pi/2/200
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
