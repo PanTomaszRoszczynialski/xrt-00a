@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1e4    # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 50          # number of reflections
+nRefl = 80          # number of reflections
 
 # capillary shape parameters
 rSample = 100.0 # starting position of the lens
@@ -85,11 +85,11 @@ class StraightCapillary(roe.OE):
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
-        return -self.ar *(s-self.s0) + self.br*(1+np.cos(np.pi/2*(s-200.0)/200))
+        return -self.ar *(s-self.s0) + self.br*(2+np.sin(np.pi/2*(s-200.0)/200))
 
     def local_r0Prime(self, s):
 #        return self.ar * 2 * (s-self.s0)
-        return -self.ar + self.br * ( -np.sin(np.pi/2*(s-200.0)/200))*np.pi/2/200
+        return -self.ar + self.br * ( + np.cos(np.pi/2*(s-200.0)/200))*np.pi/2/200
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
