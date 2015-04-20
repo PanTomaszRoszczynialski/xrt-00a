@@ -22,7 +22,7 @@ repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 min_d   = 0     # [mm] | source - screen distance
 step    = 4     # [mm] | screen step size
-N_      = 20    # number of step to take
+N_      = 10    # number of step to take
 
 xLimits = [-0.05, 0.05] # Plot limits
 zLimits = xLimits       # axis square
@@ -34,8 +34,8 @@ bl_height   = 0.
 bl_xzMax    = 0.
 
 # x-direction parameters
-distx       = 'flat'
-dx          = 0.005
+distx       = 'annulus'
+dx          = 0.005, 0.01
 distxprime  = 'normal'
 dxprime     = 2e-4
 # z-direction
