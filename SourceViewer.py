@@ -21,7 +21,7 @@ import xrt.backends.raycing.screens as rsc
 repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 min_d   = 0     # [mm] | source - screen distance
-step    = 3     # [mm] | screen step size
+step    = 4     # [mm] | screen step size
 N_      = 20    # number of step to take
 
 xLimits = [-0.05, 0.05] # Plot limits
@@ -34,13 +34,13 @@ bl_height   = 0.
 bl_xzMax    = 0.
 
 # x-direction parameters
-distx       = 'normal'
-dx          = 0.0
+distx       = 'flat'
+dx          = 0.02
 distxprime  = 'normal'
 dxprime     = 1e-4
 # z-direction
-distz       = 'normal'
-dz          = 0.0
+distz       = 'flat'
+dz          = 0.02
 distzprime  = 'normal'
 dzprime     = 1e-4
 
