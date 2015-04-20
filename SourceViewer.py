@@ -20,9 +20,9 @@ import xrt.backends.raycing.screens as rsc
 """ WELL DOCUMENTED PARAMETERS """
 repeats = 1e4   # liczba
 E0      = 9000  # [eV]
-min_d   = 1     # [mm] | source - screen distance
-step    = 19     # [mm] | screen step size
-N_      = 4    # number of step to take
+min_d   = 0     # [mm] | source - screen distance
+step    = 3     # [mm] | screen step size
+N_      = 20    # number of step to take
 
 xLimits = [-0.05, 0.05] # Plot limits
 zLimits = xLimits       # axis square
@@ -41,8 +41,8 @@ dxprime     = 1e-4
 # z-direction
 distz       = 'normal'
 dz          = 0.0
-distzprime  = 'annulus'
-dzprime     = 1e-3
+distzprime  = 'normal'
+dzprime     = 1e-4
 
 def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=bl_height)
