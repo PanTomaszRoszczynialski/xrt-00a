@@ -21,17 +21,28 @@ import xrt.backends.raycing.screens as rsc
 repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 min_d   = 1     # [mm] | source - screen distance
-step    = 2     # [mm] | screen step size
-N_      = 20     # number of step to take
+step    = 19     # [mm] | screen step size
+N_      = 4    # number of step to take
 
 xLimits = [-0.05, 0.05] # Plot limits
 zLimits = xLimits       # axis square
 
 processes = 8
 
-""" PARAMETERS TO CHECK: """
+""" GeometricSource():: PARAMETERS TO CHECK: """
 bl_height   = 0.
 bl_xzMax    = 0.
+
+# x-direction parameters
+distx       = 'normal'
+dx          = 0.0
+distxprime  = 'annulus'
+dxprime     = 1e-3
+# z-direction
+distz       = 'normal'
+dz          = 0.0
+distzprime  = 'normal'
+dzprime     = 1e-4
 
 def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=bl_height)
@@ -39,7 +50,8 @@ def build_beamline(nrays=1000):
     # source appends itself to the provided beamline
     rs.GeometricSource(
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
-        dx=0., dz=0., distxprime='annulus',
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')
         
     # some mysterious parameters
@@ -92,9 +104,3 @@ if __name__ == '__main__':
         
         
         
-        
-        
-        
-        
-        
-    
