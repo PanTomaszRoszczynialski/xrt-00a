@@ -36,13 +36,13 @@ bl_xzMax    = 0.
 # x-direction parameters
 distx       = 'normal'
 dx          = 0.0
-distxprime  = 'annulus'
-dxprime     = 1e-3
+distxprime  = 'normal'
+dxprime     = 1e-4
 # z-direction
 distz       = 'normal'
 dz          = 0.0
-distzprime  = 'normal'
-dzprime     = 1e-4
+distzprime  = 'annulus'
+dzprime     = 1e-3
 
 def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=bl_height)
