@@ -35,9 +35,9 @@ bl_xzMax    = 0.
 
 # x-direction parameters
 distx       = 'flat'
-dx          = 0.02
+dx          = 0.005
 distxprime  = 'normal'
-dxprime     = 1e-4
+dxprime     = 2e-4
 # z-direction
 distz       = 'flat'
 dz          = 0.02
