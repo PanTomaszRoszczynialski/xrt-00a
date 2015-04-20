@@ -22,10 +22,12 @@ repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 min_d   = 1     # [mm] | source - screen distance
 step    = 2     # [mm] | screen step size
-N_      = 3     # number of step to take
+N_      = 20     # number of step to take
 
 xLimits = [-0.05, 0.05] # Plot limits
 zLimits = xLimits       # axis square
+
+processes = 8
 
 """ PARAMETERS TO CHECK: """
 bl_height   = 0.
@@ -83,7 +85,7 @@ def main():
         plot.baseName = 'dist_' + str(1000 + c_dist)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=processes)
 
 if __name__ == '__main__':
     main()
