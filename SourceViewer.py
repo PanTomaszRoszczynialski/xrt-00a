@@ -22,9 +22,9 @@ repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 min_d   = 0     # [mm] | source - screen distance
 step    = 4     # [mm] | screen step size
-N_      = 10    # number of step to take
+N_      = 11    # number of step to take
 
-xLimits = [-0.05, 0.05] # Plot limits
+xLimits = [-5.05, 5.05] # Plot limits
 zLimits = xLimits       # axis square
 
 processes = 8
@@ -34,15 +34,15 @@ bl_height   = 0.
 bl_xzMax    = 0.
 
 # x-direction parameters
-distx       = 'annulus'
-dx          = 0.005, 0.01
+distx       = 'flat'
+dx          = 0.1
 distxprime  = 'normal'
-dxprime     = 2e-4
+dxprime     = 5e-2
 # z-direction
 distz       = 'flat'
-dz          = 0.02
+dz          = 0.1
 distzprime  = 'normal'
-dzprime     = 1e-4
+dzprime     = 5e-2
 
 def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=bl_height)
