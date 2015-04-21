@@ -24,7 +24,7 @@ min_d   = 0     # [mm] | source - screen distance
 step    = 4     # [mm] | screen step size
 N_      = 11    # number of step to take
 
-xLimits = [-5.05, 5.05] # Plot limits
+xLimits = [-6.05, 6.05] # Plot limits
 zLimits = xLimits       # axis square
 
 processes = 8
@@ -36,13 +36,13 @@ bl_xzMax    = 0.
 # x-direction parameters
 distx       = 'flat'
 dx          = 0.1
-distxprime  = 'flat'
-dxprime     = 5e-2
+distxprime  = 'normal'
+dxprime     = 0.1
 # z-direction
 distz       = 'flat'
 dz          = 0.1
-distzprime  = 'flat'
-dzprime     = 5e-2
+distzprime  = 'normal'
+dzprime     = 0.1
 
 def build_beamline(nrays=1000):
     beamLine = raycing.BeamLine(height=bl_height)
