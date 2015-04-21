@@ -36,12 +36,12 @@ bl_xzMax    = 0.
 # x-direction parameters
 distx       = 'flat'
 dx          = 0.1
-distxprime  = 'normal'
+distxprime  = 'flat'
 dxprime     = 5e-2
 # z-direction
 distz       = 'flat'
 dz          = 0.1
-distzprime  = 'normal'
+distzprime  = 'flat'
 dzprime     = 5e-2
 
 def build_beamline(nrays=1000):
