@@ -29,27 +29,27 @@ import scipy.io
     
 # ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 1e3    # number of ray traycing iterations
+repeats = 1e4    # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 480          # number of reflections
+nRefl = 100          # number of reflections
 
 # capillary shape parameters
 rSample = 30.0 # starting position of the lens
 L_ = 100.0
 f = rSample + L_ # y length in mm from foucs to the end of the lens
-r0 = 0.09
-rOut = 0.09
+r0 = 0.202
+rOut = 0.202
 wall = 0.005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 2.5            # entrance height
+y_in    = 0.1            # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
 
 # image acquisition
-screen1_pos = rSample + 100     # not really used
+screen1_pos = rSample     # not really used
 screen2_pos = f + 1             # first image position outside capillary
 max_plots = 0                   # for imaging different position at once| 0=off
 
@@ -129,24 +129,26 @@ class StraightCapillary(roe.OE):
         z = r * np.cos(phi)
         return x, y, z
         
-def build_beamline(nrays=5000):
+def build_beamline(nrays=500):
     beamLine = raycing.BeamLine(height=0)
     # source checked @SourceView.py
     rs.GeometricSource(
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
-        distE='lines', energies=(E0,), polarization=None)              
+        distE='lines', energies=(E0,), polarization='horizontal')              
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
-    alpha = 0.0
+    alpha = np.arctan(y_in/rSample)
     roll = 0 # test if this rotates whole object
-    limPhysY=[rSample*np.cos(alpha)]
+    limPhysY=[rSample*np.cos(alpha),f]
+#    limPhysY=[0, f]
+
     
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
-        material=mGlass, limPhysY=[0, f],
+        material=mGlass, limPhysY=limPhysY,
         order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
     beamLine.capillary = capillary         
 #    beamLine.capillaries.append(capillary)         
@@ -225,7 +227,7 @@ def main():
     """
     REAL SPACE PLOT
     """
-    plot = xrtp.XYCPlot('beamFSM2', (1,3),
+    plot = xrtp.XYCPlot('beamFSM2', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
@@ -240,14 +242,14 @@ def main():
     
     # ITERATING OVER PLOTS {}
     for it in range(0,max_plots):
-        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
+        plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,),
             xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=xLimits),
             yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=zLimits),
             caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
         plot.baseName = 'thin_cap_dist_' + str(110+it)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
