@@ -29,7 +29,7 @@ def plot2D(beamLine,f):
     ax1.plot(f-s, x+r, 'r-', lw=2)
     ax1.set_xlim(0, f+20)
 #    ax1.set_ylim(0.0,0.2)
-    ax1.set_ylim(-2*capillary.r0in - 0.05, capillary.local_x0(200) + 2*capillary.r0out + 0.05)
+    ax1.set_ylim(-2*capillary.r0in - 0.05, capillary.local_x0(50) + 2*capillary.r0out + 0.05)
     ax1.set_aspect('auto')
     ax1.relim()
     ax1.autoscale_view()

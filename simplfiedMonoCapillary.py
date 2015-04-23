@@ -29,22 +29,23 @@ import scipy.io
     
 # ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 2e4    # number of ray traycing iterations
+repeats = 1e3    # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 80          # number of reflections
+nRefl = 480          # number of reflections
 
 # capillary shape parameters
 rSample = 30.0 # starting position of the lens
-f = rSample + 400 # y length in mm from foucs to the end of the lens
-r0 = 0.002*1
-rOut = 0.002*1
-wall = 0.0005
+L_ = 100.0
+f = rSample + L_ # y length in mm from foucs to the end of the lens
+r0 = 0.09
+rOut = 0.09
+wall = 0.005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.01             # entrance height
+y_in    = 2.5            # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
-a_      = -200.0/np.arcsinh(-y_in/rS)
+a_      = -L_/2/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
 
 # image acquisition
@@ -55,6 +56,16 @@ max_plots = 0                   # for imaging different position at once| 0=off
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 
+# Source parameters
+distx       = 'flat'
+dx          = 0.1
+distxprime  = 'normal'
+dxprime     = 0.1
+# z-direction
+distz       = 'flat'
+dz          = 0.1
+distzprime  = 'normal'
+dzprime     = 0.1
 
 
 class StraightCapillary(roe.OE):
@@ -77,19 +88,19 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -a_*np.cosh((s-200.0)/a_) +  a_*np.cosh(200.0/a_) + y_in
+        return -a_*np.cosh((s-L_/2.)/a_) +  a_*np.cosh(L_/2./a_) + y_in
         
 
     def local_x0Prime(self, s):
-        return -np.sinh((s-200.0)/a_)
+        return -np.sinh((s-L_/2.)/a_)
 
     def local_r0(self, s):  # radius of capillary (s)
 #        return self.ar * (s-self.s0)**2 + self.br
-        return -self.ar *(s-self.s0) + self.br*(2+np.cos(np.pi/2*(s-200.0)/200))
+        return -self.ar *(s-self.s0) + self.br #self.br*(2+np.cos(np.pi/2*(s-L_/2.)/L_/2.))
 
     def local_r0Prime(self, s):
 #        return self.ar * 2 * (s-self.s0)
-        return -self.ar + self.br * ( - np.sin(np.pi/2*(s-200.0)/200))*np.pi/2/200
+        return -self.ar #+ self.br * ( - np.sin(np.pi/2*(s-L_/2.)/L_/2.))*np.pi/2/L_/2.
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
@@ -118,34 +129,29 @@ class StraightCapillary(roe.OE):
         z = r * np.cos(phi)
         return x, y, z
         
-def build_beamline(nrays=1000):
+def build_beamline(nrays=5000):
     beamLine = raycing.BeamLine(height=0)
+    # source checked @SourceView.py
     rs.GeometricSource(
-        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0., dz=0., distxprime='annulus',
-        distE='lines', energies=(E0,), polarization='horizontal')                 
+        beamLine,'GeometricSource',(0,0,0), nrays=nrays,
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+        distE='lines', energies=(E0,), polarization=None)              
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
-    # try to remove superflous container
-    #beamLine.capillaries = []
-    beamLine.xzMax = 0 # no ide what this does
-    # this parameter should be @line 8
-    alpha = 0.000 # hopefully milliradian
+    alpha = 0.0
     roll = 0 # test if this rotates whole object
+    limPhysY=[rSample*np.cos(alpha)]
+    
     capillary = StraightCapillary(
         beamLine, 'StraightCapillary', [0,0,0], roll=roll,
-        material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
+        material=mGlass, limPhysY=[0, f],
         order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
     beamLine.capillary = capillary         
 #    beamLine.capillaries.append(capillary)         
     
-    if beamLine.xzMax < capillary.b0:
-        beamLine.xzMax = capillary.b0
-    beamLine.xzMax += 2*r0
     
-    n=8   # one layer..
-    beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
     for it in range(0,max_plots):
@@ -183,6 +189,7 @@ def run_process(beamLine, shineOnly1stSource=False):
         beamFsms.append(beamLine.myFsms[it].expose(beamCapillaryGlobalTotal))
         outDict['myExposedScreen{0:02d}'.format(it)] = beamFsms[it]
     return outDict
+    
 rr.run_process = run_process  
 
 
@@ -190,17 +197,19 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [y_in-0.005, y_in+0.005]
-    xpLimits = [-0.15, 0.15]
+    xLimits = [y_in - 3.6*r0, y_in + 3.6*r0]
+    xpLimits = [-0.55, 0.55]
 #    zLimits = xLimits
-    zLimits = [-r0*1.6, 1.6*r0]
+    zLimits = [-r0*3.6, 3.6*r0]
+#    xLimits = [-5.2, 5.2]
+#    zLimits = xLimits
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
     # at the entrance
     """
     PHASE SPACE PLOT
     """
-    plot = xrtp.XYCPlot('beamFSM2', (1,),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
         yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
 #        caxis='category', 
@@ -216,7 +225,7 @@ def main():
     """
     REAL SPACE PLOT
     """
-    plot = xrtp.XYCPlot('beamFSM2', (1,),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
