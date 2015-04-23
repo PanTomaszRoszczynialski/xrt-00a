@@ -37,8 +37,8 @@ nRefl = 30          # number of reflections
 rSample = 30.0 # starting position of the lens
 L_ = 100.0
 f = rSample + L_ # y length in mm from foucs to the end of the lens
-r0 = 0.202
-rOut = 0.202
+r0 = 0.02
+rOut = 0.02
 wall = 0.005
 
 # parameters for local_x0 function for actual shape definition
@@ -132,17 +132,17 @@ class StraightCapillary(roe.OE):
 def build_beamline(nrays=500):
     beamLine = raycing.BeamLine(height=0)
     # source checked @SourceView.py
-#    rs.GeometricSource(
-#        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-#        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
-#        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
-#        distE='lines', energies=(E0,), polarization='horizontal')            
-    
     rs.GeometricSource(
         beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0., dz=0., distxprime='annulus',
-        distE='lines', energies=(E0,), polarization='horizontal')                
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+        distE='lines', energies=(E0,), polarization='horizontal')            
     
+#    rs.GeometricSource(
+#        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
+#        dx=0., dz=0., distxprime='annulus',
+#        distE='lines', energies=(E0,), polarization='horizontal')                
+#    
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
@@ -272,5 +272,5 @@ def main():
     
     
 if __name__ == '__main__':
-    PlotMono.plot2D(build_beamline(),f)
-#    main()
+#    PlotMono.plot2D(build_beamline(),f)
+    main()
