@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1e4    # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 100          # number of reflections
+nRefl = 30          # number of reflections
 
 # capillary shape parameters
 rSample = 30.0 # starting position of the lens
@@ -42,7 +42,7 @@ rOut = 0.202
 wall = 0.005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.1            # entrance height
+y_in    = 1.1            # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2/np.arcsinh(-y_in/rS)
@@ -132,17 +132,24 @@ class StraightCapillary(roe.OE):
 def build_beamline(nrays=500):
     beamLine = raycing.BeamLine(height=0)
     # source checked @SourceView.py
+#    rs.GeometricSource(
+#        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
+#        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+#        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+#        distE='lines', energies=(E0,), polarization='horizontal')            
+    
     rs.GeometricSource(
-        beamLine,'GeometricSource',(0,0,0), nrays=nrays,
-        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
-        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
-        distE='lines', energies=(E0,), polarization='horizontal')              
+        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
+        dx=0., dz=0., distxprime='annulus',
+        distE='lines', energies=(E0,), polarization='horizontal')                
+    
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
     alpha = np.arctan(y_in/rSample)
+    alpha = 0
     roll = 0 # test if this rotates whole object
-    limPhysY=[rSample*np.cos(alpha),f]
+    limPhysY=[0, f]
 #    limPhysY=[0, f]
 
     
@@ -152,7 +159,6 @@ def build_beamline(nrays=500):
         order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
     beamLine.capillary = capillary         
 #    beamLine.capillaries.append(capillary)         
-    
     
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
@@ -199,12 +205,12 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [y_in - 3.6*r0, y_in + 3.6*r0]
+#    xLimits = [y_in - 3.6*r0, y_in + 3.6*r0]
     xpLimits = [-0.55, 0.55]
 #    zLimits = xLimits
     zLimits = [-r0*3.6, 3.6*r0]
-#    xLimits = [-5.2, 5.2]
-#    zLimits = xLimits
+    xLimits = None
+    zLimits = xLimits
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
     # at the entrance
@@ -227,7 +233,7 @@ def main():
     """
     REAL SPACE PLOT
     """
-    plot = xrtp.XYCPlot('beamFSM2', (1,),
+    plot = xrtp.XYCPlot('beamFSM2', (1,3),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
@@ -266,5 +272,5 @@ def main():
     
     
 if __name__ == '__main__':
-#    PlotMono.plot2D(build_beamline(),f)
-    main()
+    PlotMono.plot2D(build_beamline(),f)
+#    main()
