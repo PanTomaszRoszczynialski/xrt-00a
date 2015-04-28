@@ -34,8 +34,9 @@ E0 = 9000.          # energy in electronoVolts
 nRefl = 80          # number of reflections
 
 # capillary shape parameters
-rSample = 30.0 # starting position of the lens
-f = rSample + 400 # y length in mm from foucs to the end of the lens
+rSample = 30.0              # starting position of the lens
+L_      = 400.0               # length of the lens
+f       = rSample + L_     # y length in mm from foucs to the end of the lens
 r0 = 0.002*1
 rOut = 0.002*1
 wall = 0.0005
@@ -44,12 +45,12 @@ wall = 0.0005
 y_in    = 0.01             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
-a_      = -200.0/np.arcsinh(-y_in/rS)
+a_      = -L_/2.0/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
 
 # image acquisition
 screen1_pos = rSample + 100     # not really used
-screen2_pos = f + 1             # first image position outside capillary
+screen2_pos = f + 0             # first image position outside capillary
 max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
@@ -77,19 +78,18 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -a_*np.cosh((s-200.0)/a_) +  a_*np.cosh(200.0/a_) + y_in
+        return -a_*np.cosh((s-L_/2.0)/a_) +  a_*np.cosh(L_/2.0/a_) + y_in
         
 
     def local_x0Prime(self, s):
-        return -np.sinh((s-200.0)/a_)
+        return -np.sinh((s-L_/2.0)/a_)
 
     def local_r0(self, s):  # radius of capillary (s)
-#        return self.ar * (s-self.s0)**2 + self.br
-        return -self.ar *(s-self.s0) + self.br*(2+np.cos(np.pi/2*(s-200.0)/200))
+        return -self.ar *(s-self.s0) + self.br*(2.0+np.cos(np.pi/2.0*(s-L_/2.0)/L_/2.0))
 
     def local_r0Prime(self, s):
-#        return self.ar * 2 * (s-self.s0)
-        return -self.ar + self.br * ( - np.sin(np.pi/2*(s-200.0)/200))*np.pi/2/200
+        return -self.ar + self.br * ( - np.sin(np.pi/2.0*(s-L_/2.0)/L_/2.0))*np.pi/2.0/L_/2.0
+
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
@@ -190,10 +190,11 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    xLimits = [y_in-0.005, y_in+0.005]
+    limit_r = 3.6 * r0      # visible readius
+    xLimits = [y_in - limit_r, y_in + limit_r]
     xpLimits = [-0.15, 0.15]
 #    zLimits = xLimits
-    zLimits = [-r0*1.6, 1.6*r0]
+    zLimits = [-limit_r, limit_r]
 #    yLimits=None
     cLimits = [-3,3] #[8900,9100]
     # at the entrance
@@ -238,7 +239,7 @@ def main():
         plot.baseName = 'thin_cap_dist_' + str(110+it)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
