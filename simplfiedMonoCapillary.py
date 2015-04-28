@@ -85,10 +85,10 @@ class StraightCapillary(roe.OE):
         return -np.sinh((s-L_/2.0)/a_)
 
     def local_r0(self, s):  # radius of capillary (s)
-        return -self.ar *(s-self.s0) + self.br*(2.0+np.cos(np.pi/2.0*(s-L_/2.0)/L_/2.0))
+        return self.ar *(s-self.s0)**2 + self.br #+ self.br*(2.0+np.cos(np.pi/2.0*(s-L_/2.0)/L_/2.0))
 
     def local_r0Prime(self, s):
-        return -self.ar + self.br * ( - np.sin(np.pi/2.0*(s-L_/2.0)/L_/2.0))*np.pi/2.0/L_/2.0
+        return self.ar * 2 * (s-self.s0) #+ self.br * ( - np.sin(np.pi/2.0*(s-L_/2.0)/L_/2.0))*np.pi/2.0/L_/2.0
 
 
     def local_r(self, s, phi):
@@ -190,7 +190,7 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = 3.6 * r0      # visible readius
+    limit_r = 1.6 * r0      # visible readius
     xLimits = [y_in - limit_r, y_in + limit_r]
     xpLimits = [-0.15, 0.15]
 #    zLimits = xLimits
