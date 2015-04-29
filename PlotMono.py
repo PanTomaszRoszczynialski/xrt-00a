@@ -19,7 +19,7 @@ def plot2D(beamLine,f):
     seq = [2, 5, 12, 5]
 
     capillary = beamLine.capillary
-    s = np.linspace(0, capillary.s0, 200)
+    s = np.linspace(0, capillary.s0, 100)
     x = capillary.local_x0(s)
     r = capillary.local_r0(s)
     ax1.plot([0, f-s[-1]], [0, x[-1]], 'k-', lw=0.5)
@@ -29,7 +29,7 @@ def plot2D(beamLine,f):
     ax1.plot(f-s, x+r, 'r-', lw=2)
     ax1.set_xlim(0, f+20)
 #    ax1.set_ylim(0.0,0.2)
-    ax1.set_ylim(-2*capillary.r0in - 0.05, capillary.local_x0(200) + 2*capillary.r0out + 0.05)
+    ax1.set_ylim(-2*capillary.r0in - 0.05, capillary.local_x0(100) + 2*capillary.r0out + 0.05)
     ax1.set_aspect('auto')
     ax1.relim()
     ax1.autoscale_view()

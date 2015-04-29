@@ -29,20 +29,20 @@ import scipy.io
     
 # ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 1e6    # number of ray traycing iterations
+repeats = 1e6       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 250          # number of reflections
+nRefl = 550         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
-L_      = 400.0               # length of the lens
+L_      = 200.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*1
-rOut = 0.002*1
+r0 = 0.002*5
+rOut = 0.002*5
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.01             # entrance height
+y_in    = 0.05             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2.0/np.arcsinh(-y_in/rS)
@@ -54,7 +54,7 @@ screen2_pos = f + 0             # first image position outside capillary
 max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
-persistentName=None #'phase_space__energy.pickle'
+persistentName='realSpae.pickle' #'phase_space__energy.pickle'
 
 # Surce parameters
 distx       = 'flat'
@@ -205,7 +205,7 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = 3.6 * r0      # visible readius
+    limit_r = 1.6 * r0      # visible readius
     xLimits = [y_in - limit_r, y_in + limit_r]
     xpLimits = [-0.15, 0.15]
 #    zLimits = xLimits
@@ -222,7 +222,7 @@ def main():
 #        caxis='category', 
         caxis=xrtp.XYCAxis("Phse shift", 'rad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=cLimits),
         beamState='beamFSM2', title='Phase Space', aspect='auto',
-        persistentName=persistentName)
+        persistentName=None)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
     plot.baseName = 'phaseSpace'
