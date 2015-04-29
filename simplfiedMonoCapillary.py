@@ -29,9 +29,9 @@ import scipy.io
     
 # ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 2e4    # number of ray traycing iterations
+repeats = 1e6    # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 80          # number of reflections
+nRefl = 250          # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
@@ -49,13 +49,23 @@ a_      = -L_/2.0/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
 
 # image acquisition
-screen1_pos = rSample + 100     # not really used
+screen1_pos = rSample     # not really used
 screen2_pos = f + 0             # first image position outside capillary
 max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
 persistentName=None #'phase_space__energy.pickle'
 
+# Surce parameters
+distx       = 'flat'
+dx          = 0.1
+distxprime  = 'normal'
+dxprime     = 0.1
+# z-direction
+distz       = 'flat'
+dz          = 0.1
+distzprime  = 'normal'
+dzprime     = 0.1
 
 
 class StraightCapillary(roe.OE):
@@ -118,12 +128,17 @@ class StraightCapillary(roe.OE):
         z = r * np.cos(phi)
         return x, y, z
         
-def build_beamline(nrays=1000):
+def build_beamline(nrays=1e5):
     beamLine = raycing.BeamLine(height=0)
+#    rs.GeometricSource(
+#        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
+#        dx=0., dz=0., distxprime='annulus',
+#        distE='lines', energies=(E0,), polarization='horizontal')    
     rs.GeometricSource(
-        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
-        dx=0., dz=0., distxprime='annulus',
-        distE='lines', energies=(E0,), polarization='horizontal')                 
+        beamLine,'GeometricSource',(0,0,0), nrays=nrays,
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+        distE='lines', energies=(E0,), polarization='horizontal')         
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
     
@@ -142,10 +157,10 @@ def build_beamline(nrays=1000):
     
     if beamLine.xzMax < capillary.b0:
         beamLine.xzMax = capillary.b0
-    beamLine.xzMax += 2*r0
+    beamLine.xzMax = 0.0
     
-    n=8   # one layer..
-    beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
+#    n=8   # one layer..
+#    beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
     for it in range(0,max_plots):
@@ -190,7 +205,7 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = 1.6 * r0      # visible readius
+    limit_r = 3.6 * r0      # visible readius
     xLimits = [y_in - limit_r, y_in + limit_r]
     xpLimits = [-0.15, 0.15]
 #    zLimits = xLimits
@@ -221,7 +236,7 @@ def main():
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'nr of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0,nRefl]),
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
         beamState='beamFSM2', title='Real Space', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
