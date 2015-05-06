@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1e6       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 550         # number of reflections
+nRefl = 100         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
@@ -271,5 +271,5 @@ def main():
     
     
 if __name__ == '__main__':
-#    PlotMono.plot2D(build_beamline(),f)
-    main()
+    PlotMono.plot2D(build_beamline(),f)
+#    main()
