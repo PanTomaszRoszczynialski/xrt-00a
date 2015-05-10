@@ -29,20 +29,20 @@ import scipy.io
     
 # ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 1e6       # number of ray traycing iterations
+repeats = 1e4       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 200         # number of reflections
+nRefl = 30         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
 L_      = 200.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*3
-rOut = 0.002*3
+r0 = 0.002*20
+rOut = 0.002*20
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.05             # entrance height
+y_in    = 0.15             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2.0/np.arcsinh(-y_in/rS)
@@ -207,7 +207,7 @@ def main():
 
     limit_r = 1.6 * r0      # visible readius
     xLimits = [y_in - limit_r, y_in + limit_r]
-    xpLimits = [-0.15, 0.15]
+    xpLimits = [-2., 2.]
 #    zLimits = xLimits
     zLimits = [-limit_r, limit_r]
 #    yLimits=None
@@ -254,7 +254,7 @@ def main():
         plot.baseName = 'thin_cap_dist_' + str(110+it)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
