@@ -234,7 +234,7 @@ def main():
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
         caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
-        beamState='beamFSM2', title='Real Space', aspect='auto',
+        beamState='beamFSM2', title='Detector at exit', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
@@ -255,7 +255,7 @@ def main():
         plot.saveName = 'png/' + plot.baseName + '.png'
         plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
