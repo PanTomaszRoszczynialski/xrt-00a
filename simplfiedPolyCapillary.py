@@ -37,12 +37,12 @@ nRefl = 30         # number of reflections
 rSample = 30.0              # starting position of the lens
 L_      = 200.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*20
-rOut = 0.002*20
+r0 = 0.002*10
+rOut = 0.002*10
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.15             # entrance height
+y_in    = 0.12             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2.0/np.arcsinh(-y_in/rS)
@@ -54,7 +54,7 @@ screen2_pos = f + 0             # first image position outside capillary
 max_plots = 5                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
-persistentName = 'polyCapExit.pickle' #'realSpae.pickle' 
+persistentName = 'pickle/polyCapExit.pickle' #'realSpae.pickle' 
 
 # Surce parameters
 distx       = 'flat'
@@ -163,11 +163,14 @@ def build_beamline(nrays=1e4):
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
     beamLine.myFsms = []
     
-    # Iterate from exit to focus (symmetric atm)
+    # Iterate from exit to focus (symmetric atm), save distances for names
+    beamLine.myScreens_pos = []
     for it in range(1,max_plots+1):
+        tmp_pos = f + it*rSample/max_plots
+        beamLine.myScreens_pos.append(tmp_pos)
         beamLine.myFsms.append(rsc.Screen(beamLine,
                                           'myScreen{0:02d}'.format(it),
-                                          (0, f + it*rSample/max_plots, 0)))
+                                          (0, tmp_pos, 0)))
 
     return beamLine
          
@@ -235,20 +238,22 @@ def main():
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'realSpace_poly'
-    plot.saveName = plot.baseName + '.png'    
+    plot.baseName = 'Detector_at__' + str(f)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)
     
     # ITERATING OVER PLOTS {}
     cLimits = [0, nRefl]
     for it in range(0,max_plots):
+        tmp_name = 'Detector_at_' + str(beamLine.myScreens_pos[it])
         plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
             xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=xLimits),
             yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=zLimits),
             caxis=xrtp.XYCAxis('Reflections', 'number', data=raycing.get_reflection_number, bins=256, ppb=2, limits=cLimits),
-            beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
-        plot.baseName = 'thin_cap_dist_' + str(110+it)
-        plot.saveName = plot.baseName + '.png'
+            beamState='myExposedScreen{0:02d}'.format(it), title=tmp_name)
+        plot.baseName = tmp_name
+        plot.saveName = 'png/' + plot.baseName + '.png'
+        plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
         plots.append(plot)    
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
@@ -262,9 +267,8 @@ def main():
 #                                 'RSpace_total2D':plots[1].total2D,
 #                                 'RSpace_caxis_total':plots[1].caxis.total1D,
 #                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
-    # just for debug 
+    # just for debug x`
     return plot                                 
-    
     
 if __name__ == '__main__':
 #    PlotMono.plot2D(build_beamline(),f)
