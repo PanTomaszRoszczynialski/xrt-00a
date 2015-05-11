@@ -207,7 +207,7 @@ def main():
 
     limit_r = 1.6 * r0      # visible readius
     xLimits = [y_in - limit_r, y_in + limit_r]
-    xpLimits = [-0.15, 0.15]
+    xpLimits = [-0.3, 0.3]
 #    zLimits = xLimits
     zLimits = [-limit_r, limit_r]
 #    yLimits=None
@@ -254,7 +254,7 @@ def main():
         plot.baseName = 'thin_cap_dist_' + str(110+it)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, threads=8, processes=7)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
@@ -267,7 +267,7 @@ def main():
 #                                 'RSpace_caxis_total':plots[1].caxis.total1D,
 #                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
     # just for debug 
-    return plot                                 
+#    return plot                                 
     
     
 if __name__ == '__main__':
