@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1e4       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 30         # number of reflections
+nRefl = 80         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
@@ -42,7 +42,8 @@ rOut = 0.002*10
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.12             # entrance height
+# those should get moved to Capillary definition
+y_in    = 1.12              # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2.0/np.arcsinh(-y_in/rS)
@@ -254,7 +255,7 @@ def main():
         plot.baseName = 'thin_cap_dist_' + str(110+it)
         plot.saveName = plot.baseName + '.png'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,

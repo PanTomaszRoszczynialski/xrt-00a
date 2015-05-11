@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 1e4       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 30         # number of reflections
+nRefl = 80         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
@@ -42,7 +42,7 @@ rOut = 0.002*10
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.12             # entrance height
+y_in    = 1.12             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 a_      = -L_/2.0/np.arcsinh(-y_in/rS)
@@ -146,7 +146,7 @@ def build_beamline(nrays=1e4):
     beamLine.capillaries = []
 
     alpha = 0.000   # hopefully milliradian
-    N_ = 12
+    N_ = 175
     for it in range(N_):
         roll = it*2*np.pi/N_
         capillary = BentCapillary(
