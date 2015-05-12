@@ -263,7 +263,7 @@ def main():
     """
     BEHIND THE SLIT
     """
-    limit_r = 3
+    limit_r = 0.5
     xLimits = [- limit_r, limit_r]
     zLimits = [-limit_r, limit_r]
     plot = xrtp.XYCPlot('slitScreen', (1,),
