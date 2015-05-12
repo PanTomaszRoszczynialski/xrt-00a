@@ -37,8 +37,8 @@ nRefl = 80         # number of reflections
 rSample = 30.0              # starting position of the lens
 L_      = 200.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*10
-rOut = 0.002*10
+r0 = 0.002*5
+rOut = 0.002*5
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
@@ -51,7 +51,7 @@ print a_, y_in/rS
 # image acquisition
 screen1_pos = rSample     # not really used
 screen2_pos = f + 0             # first image position outside capillary
-max_plots = 5                   # for imaging different position at once| 0=off
+max_plots = 15                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
 persistentName = 'pickle/polyCapExit.pickle' #'realSpae.pickle' 
@@ -146,7 +146,7 @@ def build_beamline(nrays=1e4):
     beamLine.capillaries = []
 
     alpha = 0.000   # hopefully milliradian
-    N_ = 175
+    N_ = 350 
     for it in range(N_):
         roll = it*2*np.pi/N_
         capillary = BentCapillary(
@@ -166,7 +166,7 @@ def build_beamline(nrays=1e4):
     # Iterate from exit to focus (symmetric atm), save distances for names
     beamLine.myScreens_pos = []
     for it in range(1,max_plots+1):
-        tmp_pos = f + it*rSample/max_plots
+        tmp_pos = f + 2*it*rSample/max_plots
         beamLine.myScreens_pos.append(tmp_pos)
         beamLine.myFsms.append(rsc.Screen(beamLine,
                                           'myScreen{0:02d}'.format(it),
@@ -221,7 +221,7 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = y_in + 1.6 * r0     
+    limit_r = 1.05 * y_in + 1.6 * r0     
     xLimits = [- limit_r, limit_r]
     zLimits = [-limit_r, limit_r]
 
