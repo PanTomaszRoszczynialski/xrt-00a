@@ -176,7 +176,7 @@ def build_beamline(nrays=1e4):
     slitDx = 0.2
     slitDz = 0.1                                     
     beamLine.slit = ra.RectangularAperture(
-        beamLine, 'squareSlit', 0, (f + 2.2*rSample), ('left', 'right', 'bottom', 'top'),
+        beamLine, 'squareSlit', [0, f + 2.2*rSample ,0], ('left', 'right', 'bottom', 'top'),
         [-slitDx, slitDx, -slitDz, slitDz])
         
     # Insert screen after slit
@@ -225,7 +225,7 @@ def run_process(beamLine, shineOnly1stSource=False):
         outDict['myExposedScreen{0:02d}'.format(it)] = beamFsms[it]
 
     # Push photons through the slit
-    beamPastSlit = beamLine.slit.propagate(beamCapillaryGlobalTotal)
+    beamPastSlit, dupa = beamLine.slit.propagate(beamCapillaryGlobalTotal,needNewGlobal=True)
     
     # Observe what's behind
     pastSlitScreen = beamLine.sltScreen.expose(beamPastSlit)
