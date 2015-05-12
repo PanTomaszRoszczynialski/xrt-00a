@@ -174,9 +174,9 @@ def build_beamline(nrays=1e4):
                                           
     # Insert slit                                          
     slitDx = 0.2
-    slitDz = 0.02                                     
+    slitDz = 0.1                                     
     beamLine.slit = ra.RectangularAperture(
-        beamLine, 'squareSlit', 0, f + 2.2*rSample, ('left', 'right', 'bottom', 'top'),
+        beamLine, 'squareSlit', 0, (f + 2.2*rSample), ('left', 'right', 'bottom', 'top'),
         [-slitDx, slitDx, -slitDz, slitDz])
         
     # Insert screen after slit
@@ -263,15 +263,16 @@ def main():
     """
     BEHIND THE SLIT
     """
+    limit_r = 3
+    xLimits = [- limit_r, limit_r]
+    zLimits = [-limit_r, limit_r]
     plot = xrtp.XYCPlot('slitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
         caxis='category', 
 #        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
         beamState='slitScreen', title='After the slit', aspect='auto',
-        persistentName=persistentName)
-    # setting persistentName saves data into a python pickle, and might be
-    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+        persistentName=None)
     plot.baseName = 'slit_0A'
     plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)
