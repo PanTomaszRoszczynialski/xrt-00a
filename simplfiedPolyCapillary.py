@@ -21,8 +21,8 @@ import xrt.plotter as xrtp
 import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 
-# see XYCAxis constructor:
-#from xrt.backends import raycing
+import xrt.backends.raycing.apertures as ra
+
 
 # for saving into .mat file
 import scipy.io
@@ -51,7 +51,7 @@ print a_, y_in/rS
 # image acquisition
 screen1_pos = rSample     # not really used
 screen2_pos = f + 0             # first image position outside capillary
-max_plots = 5                   # for imaging different position at once| 0=off
+max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
 persistentName = 'pickle/polyCapExit.pickle' #'realSpae.pickle' 
@@ -171,10 +171,21 @@ def build_beamline(nrays=1e4):
         beamLine.myFsms.append(rsc.Screen(beamLine,
                                           'myScreen{0:02d}'.format(it),
                                           (0, tmp_pos, 0)))
+                                          
+    # Insert slit                                          
+    slitDx = 0.2
+    slitDz = 0.02                                     
+    beamLine.slit = ra.RectangularAperture(
+        beamLine, 'squareSlit', 0, f + 2.2*rSample, ('left', 'right', 'bottom', 'top'),
+        [-slitDx, slitDx, -slitDz, slitDz])
+        
+    # Insert screen after slit
+    beamLine.sltScreen = rsc.Screen(beamLine,'DiamondFSM2', (0,f+2.5*rSample,0))        
 
     return beamLine
          
 def run_process(beamLine, shineOnly1stSource=False):
+
     beamSource = beamLine.sources[0].shine()
     # at the entrance | unused
     beamFSM1 = beamLine.fsm1.expose(beamSource)
@@ -206,12 +217,19 @@ def run_process(beamLine, shineOnly1stSource=False):
     beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
     outDict['beamFSM2'] = beamFSM2
     
-    # For future use
+    # For future use | this for should probably end before the slit
+    # and another one should be run after | ?
     beamFsms = []
-    for it in range(0,max_plots):
+    for it in range(0,max_plots): # 0
         beamFsms.append(beamLine.myFsms[it].expose(beamCapillaryGlobalTotal))
         outDict['myExposedScreen{0:02d}'.format(it)] = beamFsms[it]
 
+    # Push photons through the slit
+    beamPastSlit = beamLine.slit.propagate(beamCapillaryGlobalTotal)
+    
+    # Observe what's behind
+    pastSlitScreen = beamLine.sltScreen.expose(beamPastSlit)
+    outDict['slitScreen'] = pastSlitScreen
     return outDict
     
 rr.run_process = run_process  
@@ -242,6 +260,22 @@ def main():
     plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)
     
+    """
+    BEHIND THE SLIT
+    """
+    plot = xrtp.XYCPlot('slitScreen', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+        caxis='category', 
+#        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='slitScreen', title='After the slit', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'slit_0A'
+    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plots.append(plot)
+    
     # ITERATING OVER PLOTS {}
     cLimits = [0, nRefl]
     for it in range(0,max_plots):
@@ -255,7 +289,7 @@ def main():
         plot.saveName = 'png/' + plot.baseName + '.png'
         plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
         plots.append(plot)    
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
     
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,

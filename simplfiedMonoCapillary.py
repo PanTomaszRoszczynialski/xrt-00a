@@ -21,6 +21,7 @@ import xrt.plotter as xrtp
 import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 
+
 # see XYCAxis constructor:
 #from xrt.backends import raycing
 
@@ -271,5 +272,5 @@ def main():
     
     
 if __name__ == '__main__':
-#    PlotMono.plot2D(build_beamline(),f)
-    main()
+    PlotMono.plot2D(build_beamline(),f)
+#    main()
