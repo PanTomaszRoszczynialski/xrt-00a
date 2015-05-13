@@ -37,8 +37,8 @@ nRefl = 200         # number of reflections
 rSample = 30.0              # starting position of the lens
 L_      = 200.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*3
-rOut = 0.002*3
+r0 = 0.002*2
+rOut = 0.002*2
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
@@ -49,12 +49,12 @@ a_      = -L_/2.0/np.arcsinh(-y_in/rS)
 print a_, y_in/rS
 
 # image acquisition
-screen1_pos = rSample     # not really used
+screen1_pos = rSample           # not really used
 screen2_pos = f + 0             # first image position outside capillary
 max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
-persistentName='realSpae.pickle' #'phase_space__energy.pickle'
+persistentName='realSpace.pickle' #'phase_space__energy.pickle'
 
 # Surce parameters
 distx       = 'flat'
