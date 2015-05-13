@@ -174,13 +174,13 @@ def build_beamline(nrays=1e4):
                                           
     # Insert slit                                          
     slitDx = 0.2
-    slitDz = 0.1                                     
+    slitDz = 0.01                                     
     beamLine.slit = ra.RectangularAperture(
-        beamLine, 'squareSlit', [0, f + 2.2*rSample ,0], ('left', 'right', 'bottom', 'top'),
+        beamLine, 'squareSlit', [0, f + 2*rSample ,0], ('left', 'right', 'bottom', 'top'),
         [-slitDx, slitDx, -slitDz, slitDz])
         
     # Insert screen after slit
-    beamLine.sltScreen = rsc.Screen(beamLine,'DiamondFSM2', (0,f+2.5*rSample,0))        
+    beamLine.sltScreen = rsc.Screen(beamLine,'DiamondFSM2', (0,f+3*rSample,0))        
 
     return beamLine
          
