@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 5e4       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 150         # number of reflections
+nRefl = 170         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
@@ -42,16 +42,16 @@ rOut = 0.002*1
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 1.12             # entrance height
+x_0		= 0.5
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
-a_      = -L_/2.0/np.arcsinh(-y_in/rS)
-print a_, y_in/rS
+#a_      = -L_/2.0/np.arcsinh(-y_in/rS)
+#print a_, y_in/rS
 
 # image acquisition
 screen1_pos = rSample     # not really used
 screen2_pos = f + 0             # first image position outside capillary
-max_plots = 9                   # for imaging different position at once| 0=off
+max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
 persistentName = 'pickle/polyCapExit.pickle' #'realSpae.pickle' 
@@ -75,7 +75,12 @@ class BentCapillary(roe.OE):
         self.f = kwargs.pop('f') # 
         self.r0in = kwargs.pop('rIn')
         self.r0out = kwargs.pop('rOut')
+        # New parameters
+        self.x_in   = kwargs.pop('x_in')
         roe.OE.__init__(self, *args, **kwargs)
+
+        self.L_ = self.f - self.rSample
+        self.a_ = -self.L_/2.0/np.arcsinh(-self.x_in/self.rSample)
 
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
@@ -88,11 +93,11 @@ class BentCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -a_*np.cosh((s-L_/2.0)/a_) +  a_*np.cosh(L_/2.0/a_) + y_in
+        return -self.a_*np.cosh((s-self.L_/2.0)/self.a_) +  self.a_*np.cosh(self.L_/2.0/self.a_) + self.x_in
         
 
     def local_x0Prime(self, s):
-        return -np.sinh((s-L_/2.0)/a_)
+        return -np.sinh((s-self.L_/2.0)/self.a_)
 
     def local_r0(self, s):  # radius of capillary (s)
         return self.ar *(s-self.s0)**2 + self.br #+ self.br*(2.0+np.cos(np.pi/2.0*(s-L_/2.0)/L_/2.0))
@@ -145,25 +150,40 @@ def build_beamline(nrays=1e4):
     # try to remove superflous container
     beamLine.capillaries = []
 
-    alpha = 0.000   # hopefully milliradian
-    N_ = 350*5 
-    for it in range(N_):
-        roll = it*2*np.pi/N_
-        capillary = BentCapillary(
-            beamLine, 'BentCapillary', [0,0,0], roll=roll,
-            material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-            order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
-        # 
-        beamLine.capillaries.append(capillary)         
+
+
+    alpha = 0.000   # this is so obsolete
+    
+    for h_it in range(0,5):
+        x_in = x_0 - h_it * (2*r0 + 2*wall)
+        Obw_tmp = 2*np.pi*x_in
+        N_ = int(np.floor( Obw_tmp/(2*r0 + 2*wall) ) )
+        print "Number of capillaries: " + str(N_)
+        print "On circle with radius:  " + str(Obw_tmp)
+
+        for it in range(int(N_)):
+            roll = it*2*np.pi/N_
+            capillary = BentCapillary(
+                beamLine, 'BentCapillary', [0,0,0], roll=roll,
+                material=mGlass, limPhysY=[rSample*np.cos(alpha), f], x_in=x_in,
+                order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
+            # 
+            beamLine.capillaries.append(capillary)         
     
     # debug cout
-    print "Number of capillaries: " + str(len(beamLine.capillaries))
+    print "Total number of capillaries: " + str(len(beamLine.capillaries))
     
     # prepare screen fo all of them
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
-    beamLine.myFsms = []
+    
+    # Screen in focal spot
+    beamLine.fsm3 = rsc.Screen(beamLine,'DiamondFSM3', (0,f + rSample,0))
+    
+    # Screen where 1:1 image should be
+    beamLine.fsm4 = rsc.Screen(beamLine,'DiamondFSM4', (0,f + 2*rSample,0))
     
     # Iterate from exit to focus (symmetric atm), save distances for names
+    beamLine.myFsms = []
     beamLine.myScreens_pos = []
     for it in range(1,max_plots-1):
         tmp_pos = f + 2*it*rSample/max_plots
@@ -205,6 +225,10 @@ def run_process(beamLine, shineOnly1stSource=False):
     # See them on screen 
     beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
     outDict['beamFSM2'] = beamFSM2
+    beamFSM3 = beamLine.fsm3.expose(beamCapillaryGlobalTotal)
+    outDict['beamFSM3'] = beamFSM3
+    beamFSM4 = beamLine.fsm4.expose(beamCapillaryGlobalTotal)
+    outDict['beamFSM4'] = beamFSM4
     
     # For future use
     beamFsms = []
@@ -221,13 +245,13 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = 1.05 * y_in + 1.6 * r0     
+    limit_r = 1.05 * x_0 + 1.6 * r0     
     xLimits = [- limit_r, limit_r]
     zLimits = [-limit_r, limit_r]
 
     
     """
-    REAL SPACE PLOT
+    Lens Exit
     """
     plot = xrtp.XYCPlot('beamFSM2', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
@@ -238,7 +262,63 @@ def main():
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'Detector_at__' + str(f)
+    plot.baseName = 'Detector_at_' + str(f)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plots.append(plot)
+      
+    
+    """
+    1:1 Image
+    """
+    plot = xrtp.XYCPlot('beamFSM4', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='beamFSM4', title='Detector at 2f', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'Detector_at_' + str(f + 3*rSample)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plots.append(plot)
+    
+    """
+    Lens Exit ZOOM
+    """
+    
+    r_lim = 3*r0
+    xLimits = [x_0 - r_lim, x_0 + r_lim ]
+    zLimits = [-r_lim, r_lim]
+    plot = xrtp.XYCPlot('beamFSM2', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='beamFSM2', title='Detector at exit with zoom', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'zoom_Detector_at_' + str(f)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plots.append(plot)      
+    
+    
+    """
+    Focal Spot Image
+    """
+    xLimits = [-0.1 , 0.1]
+    zLimits = xLimits
+    plot = xrtp.XYCPlot('beamFSM3', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='beamFSM3', title='Detector at f', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'Detector_at_' + str(f + 2*rSample)
     plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)
     
