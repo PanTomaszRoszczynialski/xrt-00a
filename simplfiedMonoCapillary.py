@@ -29,16 +29,16 @@ import scipy.io
     
 # ray traycing settings    
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 1e4       # number of ray traycing iterations
+repeats = 5e4       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 80         # number of reflections
+nRefl = 150         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
 L_      = 200.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*5
-rOut = 0.002*5
+r0 = 0.002*1
+rOut = 0.002*1
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
