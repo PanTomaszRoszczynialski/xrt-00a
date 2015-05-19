@@ -154,7 +154,7 @@ def build_beamline(nrays=1e4):
 
     alpha = 0.000   # this is so obsolete
     
-    for h_it in range(0,5):
+    for h_it in range(0,7):
         x_in = x_0 - h_it * (2*r0 + 2*wall)
         Obw_tmp = 2*np.pi*x_in
         N_ = int(np.floor( Obw_tmp/(2*r0 + 2*wall) ) )
@@ -262,7 +262,7 @@ def main():
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'Detector_at_' + str(f)
+    plot.baseName = 'Detector_at_' + str(rSample + f)
     plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)
       
@@ -299,7 +299,7 @@ def main():
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'zoom_Detector_at_' + str(f)
+    plot.baseName = 'zoom_Detector_at_' + str(f+rSample)
     plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)      
     
