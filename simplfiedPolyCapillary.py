@@ -35,7 +35,7 @@ nRefl = 170         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
-L_      = 200.0               # length of the lens
+L_      = 100.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
 r0 = 0.002*1
 rOut = 0.002*1
