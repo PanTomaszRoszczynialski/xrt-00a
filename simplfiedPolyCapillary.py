@@ -154,7 +154,7 @@ def build_beamline(nrays=1e4):
 
     alpha = 0.000   # this is so obsolete
     
-    for h_it in range(0,7):
+    for h_it in range(0,12):
         x_in = x_0 - h_it * (2*r0 + 2*wall)
         Obw_tmp = 2*np.pi*x_in
         N_ = int(np.floor( Obw_tmp/(2*r0 + 2*wall) ) )
