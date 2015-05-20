@@ -42,11 +42,11 @@ rOut = 0.002*2
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-y_in    = 0.05             # entrance height
+x_in    = 1.05             # entrance height
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
-a_      = -L_/2.0/np.arcsinh(-y_in/rS)
-print a_, y_in/rS
+a_      = -L_/2.0/np.arcsinh(-x_in/rS)
+print a_, x_in/rS
 
 # image acquisition
 screen1_pos = rSample           # not really used
@@ -68,16 +68,20 @@ distzprime  = 'normal'
 dzprime     = 0.1
 
 
-class StraightCapillary(roe.OE):
+class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
         self.rSample = kwargs.pop('rSample')
         self.entranceAlpha = kwargs.pop('entranceAlpha')
         self.f = kwargs.pop('f') # 
         self.r0in = kwargs.pop('rIn')
         self.r0out = kwargs.pop('rOut')
+        # New parameters
+        self.x_in   = kwargs.pop('x_in')
         roe.OE.__init__(self, *args, **kwargs)
-
-        s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
+      
+        self.L_ = self.f - self.rSample
+        self.a_ = -self.L_/2.0/np.arcsinh(-self.x_in/self.rSample)
+	s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
         self.b0 = 0.5*self.rSample * np.sin(self.entranceAlpha) - self.a0 * s0**2
         self.b0 = 0.
@@ -88,11 +92,10 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -a_*np.cosh((s-L_/2.0)/a_) +  a_*np.cosh(L_/2.0/a_) + y_in
-        
+        return -self.a_*np.cosh((s-self.L_/2.0)/self.a_) +  self.a_*np.cosh(self.L_/2.0/self.a_) + self.x_in
 
     def local_x0Prime(self, s):
-        return -np.sinh((s-L_/2.0)/a_)
+        return -np.sinh((s-self.L_/2.0)/self.a_)
 
     def local_r0(self, s):  # radius of capillary (s)
         return self.ar *(s-self.s0)**2 + self.br #+ self.br*(2.0+np.cos(np.pi/2.0*(s-L_/2.0)/L_/2.0))
@@ -148,9 +151,9 @@ def build_beamline(nrays=1e5):
     # this parameter should be @line 8
     alpha = 0.000 # hopefully milliradian
     roll = 0 # test if this rotates whole object
-    capillary = StraightCapillary(
-        beamLine, 'StraightCapillary', [0,0,0], roll=roll,
-        material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
+    capillary = BentCapillary(
+        beamLine, 'BentCapillary', [0,0,0], roll=roll,
+        material=mGlass, limPhysY=[rSample*np.cos(alpha), f], x_in=x_in,
         order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
     beamLine.capillary = capillary         
 #    beamLine.capillaries.append(capillary)         
@@ -206,7 +209,7 @@ def main():
     plots = []
 
     limit_r = 1.6 * r0      # visible readius
-    xLimits = [y_in - limit_r, y_in + limit_r]
+    xLimits = [x_in - limit_r, x_in + limit_r]
     xpLimits = [-0.3, 0.3]
 #    zLimits = xLimits
     zLimits = [-limit_r, limit_r]
@@ -271,5 +274,5 @@ def main():
     
     
 if __name__ == '__main__':
-#    PlotMono.plot2D(build_beamline(),f)
-    main()
+    PlotMono.plot2D(build_beamline(),f)
+#    main()
