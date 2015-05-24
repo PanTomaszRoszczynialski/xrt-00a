@@ -94,7 +94,6 @@ class BentCapillary(roe.OE):
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
         return -self.a_*np.cosh((s-self.L_/2.0)/self.a_) +  self.a_*np.cosh(self.L_/2.0/self.a_) + self.x_in
-        
 
     def local_x0Prime(self, s):
         return -np.sinh((s-self.L_/2.0)/self.a_)
@@ -132,7 +131,7 @@ class BentCapillary(roe.OE):
         y = self.f - s
         z = r * np.cos(phi)
         return x, y, z
-        
+
 def build_beamline(nrays=1e4):
     beamLine = raycing.BeamLine(height=0)
 #    rs.GeometricSource(
@@ -143,17 +142,17 @@ def build_beamline(nrays=1e4):
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
-        distE='lines', energies=(E0,), polarization='horizontal')         
+        distE='lines', energies=(E0,), polarization='horizontal')
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
-    
+
     # try to remove superflous container
     beamLine.capillaries = []
 
 
 
     alpha = 0.000   # this is so obsolete
-    
+
     for h_it in range(0,12):
         x_in = x_0 - h_it * (2*r0 + 2*wall)
         Obw_tmp = 2*np.pi*x_in
@@ -168,20 +167,19 @@ def build_beamline(nrays=1e4):
                 material=mGlass, limPhysY=[rSample*np.cos(alpha), f], x_in=x_in,
                 order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
             # 
-            beamLine.capillaries.append(capillary)         
-    
-    # debug cout
-    print "Total number of capillaries: " + str(len(beamLine.capillaries))
-    
+            beamLine.capillaries.append(capillary) 
+
+    # debug cout print "Total number of capillaries: " + str(len(beamLine.capillaries))
+
     # prepare screen fo all of them
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
-    
+
     # Screen in focal spot
     beamLine.fsm3 = rsc.Screen(beamLine,'DiamondFSM3', (0,f + rSample,0))
-    
+
     # Screen where 1:1 image should be
     beamLine.fsm4 = rsc.Screen(beamLine,'DiamondFSM4', (0,f + 2*rSample,0))
-    
+
     # Iterate from exit to focus (symmetric atm), save distances for names
     beamLine.myFsms = []
     beamLine.myScreens_pos = []
@@ -193,22 +191,22 @@ def build_beamline(nrays=1e4):
                                           (0, tmp_pos, 0)))
 
     return beamLine
-         
+
 def run_process(beamLine, shineOnly1stSource=False):
     beamSource = beamLine.sources[0].shine()
     # at the entrance | unused
     beamFSM1 = beamLine.fsm1.expose(beamSource)
     outDict = {'beamSource': beamSource, 'beamFSM1': beamFSM1}
-    
+
     # Start collecting capillaries' light
     beamCapillaryGlobalTotal = None
-    for i, capillary in enumerate(beamLine.capillaries):   
+    for i, capillary in enumerate(beamLine.capillaries):
         # Get both type of coordinates (global,local)
         beamCapillaryGlobal, beamCapillaryLocalN =\
             capillary.multiple_reflect(beamSource, maxReflections=nRefl)
         # Not sure what is this for 
         beamCapillaryLocalN.phi /= np.pi
-        
+
         if beamCapillaryGlobalTotal is None:
             beamCapillaryGlobalTotal = beamCapillaryGlobal
         else:
@@ -217,11 +215,11 @@ def run_process(beamLine, shineOnly1stSource=False):
             # Add photons to GlobalTotal
             rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
                          good, includeState=True)
-                         
+
     # Prepare acces to Global beam 
     # (individual capillaries might be acessed as well)
     outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal
-    
+
     # See them on screen 
     beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
     outDict['beamFSM2'] = beamFSM2
@@ -229,7 +227,7 @@ def run_process(beamLine, shineOnly1stSource=False):
     outDict['beamFSM3'] = beamFSM3
     beamFSM4 = beamLine.fsm4.expose(beamCapillaryGlobalTotal)
     outDict['beamFSM4'] = beamFSM4
-    
+
     # For future use
     beamFsms = []
     for it in range(0,max_plots-2):
@@ -237,19 +235,18 @@ def run_process(beamLine, shineOnly1stSource=False):
         outDict['myExposedScreen{0:02d}'.format(it)] = beamFsms[it]
 
     return outDict
-    
-rr.run_process = run_process  
+
+rr.run_process = run_process
 
 
 def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = 1.05 * x_0 + 1.6 * r0     
+    limit_r = 1.05 * x_0 + 1.6 * r0
     xLimits = [- limit_r, limit_r]
     zLimits = [-limit_r, limit_r]
 
-    
     """
     Lens Exit
     """
