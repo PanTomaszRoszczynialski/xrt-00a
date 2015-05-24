@@ -59,7 +59,7 @@ class BentCapillary(roe.OE):
         + self.p[4]*s**4 + self.p[5]*s**5
 
     def local_x0Prime(self, s):
-        return 1 + self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2
+        return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2
         + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
 
     def local_r0(self, s):
@@ -96,7 +96,7 @@ class BentCapillary(roe.OE):
         y = s
         z = r * np.cos(phi)
         return x, y, z
-        
+
 def build_beamline(nrays=1e4):
     beamLine = raycing.BeamLine(height=0)
 
@@ -107,7 +107,8 @@ def build_beamline(nrays=1e4):
         distE='lines', energies=(E0,), polarization='horizontal')
 
     # Insert screen at the lens entrance here
-    beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen', (0,y1,0))
+    beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',
+    (0,y1,0))
 
     beamLine.capillaries = []
     for h_it in range(-10,11):
