@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-import PlotMono
+from PlotMono import plot2D
 
 import xrt.backends.raycing as raycing
 import xrt.backends.raycing.sources as rs
@@ -34,7 +34,7 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rin =   0.02   # lens radius
+rin =   0.02    # lens radius
 
 # Surce parameters
 distx       = 'flat'
@@ -55,12 +55,10 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):
-        return self.p[0] + self.p[1]*s + self.p[2]*s**2 + self.p[3]*s**3
-        + self.p[4]*s**4 + self.p[5]*s**5
+        return self.p[0] + self.p[1]*s + self.p[2]*s**2 + self.p[3]*s**3 + self.p[4]*s**4 + self.p[5]*s**5
 
     def local_x0Prime(self, s):
-        return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2
-        + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
+        return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2 + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
 
     def local_r0(self, s):
         return self.rin
@@ -93,12 +91,18 @@ class BentCapillary(roe.OE):
     def param_to_xyz(self, s, phi, r):
         x = self.local_x0(s) + r*np.sin(phi)
 #        y = self.f - s
-        y = s
+        y =  s
         z = r * np.cos(phi)
         return x, y, z
 
 def build_beamline(nrays=1e4):
     beamLine = raycing.BeamLine(height=0)
+    beamLine.y0 = y0
+    beamLine.y1 = y1
+    beamLine.y2 = y2
+    beamLine.yf = yf
+    beamLine.hMax = hMax
+    beamLine.h1 = Din/2
 
     rs.GeometricSource(
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
@@ -111,18 +115,20 @@ def build_beamline(nrays=1e4):
     (0,y1,0))
 
     beamLine.capillaries = []
-    for h_it in range(-10,11):
+    for h_it in range(0,11):
         h_in = h_it * hMax/40.
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
                 roll=roll, limPhysY=[y1, y2], order=8,
                 rin=rin, curveCoeffs=p)
+        capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreent', (0,y2,0))
 
     return beamLine
+
 
 def run_process(beamLine, shineOnly1stSource=False):
     beamSource = beamLine.sources[0].shine()
@@ -161,6 +167,7 @@ rr.run_process = run_process
 
 def main():
     beamLine = build_beamline()
+#    plot2D(beamLine)
     plots = []
     """
     Lens Exit Screen
@@ -179,6 +186,8 @@ def main():
     plots.append(plot)
 
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+
+#    return beamLine
 
 if __name__ == '__main__':
     main()

@@ -58,10 +58,9 @@ def diff_coeffs(x):
 
 if __name__ == '__main__':
     Din, Dout = 4.5, 2.4
-    y0,y1,ym,y2,y3,h1 = 0., 40., 85., 140., 155., -2.1
+    y0,y1,ym,y2,y3,h1 = 0., 40., 85., 140., 155., -1.1
     hMax = 4.
     h2 = h1 * Dout/Din
-    hm = 4. * h1/(Din/2.)
     p = getPolyCoeffs(y0,y1,ym,y2,y3,h1,Din,Dout,hMax)
     print p
     x = np.linspace(y1,y2,1000)
