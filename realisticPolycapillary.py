@@ -115,7 +115,7 @@ def build_beamline(nrays=1e4):
     (0,y1,0))
 
     beamLine.capillaries = []
-    for h_it in range(0,11):
+    for h_it in range(-10,11):
         h_in = h_it * hMax/40.
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
@@ -167,7 +167,7 @@ rr.run_process = run_process
 
 def main():
     beamLine = build_beamline()
-#    plot2D(beamLine)
+    plot2D(beamLine)
     plots = []
     """
     Lens Exit Screen
