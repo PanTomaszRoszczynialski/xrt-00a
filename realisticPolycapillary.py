@@ -23,7 +23,7 @@ from LensPolynomial import getPolyCoeffs
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 5e4           # number of ray traycing iterations
 E0      = 9000.         # energy in electronoVolts
-nRefl   = 170           # number of reflections
+nRefl   = 25            # number of reflections
 
 # Constant capillary/setup parameters [mm]
 y0 =    0.      # relative light source position
@@ -50,7 +50,7 @@ dzprime     = 0.1
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
         self.p  = kwargs.pop("curveCoeffs")
-        self.rin    = kwargs.pop("rin")
+        self.rIn    = kwargs.pop("rIn")
         roe.OE.__init__(self, *args, **kwargs)
         self.isParametric = True
 
@@ -61,7 +61,7 @@ class BentCapillary(roe.OE):
         return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2 + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
 
     def local_r0(self, s):
-        return self.rin
+        return self.rIn
 
     def local_r0Prime(self,s):
         return 0.
@@ -116,12 +116,12 @@ def build_beamline(nrays=1e4):
 
     beamLine.capillaries = []
     for h_it in range(-10,11):
-        h_in = h_it * hMax/40.
+        h_in = h_it * hMax/20.
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
                 roll=roll, limPhysY=[y1, y2], order=8,
-                rin=rin, curveCoeffs=p)
+                rIn=rin, curveCoeffs=p)
         capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
 
