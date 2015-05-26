@@ -49,6 +49,7 @@ dzprime     = 0.1
 
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
+        self.y1 = kwargs.pop("y1")
         self.p  = kwargs.pop("curveCoeffs")
         self.rIn    = kwargs.pop("rIn")
         roe.OE.__init__(self, *args, **kwargs)
@@ -82,16 +83,14 @@ class BentCapillary(roe.OE):
         *s* is along y in inverse direction, started at the exit,
         *r* is measured from the capillary axis x0(s)
         *phi* is the polar angle measured from the z (vertical) direction."""
-#        s = self.f - y
-        s = y
+        s = self.y1 + y
         phi = np.arctan2(x - self.local_x0(s), z)
         r = np.sqrt((x-self.local_x0(s))**2 + z**2)
         return s, phi, r
 
     def param_to_xyz(self, s, phi, r):
         x = self.local_x0(s) + r*np.sin(phi)
-#        y = self.f - s
-        y =  s
+        y = self.y1 + s
         z = r * np.cos(phi)
         return x, y, z
 
@@ -121,7 +120,7 @@ def build_beamline(nrays=1e4):
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
                 roll=roll, limPhysY=[y1, y2], order=8,
-                rIn=rin, curveCoeffs=p)
+                rIn=rin, curveCoeffs=p, y1=y1)
         capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
 
