@@ -90,7 +90,6 @@ class StraightCapillary(roe.OE):
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
         return -a_*np.cosh((s-L_/2.0)/a_) +  a_*np.cosh(L_/2.0/a_) + y_in
-        
 
     def local_x0Prime(self, s):
         return -np.sinh((s-L_/2.0)/a_)

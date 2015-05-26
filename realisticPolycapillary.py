@@ -23,7 +23,7 @@ from LensPolynomial import getPolyCoeffs
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 5e4           # number of ray traycing iterations
 E0      = 9000.         # energy in electronoVolts
-nRefl   = 25            # number of reflections
+nRefl   = 125           # number of reflections
 
 # Constant capillary/setup parameters [mm]
 y0 =    0.      # relative light source position
@@ -49,7 +49,7 @@ dzprime     = 0.1
 
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
-        self.y1 = kwargs.pop("y1")
+        self.y2 = kwargs.pop("y2")
         self.p  = kwargs.pop("curveCoeffs")
         self.rIn    = kwargs.pop("rIn")
         roe.OE.__init__(self, *args, **kwargs)
@@ -83,14 +83,14 @@ class BentCapillary(roe.OE):
         *s* is along y in inverse direction, started at the exit,
         *r* is measured from the capillary axis x0(s)
         *phi* is the polar angle measured from the z (vertical) direction."""
-        s = self.y1 + y
+        s = self.y2 - y
         phi = np.arctan2(x - self.local_x0(s), z)
         r = np.sqrt((x-self.local_x0(s))**2 + z**2)
         return s, phi, r
 
     def param_to_xyz(self, s, phi, r):
         x = self.local_x0(s) + r*np.sin(phi)
-        y = self.y1 + s
+        y = self.y2 - s
         z = r * np.cos(phi)
         return x, y, z
 
@@ -115,12 +115,12 @@ def build_beamline(nrays=1e4):
 
     beamLine.capillaries = []
     for h_it in range(-10,11):
-        h_in = h_it * hMax/20.
+        h_in = h_it * hMax/40.
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
                 roll=roll, limPhysY=[y1, y2], order=8,
-                rIn=rin, curveCoeffs=p, y1=y1)
+                rIn=rin, curveCoeffs=p, y2=y2)
         capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
 
@@ -171,8 +171,8 @@ def main():
     """
     Lens Exit Screen
     """
-    xLimits = [-2*hMax, 2*hMax]
-    zLimits = xLimits
+    xLimits = [-Dout, Dout]
+    zLimits = [-2*rin, 2*rin] 
     plot = xrtp.XYCPlot('ExitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
