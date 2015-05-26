@@ -171,7 +171,7 @@ def main():
     """
     Lens Exit Screen
     """
-    xLimits = [-hMax, hMax]
+    xLimits = [-2*hMax, 2*hMax]
     zLimits = xLimits
     plot = xrtp.XYCPlot('ExitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
