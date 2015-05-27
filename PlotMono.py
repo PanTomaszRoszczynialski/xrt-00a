@@ -13,7 +13,7 @@ def plot2D(beamLine):
     ax1 = plt.subplot(111, aspect=20, label='1')
     ax1.set_title('Cross-section of polycapillary at z=0')
     ax1.set_xlabel('y [mm]', fontsize=14)
-    ax1.set_xlabel('x [mm]', fontsize=14)
+    ax1.set_ylabel('x [mm]', fontsize=14)
     seq = [2, 5, 12, 5]
     s = np.linspace(beamLine.y1, beamLine.y2,200)
     for capillary in beamLine.capillaries:

@@ -56,11 +56,9 @@ class BentCapillary(roe.OE):
         self.isParametric = True
 
     def local_x0(self, s):
-        s = self.y2 - s
         return self.p[0] + self.p[1]*s + self.p[2]*s**2 + self.p[3]*s**3 + self.p[4]*s**4 + self.p[5]*s**5
 
     def local_x0Prime(self, s):
-        s = self.y2 - s
         return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2 + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
 
     def local_r0(self, s):
@@ -85,14 +83,14 @@ class BentCapillary(roe.OE):
         *s* is along y in inverse direction, started at the exit,
         *r* is measured from the capillary axis x0(s)
         *phi* is the polar angle measured from the z (vertical) direction."""
-        s = self.y2 - y
+        s = y
         phi = np.arctan2(x - self.local_x0(s), z)
         r = np.sqrt((x-self.local_x0(s))**2 + z**2)
         return s, phi, r
 
     def param_to_xyz(self, s, phi, r):
         x = self.local_x0(s) + r*np.sin(phi)
-        y = self.y2 - s
+        y = s
         z = r * np.cos(phi)
         return x, y, z
 
@@ -112,8 +110,7 @@ def build_beamline(nrays=1e4):
         distE='lines', energies=(E0,), polarization='horizontal')
 
     # Insert screen at the lens entrance here
-    beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',
-    (0,y1,0))
+    beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
     for h_it in range(1,2):
@@ -127,7 +124,7 @@ def build_beamline(nrays=1e4):
         beamLine.capillaries.append(capillary)
         print h_in, 'dupa', h_in*Dout/Din
 
-    beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreent', (0,y2,0))
+    beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
     return beamLine
 
@@ -174,7 +171,7 @@ def main():
     """
     Lens Exit Screen
     """
-    xLimits = [-3*rin, 3*rin]
+    xLimits = [-Dout, Dout]
     zLimits = [-3*rin, 3*rin]
     plot = xrtp.XYCPlot('ExitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
