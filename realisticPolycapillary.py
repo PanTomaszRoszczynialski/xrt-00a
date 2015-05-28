@@ -34,7 +34,7 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rIn =   0.08     # lens radius
+rIn =   0.02     # lens radius
 
 # Surce parameters
 distx       = 'flat'
@@ -76,6 +76,8 @@ class BentCapillary(roe.OE):
         b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
         c = -np.cos(phi)
         norm = np.sqrt(a**2 + b**2 + c**2)
+        # FIXME: a and c probably should also get minues
+        # but due to symmetry it's not visible for now?
         return a/norm, -b/norm, c/norm
 
     def xyz_to_param(self, x, y, z):
@@ -113,8 +115,8 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    for h_it in range(-1,2):
-        h_in = h_it * hMax/10.
+    for h_it in range(-10,11):
+        h_in = h_it * Din/20.
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
@@ -172,7 +174,7 @@ def main():
     Lens Exit Screen
     """
     xLimits = [-Dout, Dout]
-    zLimits = [-3*rIn, 3*rIn]
+    zLimits = xLimits #[-3*rIn, 3*rIn]
     plot = xrtp.XYCPlot('ExitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
