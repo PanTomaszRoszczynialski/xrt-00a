@@ -34,7 +34,7 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rin =   0.2     # lens radius
+rIn =   0.08     # lens radius
 
 # Surce parameters
 distx       = 'flat'
@@ -65,7 +65,7 @@ class BentCapillary(roe.OE):
         return self.rIn
 
     def local_r0Prime(self,s):
-        return 0.
+        return 0
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
@@ -76,7 +76,7 @@ class BentCapillary(roe.OE):
         b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
         c = -np.cos(phi)
         norm = np.sqrt(a**2 + b**2 + c**2)
-        return a/norm, b/norm, c/norm
+        return a/norm, -b/norm, c/norm
 
     def xyz_to_param(self, x, y, z):
         """ *s*, *r*, *phi* are cynindrc-like coordinates of the capillary.
@@ -113,13 +113,13 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    for h_it in range(1,2):
+    for h_it in range(-1,2):
         h_in = h_it * hMax/10.
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
                 roll=roll, limPhysY=[y1, y2], order=8,
-                rIn=rin, curveCoeffs=p, y2=y2)
+                rIn=rIn, curveCoeffs=p, y2=y2)
         capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
         print h_in, 'dupa', h_in*Dout/Din
@@ -172,7 +172,7 @@ def main():
     Lens Exit Screen
     """
     xLimits = [-Dout, Dout]
-    zLimits = [-3*rin, 3*rin]
+    zLimits = [-3*rIn, 3*rIn]
     plot = xrtp.XYCPlot('ExitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
