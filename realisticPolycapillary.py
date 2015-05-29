@@ -34,7 +34,7 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rIn =   0.02     # lens radius
+rIn =   0.01     # lens radius
 
 # Surce parameters
 distx       = 'flat'
@@ -115,8 +115,9 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    for h_it in range(-10,11):
-        h_in = h_it * Din/20.
+    N_ = 60         # Quick number of capillaries TODO: remove this
+    for h_it in range(-N_,N_+1):
+        h_in = h_it * Din/2./N_
         roll = 0.
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
@@ -124,7 +125,7 @@ def build_beamline(nrays=1e4):
                 rIn=rIn, curveCoeffs=p, y2=y2)
         capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
-        print h_in, 'dupa', h_in*Dout/Din
+        print 'h_in:', h_in, ' h_out:', h_in*Dout/Din
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
@@ -173,7 +174,7 @@ def main():
     """
     Lens Exit Screen
     """
-    xLimits = [-Dout, Dout]
+    xLimits = [-Dout/2, Dout/2]
     zLimits = xLimits #[-3*rIn, 3*rIn]
     plot = xrtp.XYCPlot('ExitScreen', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
