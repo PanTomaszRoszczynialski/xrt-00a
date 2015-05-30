@@ -2,6 +2,7 @@
 This will help manage multiple screens/plots without
 overgarbagin the main code
 """
+import numpy as np
 import xrt.backends.raycing.screens as rsc
 #import xrt.backends.raycing.run as rr
 import xrt.backends.raycing as raycing
@@ -12,21 +13,22 @@ import xrt.plotter as xrtp
 # p_range = min, max
 # N = number of screens spanned on that distance
 
-def createScreens(beamLine, ranges):
+def createScreens(beamLine, ranges, howmany):
+    positions = np.linspace(ranges[0], ranges[1], howmany)
     screens = {}
-    for it in ranges:
+    for it in positions:
         screen = rsc.Screen(beamLine,'Screen_at_'+str(it), (0,it,0))
         screens[it] = screen
         print 'Screen at ' + str(it)
     # Save ranges as beamline property, no need to keep globally
-    beamLine.s_ranges = ranges
+    beamLine.s_positions = positions
     beamLine.screens  = screens
 
 # Next screens need to be exposed in run_process and
 # dictionary must be prepared
 def exposeScreens(beamLine, beamToBeSeen):
     partDict = {}
-    for it in beamLine.s_ranges:
+    for it in beamLine.s_positions:
         partDict['Screen_at_'+str(int(it))] =\
                 beamLine.screens[it].expose(beamToBeSeen)
     return partDict
@@ -37,9 +39,9 @@ def createPlots(beamLine):
     zLimits = xLimits
     cLimits = [0, beamLine.nRefl]
     plots = []
-    for it in beamLine.s_ranges:
-        print 'current range: ' + str(it)
-        print 'Screen_at_'+str(it)
+    for it in beamLine.s_positions:
+#        print 'current range: ' + str(it)
+#        print 'Screen_at_'+str(it)
         name = 'Screen_at_'+str(int(it))
         plot = xrtp.XYCPlot(name, (1,),
             xaxis=xrtp.XYCAxis(r'$x$', 'mm', data=raycing.get_x,\
@@ -55,6 +57,6 @@ def createPlots(beamLine):
         plot.saveName = 'png/' + plot.baseName + '.png'
 #        plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
         plots.append(plot)
-    print 'leaving createPlots()'
-#    print plots[0].nRaysAlive
+#    print 'leaving createPlots()'
+
     return plots
