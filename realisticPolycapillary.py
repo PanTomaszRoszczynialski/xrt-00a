@@ -7,6 +7,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from PlotMono import plot2D
+from screening import *
 
 import xrt.backends.raycing as raycing
 import xrt.backends.raycing.sources as rs
@@ -102,8 +103,10 @@ def build_beamline(nrays=1e4):
     beamLine.y1 = y1
     beamLine.y2 = y2
     beamLine.yf = yf
-    beamLine.hMax = hMax
-    beamLine.h1 = Din/2
+    beamLine.hMax   = hMax
+    beamLine.h1     = Din/2
+    beamLine.Dout   = Dout
+    beamLine.nRefl  = nRefl
 
     rs.GeometricSource(
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
@@ -125,10 +128,11 @@ def build_beamline(nrays=1e4):
                 rIn=rIn, curveCoeffs=p, y2=y2)
         capillary.h_in = h_in
         beamLine.capillaries.append(capillary)
-        print 'h_in:', h_in, ' h_out:', h_in*Dout/Din
+#        print 'h_in:', h_in, ' h_out:', h_in*Dout/Din
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
+    createScreens(beamLine,[y2, yf, (y2+yf)/2, yf + (yf-y2)])
     return beamLine
 
 
@@ -162,6 +166,8 @@ def run_process(beamLine, shineOnly1stSource=False):
     # See them on screen 
     ExitScreen = beamLine.exitScreen.expose(beamCapillaryGlobalTotal)
     outDict['ExitScreen'] = ExitScreen
+    outDict.update(exposeScreens(beamLine, beamCapillaryGlobalTotal))
+    print outDict.keys()
 
     return outDict
 
@@ -177,16 +183,24 @@ def main():
     xLimits = [-Dout/2, Dout/2]
     zLimits = xLimits #[-3*rIn, 3*rIn]
     plot = xrtp.XYCPlot('ExitScreen', (1,),
-        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
-        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
-#        caxis='category', 
-        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x,\
+                bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z,\
+                bins=256, ppb=2, limits=zLimits),
+        caxis=xrtp.XYCAxis("Reflections", 'num of',\
+                data=raycing.get_reflection_number,\
+                bins=256, ppb=2, limits=[0, nRefl]),
         beamState='ExitScreen', title='Detector at exit', aspect='auto',
         persistentName=None)
     plot.baseName = 'Detector_at_' + str(y2)
     plot.saveName = 'png/' + plot.baseName + '.png'
     plots.append(plot)
 
+    # Add plots with clever outside function:
+    plots = plots + createPlots(beamLine)
+#    for plott in plots:
+#        print 'name: ' + plott.beam
+    print 'plots size: ' + str(len(plots))
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
 
 #    return beamLine

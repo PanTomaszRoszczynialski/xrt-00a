@@ -316,9 +316,9 @@ def main():
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
     plot.baseName = 'Detector_at_' + str(f + 2*rSample)
-    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plot.saveName = 'png/' + plot.baseName + '.png'
     plots.append(plot)
-    
+
     # ITERATING OVER PLOTS {}
     cLimits = [0, nRefl]
     for it in range(0,max_plots-2):
@@ -331,9 +331,9 @@ def main():
         plot.baseName = tmp_name
         plot.saveName = 'png/' + plot.baseName + '.png'
         plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
-        plots.append(plot)    
+        plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
-    
+
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
 #    scipy.io.savemat('Phase_xrt_data.mat',{'Phase_total2D_RGB':plots[0].total2D_RGB,
@@ -345,8 +345,8 @@ def main():
 #                                 'RSpace_caxis_total':plots[1].caxis.total1D,
 #                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
     # just for debug x`
-    return plot                                 
-    
+    return plot
+
 if __name__ == '__main__':
 #    PlotMono.plot2D(build_beamline(),f)
     main()
