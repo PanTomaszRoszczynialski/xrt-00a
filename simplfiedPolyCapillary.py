@@ -34,15 +34,15 @@ E0 = 9000.          # energy in electronoVolts
 nRefl = 170         # number of reflections
 
 # capillary shape parameters
-rSample = 30.0              # starting position of the lens
+rSample = 15.0              # starting position of the lens
 L_      = 100.0               # length of the lens
 f       = rSample + L_     # y length in mm from foucs to the end of the lens
-r0 = 0.002*1
-rOut = 0.002*1
+r0 = 0.006
+rOut = 0.006
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-x_0		= 0.5
+x_0		= 1.5
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
 #a_      = -L_/2.0/np.arcsinh(-y_in/rS)
@@ -154,7 +154,7 @@ def build_beamline(nrays=1e4):
 
     alpha = 0.000   # this is so obsolete
     
-    for h_it in range(0,12):
+    for h_it in range(0,10):
         x_in = x_0 - h_it * (2*r0 + 2*wall)
         Obw_tmp = 2*np.pi*x_in
         N_ = int(np.floor( Obw_tmp/(2*r0 + 2*wall) ) )

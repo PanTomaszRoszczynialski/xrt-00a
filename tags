@@ -1,0 +1,156 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+BentCapillary	myCapillary0A.py	/^class BentCapillary(roe.OE):$/;"	c
+BentCapillary	simplfiedPolyCapillary.py	/^class BentCapillary(roe.OE):$/;"	c
+E0	SourceViewer.py	/^E0      = 9000  # [eV]$/;"	v
+E0	StraightCapillary.py	/^E0 = 9000.$/;"	v
+E0	myCapillary0A.py	/^E0 = 9000.$/;"	v
+E0	simplfiedMonoCapillary.py	/^E0 = 9000.          # energy in electronoVolts$/;"	v
+E0	simplfiedPolyCapillary.py	/^E0 = 9000.          # energy in electronoVolts$/;"	v
+L_	simplfiedMonoCapillary.py	/^L_      = 100.0               # length of the lens$/;"	v
+L_	simplfiedPolyCapillary.py	/^L_      = 100.0               # length of the lens$/;"	v
+N_	SourceViewer.py	/^N_      = 11    # number of step to take$/;"	v
+StraightCapillary	StraightCapillary.py	/^class StraightCapillary(roe.OE):$/;"	c
+StraightCapillary	simplfiedMonoCapillary.py	/^class StraightCapillary(roe.OE):$/;"	c
+__init__	StraightCapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:StraightCapillary
+__init__	myCapillary0A.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:BentCapillary
+__init__	simplfiedMonoCapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:StraightCapillary
+__init__	simplfiedPolyCapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:BentCapillary
+a_	simplfiedMonoCapillary.py	/^a_      = -L_\/2.0\/np.arcsinh(-y_in\/rS)$/;"	v
+bl_height	SourceViewer.py	/^bl_height   = 0.$/;"	v
+bl_xzMax	SourceViewer.py	/^bl_xzMax    = 0.$/;"	v
+build_beamline	SourceViewer.py	/^def build_beamline(nrays=1000):$/;"	f
+build_beamline	StraightCapillary.py	/^def build_beamline(nrays=1000):$/;"	f
+build_beamline	myCapillary0A.py	/^def build_beamline(nrays=1000):$/;"	f
+build_beamline	simplfiedMonoCapillary.py	/^def build_beamline(nrays=1e5):$/;"	f
+build_beamline	simplfiedPolyCapillary.py	/^def build_beamline(nrays=1e4):$/;"	f
+distx	SourceViewer.py	/^distx       = 'flat'$/;"	v
+distx	simplfiedMonoCapillary.py	/^distx       = 'flat'$/;"	v
+distx	simplfiedPolyCapillary.py	/^distx       = 'flat'$/;"	v
+distxprime	SourceViewer.py	/^distxprime  = 'normal'$/;"	v
+distxprime	simplfiedMonoCapillary.py	/^distxprime  = 'normal'$/;"	v
+distxprime	simplfiedPolyCapillary.py	/^distxprime  = 'normal'$/;"	v
+distz	SourceViewer.py	/^distz       = 'flat'$/;"	v
+distz	simplfiedMonoCapillary.py	/^distz       = 'flat'$/;"	v
+distz	simplfiedPolyCapillary.py	/^distz       = 'flat'$/;"	v
+distzprime	SourceViewer.py	/^distzprime  = 'normal'$/;"	v
+distzprime	simplfiedMonoCapillary.py	/^distzprime  = 'normal'$/;"	v
+distzprime	simplfiedPolyCapillary.py	/^distzprime  = 'normal'$/;"	v
+dx	SourceViewer.py	/^dx          = 0.1$/;"	v
+dx	simplfiedMonoCapillary.py	/^dx          = 0.1$/;"	v
+dx	simplfiedPolyCapillary.py	/^dx          = 0.1$/;"	v
+dxprime	SourceViewer.py	/^dxprime     = 0.1$/;"	v
+dxprime	simplfiedMonoCapillary.py	/^dxprime     = 0.1$/;"	v
+dxprime	simplfiedPolyCapillary.py	/^dxprime     = 0.1$/;"	v
+dz	SourceViewer.py	/^dz          = 0.1$/;"	v
+dz	simplfiedMonoCapillary.py	/^dz          = 0.1$/;"	v
+dz	simplfiedPolyCapillary.py	/^dz          = 0.1$/;"	v
+dzprime	SourceViewer.py	/^dzprime     = 0.1$/;"	v
+dzprime	simplfiedMonoCapillary.py	/^dzprime     = 0.1$/;"	v
+dzprime	simplfiedPolyCapillary.py	/^dzprime     = 0.1$/;"	v
+f	StraightCapillary.py	/^f = 450. # y length in mm from foucs to the end of the lens$/;"	v
+f	myCapillary0A.py	/^f = 500. # y length in mm from foucs to the end of the lens$/;"	v
+f	simplfiedMonoCapillary.py	/^f       = rSample + L_     # y length in mm from foucs to the end of the lens$/;"	v
+f	simplfiedPolyCapillary.py	/^f       = rSample + L_     # y length in mm from foucs to the end of the lens$/;"	v
+layers	StraightCapillary.py	/^layers = 10 # number of hexagonal layers$/;"	v
+layers	myCapillary0A.py	/^layers = 10 # number of hexagonal layers$/;"	v
+local_n	StraightCapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:StraightCapillary
+local_n	myCapillary0A.py	/^    def local_n(self, s, phi):$/;"	m	class:BentCapillary
+local_n	simplfiedMonoCapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:StraightCapillary
+local_n	simplfiedPolyCapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:BentCapillary
+local_r	StraightCapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:StraightCapillary
+local_r	myCapillary0A.py	/^    def local_r(self, s, phi):$/;"	m	class:BentCapillary
+local_r	simplfiedMonoCapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:StraightCapillary
+local_r	simplfiedPolyCapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:BentCapillary
+local_r0	StraightCapillary.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:StraightCapillary
+local_r0	myCapillary0A.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:BentCapillary
+local_r0	simplfiedMonoCapillary.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:StraightCapillary
+local_r0	simplfiedPolyCapillary.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:BentCapillary
+local_r0Prime	StraightCapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:StraightCapillary
+local_r0Prime	myCapillary0A.py	/^    def local_r0Prime(self, s):$/;"	m	class:BentCapillary
+local_r0Prime	simplfiedMonoCapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:StraightCapillary
+local_r0Prime	simplfiedPolyCapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:BentCapillary
+local_x0	StraightCapillary.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:StraightCapillary
+local_x0	myCapillary0A.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:BentCapillary
+local_x0	simplfiedMonoCapillary.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:StraightCapillary
+local_x0	simplfiedPolyCapillary.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:BentCapillary
+local_x0Prime	StraightCapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:StraightCapillary
+local_x0Prime	myCapillary0A.py	/^    def local_x0Prime(self, s):$/;"	m	class:BentCapillary
+local_x0Prime	simplfiedMonoCapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:StraightCapillary
+local_x0Prime	simplfiedPolyCapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:BentCapillary
+mGlass	StraightCapillary.py	/^mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)$/;"	v
+mGlass	myCapillary0A.py	/^mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)$/;"	v
+mGlass	simplfiedMonoCapillary.py	/^mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)$/;"	v
+mGlass	simplfiedPolyCapillary.py	/^mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)$/;"	v
+main	SourceViewer.py	/^def main():$/;"	f
+main	StraightCapillary.py	/^def main():$/;"	f
+main	myCapillary0A.py	/^def main():$/;"	f
+main	simplfiedMonoCapillary.py	/^def main():$/;"	f
+main	simplfiedPolyCapillary.py	/^def main():$/;"	f
+max_plots	simplfiedMonoCapillary.py	/^max_plots = 0                   # for imaging different position at once| 0=off$/;"	v
+max_plots	simplfiedPolyCapillary.py	/^max_plots = 0                   # for imaging different position at once| 0=off$/;"	v
+min_d	SourceViewer.py	/^min_d   = 0     # [mm] | source - screen distance$/;"	v
+nRefl	StraightCapillary.py	/^nRefl = 12$/;"	v
+nRefl	myCapillary0A.py	/^nRefl = 12$/;"	v
+nRefl	simplfiedMonoCapillary.py	/^nRefl = 150         # number of reflections$/;"	v
+nRefl	simplfiedPolyCapillary.py	/^nRefl = 170         # number of reflections$/;"	v
+nReflDisp	StraightCapillary.py	/^nReflDisp = 12 # unused$/;"	v
+nReflDisp	myCapillary0A.py	/^nReflDisp = 12 # unused$/;"	v
+param_to_xyz	StraightCapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:StraightCapillary
+param_to_xyz	myCapillary0A.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:BentCapillary
+param_to_xyz	simplfiedMonoCapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:StraightCapillary
+param_to_xyz	simplfiedPolyCapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:BentCapillary
+persistentName	simplfiedMonoCapillary.py	/^persistentName='pickle\/mono_cap_at_exit.pickle' #'phase_space__energy.pickle'$/;"	v
+persistentName	simplfiedPolyCapillary.py	/^persistentName = 'pickle\/polyCapExit.pickle' #'realSpae.pickle' $/;"	v
+plot2D	PlotMono.py	/^def plot2D(beamLine,f):$/;"	f
+plot2D	StraightCapillary.py	/^def plot2D():$/;"	f
+plot2D	myCapillary0A.py	/^def plot2D():$/;"	f
+plot2D_yLim	StraightCapillary.py	/^plot2D_yLim = [-0.05, 0.05]$/;"	v
+plot_main_lim	StraightCapillary.py	/^plot_main_lim = 1.5$/;"	v
+processes	SourceViewer.py	/^processes = 8$/;"	v
+r0	StraightCapillary.py	/^r0 = 0.07$/;"	v
+r0	myCapillary0A.py	/^r0 = 0.0030$/;"	v
+r0	simplfiedMonoCapillary.py	/^r0 = 0.006$/;"	v
+r0	simplfiedPolyCapillary.py	/^r0 = 0.006$/;"	v
+rOut	StraightCapillary.py	/^rOut = 0.02$/;"	v
+rOut	simplfiedMonoCapillary.py	/^rOut = 0.006$/;"	v
+rOut	simplfiedPolyCapillary.py	/^rOut = 0.006$/;"	v
+rS	simplfiedMonoCapillary.py	/^rS      = float(rSample)    # light source - capillary distance $/;"	v
+rS	simplfiedPolyCapillary.py	/^rS      = float(rSample)    # light source - capillary distance $/;"	v
+rSample	StraightCapillary.py	/^rSample = 100. # starting position of the lens$/;"	v
+rSample	myCapillary0A.py	/^rSample = 100. # starting position of the lens$/;"	v
+rSample	simplfiedMonoCapillary.py	/^rSample = 15.0              # starting position of the lens$/;"	v
+rSample	simplfiedPolyCapillary.py	/^rSample = 15.0              # starting position of the lens$/;"	v
+repeats	SourceViewer.py	/^repeats = 1e4   # liczba$/;"	v
+repeats	StraightCapillary.py	/^repeats = 1500 # number of ray traycing iterations$/;"	v
+repeats	simplfiedMonoCapillary.py	/^repeats = 5e4       # number of ray traycing iterations$/;"	v
+repeats	simplfiedPolyCapillary.py	/^repeats = 5e4       # number of ray traycing iterations$/;"	v
+run_process	SourceViewer.py	/^def run_process(beamLine, shineOnly1stSource=False):$/;"	f
+run_process	StraightCapillary.py	/^def run_process(beamLine, shineOnly1stSource=False):$/;"	f
+run_process	myCapillary0A.py	/^def run_process(beamLine, shineOnly1stSource=False):$/;"	f
+run_process	simplfiedMonoCapillary.py	/^def run_process(beamLine, shineOnly1stSource=False):$/;"	f
+run_process	simplfiedPolyCapillary.py	/^def run_process(beamLine, shineOnly1stSource=False):$/;"	f
+screen1_pos	simplfiedMonoCapillary.py	/^screen1_pos = rSample     # not really used$/;"	v
+screen1_pos	simplfiedPolyCapillary.py	/^screen1_pos = rSample     # not really used$/;"	v
+screen2_pos	StraightCapillary.py	/^screen2_pos = f + 400$/;"	v
+screen2_pos	simplfiedMonoCapillary.py	/^screen2_pos = f + 0             # first image position outside capillary$/;"	v
+screen2_pos	simplfiedPolyCapillary.py	/^screen2_pos = f + 0             # first image position outside capillary$/;"	v
+step	SourceViewer.py	/^step    = 4     # [mm] | screen step size$/;"	v
+wall	StraightCapillary.py	/^wall = 0.02$/;"	v
+wall	myCapillary0A.py	/^wall = 0.02$/;"	v
+wall	simplfiedMonoCapillary.py	/^wall = 0.0005$/;"	v
+wall	simplfiedPolyCapillary.py	/^wall = 0.0005$/;"	v
+xLimits	SourceViewer.py	/^xLimits = [-6.05, 6.05] # Plot limits$/;"	v
+x_0	simplfiedPolyCapillary.py	/^x_0		= 1.5$/;"	v
+xyz_to_param	StraightCapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:StraightCapillary
+xyz_to_param	myCapillary0A.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:BentCapillary
+xyz_to_param	simplfiedMonoCapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:StraightCapillary
+xyz_to_param	simplfiedPolyCapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:BentCapillary
+xzPrimeMax	StraightCapillary.py	/^xzPrimeMax = 3.$/;"	v
+xzPrimeMax	myCapillary0A.py	/^xzPrimeMax = 3.$/;"	v
+y_in	simplfiedMonoCapillary.py	/^y_in    = 1.5               # entrance height$/;"	v
+zLimits	SourceViewer.py	/^zLimits = xLimits       # axis square$/;"	v
