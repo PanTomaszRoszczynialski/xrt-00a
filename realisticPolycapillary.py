@@ -118,10 +118,11 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    N_ = 60         # Quick number of capillaries TODO: remove this
+    N_ = 80         # Quick number of capillaries TODO: remove this
     for h_it in range(-N_,N_+1):
-        h_in = h_it * Din/2./N_
-        roll = 0.
+#        h_in = h_it * Din/2./N_
+        roll = h_it * np.pi/N_
+        h_in = Din/3. * np.sin(3*roll)
         p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
                 roll=roll, limPhysY=[y1, y2], order=8,
@@ -132,6 +133,8 @@ def build_beamline(nrays=1e4):
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
+    # Create evenly distributed screens between lens exit
+    # and M=1 spot
     createScreens(beamLine,[y2, yf + yf-y2], 11)
     return beamLine
 
