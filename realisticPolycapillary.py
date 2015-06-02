@@ -35,7 +35,8 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rIn =   0.01     # lens radius
+rIn =   0.006     # lens radius
+wall =  0.0005
 
 # Surce parameters
 distx       = 'flat'
@@ -117,18 +118,22 @@ def build_beamline(nrays=1e4):
     # Insert screen at the lens entrance here
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
+    x_0 = 2.0
     beamLine.capillaries = []
-    N_ = 80         # Quick number of capillaries TODO: remove this
-    for h_it in range(-N_,N_+1):
-#        h_in = h_it * Din/2./N_
-        roll = h_it * np.pi/N_
-        h_in = Din/3. * np.sin(3*roll)
-        p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
-        capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
-                roll=roll, limPhysY=[y1, y2], order=8,
-                rIn=rIn, curveCoeffs=p, y2=y2)
-        capillary.h_in = h_in
-        beamLine.capillaries.append(capillary)
+    for h_it in range(0,8):
+        h_in = x_0 - h_it * (2*rIn + 2*wall)
+        circ = 2*np.pi*h_in
+        N_ = int(np.floor( circ/(2*rIn + 2*wall) ) )
+        print "Number of capillaries: " + str(N_)
+        print "On circle with radius:  " + str(circ)
+        for it in range(int(N_)):
+            roll = it * 2 * np.pi/N_
+            p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
+            capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
+                    roll=roll, limPhysY=[y1, y2], order=8,
+                    rIn=rIn, curveCoeffs=p, y2=y2)
+            capillary.h_in = h_in
+            beamLine.capillaries.append(capillary)
 #        print 'h_in:', h_in, ' h_out:', h_in*Dout/Din
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
