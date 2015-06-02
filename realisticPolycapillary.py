@@ -120,9 +120,9 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 10
+    layers = 50,60
     beamLine.toPlot = []
-    for n in range(layers):
+    for n in range(layers[0], layers[1]):
         if n > 0:
             ms = range(n)
             i6 = range(6)
