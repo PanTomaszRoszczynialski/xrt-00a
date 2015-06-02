@@ -36,6 +36,7 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 rIn =   0.01     # lens radius
+wall=   0.0005
 
 # Surce parameters
 distx       = 'flat'
@@ -53,6 +54,7 @@ class BentCapillary(roe.OE):
         self.y2 = kwargs.pop("y2")
         self.p  = kwargs.pop("curveCoeffs")
         self.rIn    = kwargs.pop("rIn")
+        self.h_in   = kwargs.pop("h_in")
         roe.OE.__init__(self, *args, **kwargs)
         self.isParametric = True
 
@@ -118,18 +120,28 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    N_ = 80         # Quick number of capillaries TODO: remove this
-    for h_it in range(-N_,N_+1):
-#        h_in = h_it * Din/2./N_
-        roll = h_it * np.pi/N_
-        h_in = Din/3. * np.sin(3*roll)
-        p = getPolyCoeffs(y0,y1,ym,y2,yf,h_in,Din,Dout,hMax)
-        capillary = BentCapillary(beamLine, 'BentCapillary', [0,0,0],
-                roll=roll, limPhysY=[y1, y2], order=8,
-                rIn=rIn, curveCoeffs=p, y2=y2)
-        capillary.h_in = h_in
-        beamLine.capillaries.append(capillary)
-#        print 'h_in:', h_in, ' h_out:', h_in*Dout/Din
+    layers = 10
+    beamLine.toPlot = []
+    for n in range(layers):
+        if n > 0:
+            ms = range(n)
+            i6 = range(6)
+        else: # this would happen only if layers were negative?
+            ms = 0,
+            i6 = 0,
+        beamLine.toPlot.append(len(beamLine.capillaries))
+        for i in i6:
+            for m in ms:
+                # this seems like h_in
+                x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
+                roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
+                roll = roll1 + i*np.pi/3.
+                p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
+                capillary = BentCapillary(beamLine, 'BentCapillary',
+                        [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
+                        rIn=rIn, curveCoeffs=p, y2=y2, h_in=x)
+                beamLine.capillaries.append(capillary)
+    print 'Number of capillaries: ' + str(len(beamLine.capillaries))
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 

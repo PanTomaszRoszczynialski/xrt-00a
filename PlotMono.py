@@ -16,7 +16,8 @@ def plot2D(beamLine):
     ax1.set_ylabel('x [mm]', fontsize=14)
     seq = [2, 5, 12, 5]
     s = np.linspace(beamLine.y1, beamLine.y2,200)
-    for capillary in beamLine.capillaries:
+    for it in beamLine.toPlot:
+        capillary = beamLine.capillaries[it]
         x = capillary.local_x0(s)
         r = capillary.local_r0(s)
         ax1.plot([0, beamLine.y1],[0 , capillary.h_in],'k-', lw=0.5)
