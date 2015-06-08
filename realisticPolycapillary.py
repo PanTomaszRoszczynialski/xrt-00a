@@ -35,7 +35,7 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rIn =   0.01     # lens radius
+rIn =   0.006     # lens radius
 wall=   0.0005
 
 # Surce parameters
@@ -120,9 +120,9 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 50,60
+    layers = range(10,20) + range(30,40) + range(90,100) + range(130,135)
     beamLine.toPlot = []
-    for n in range(layers[0], layers[1]):
+    for n in layers:
         if n > 0:
             ms = range(n)
             i6 = range(6)
@@ -194,7 +194,7 @@ def main():
 
     # Create xrtp.Plots in outside module  
     plots = createPlots(beamLine)
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=8, threads=8)
 
 #    return beamLine
 
