@@ -35,8 +35,8 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-rIn =   0.01     # lens radius
-wall=   0.0005
+rIn =   0.01*10     # lens radius
+wall=   0.0005*50 # make wider walls for structure visibility
 
 # Surce parameters
 distx       = 'flat'
@@ -120,7 +120,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 50,60
+    layers = 1,7
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -147,7 +147,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    createScreens(beamLine,[y2, yf + yf-y2], 11)
+    createScreens(beamLine,[y2, yf + yf-y2], 3)
     return beamLine
 
 
@@ -194,6 +194,17 @@ def main():
 
     # Create xrtp.Plots in outside module  
     plots = createPlots(beamLine)
+    # FIXME: Manually add plot showing entrance structure
+    limits = [ - Din/1.9, Din/1.9 ]
+    plot = xrtp.XYCPlot(
+        'EntranceScreen', (1, 3, -1),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
+        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
+        caxis='category', beamState='Screen_at_'+str(int(y2)))
+    plot.title = 'Entrance structure'
+    plot.baseName = 'Entrance_structure'
+    plot.saveName = 'png/' + plot.baseName + '.png'
+    plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
 
 #    return beamLine

@@ -39,6 +39,7 @@ def createPlots(beamLine):
     zLimits = xLimits
     cLimits = [0, beamLine.nRefl]
     plots = []
+    # Plots after the exit
     for it in beamLine.s_positions:
 #        print 'current range: ' + str(it)
 #        print 'Screen_at_'+str(it)
