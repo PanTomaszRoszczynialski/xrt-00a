@@ -36,6 +36,7 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 rIn =   0.01*10     # lens radius
+rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 wall=   0.0005*50 # make wider walls for structure visibility
 
 # Surce parameters
@@ -54,8 +55,12 @@ class BentCapillary(roe.OE):
         self.y2 = kwargs.pop("y2")
         self.p  = kwargs.pop("curveCoeffs")
         self.rIn    = kwargs.pop("rIn")
+        self.rOut   = kwargs.pop("rOut")
         self.h_in   = kwargs.pop("h_in")
         roe.OE.__init__(self, *args, **kwargs)
+
+        self.ar = (self.rIn - self.rOut) / (y1 - self.y2)
+        self.br = self.rIn - y1 * self.ar
         self.isParametric = True
 
     def local_x0(self, s):
@@ -65,10 +70,11 @@ class BentCapillary(roe.OE):
         return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2 + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
 
     def local_r0(self, s):
-        return self.rIn
+#        return self.rIn
+        return self.ar * s + self.br
 
     def local_r0Prime(self,s):
-        return 0
+        return self.ar
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
@@ -120,7 +126,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 1,7
+    layers = 0,5
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -139,7 +145,7 @@ def build_beamline(nrays=1e4):
                 p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
                 capillary = BentCapillary(beamLine, 'BentCapillary',
                         [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
-                        rIn=rIn, curveCoeffs=p, y2=y2, h_in=x)
+                        rIn=rIn, rOut=rOut, curveCoeffs=p, y2=y2, h_in=x)
                 beamLine.capillaries.append(capillary)
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
 
