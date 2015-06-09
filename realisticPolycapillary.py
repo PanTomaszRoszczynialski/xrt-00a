@@ -39,7 +39,7 @@ Dmax =  2*hMax  # max diameter
 rIn =   0.01*10     # lens radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall=   0.0005*50 # make wider walls for structure visibility
+wall=   0.0005 *2 # |*50 make wider walls for structure visibility
 
 # Surce parameters
 distx       = 'flat'
@@ -141,7 +141,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 0,8
+    layers = 0,5
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -219,7 +219,7 @@ def main():
     # FIXME: Manually add plot showing entrance structure
     limits = [ - Din/1.9, Din/1.9 ]
     plot = xrtp.XYCPlot(
-        'EntranceScreen', (1, 3, -1),
+        'EntranceScreen', (1, 3,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
         caxis='category', beamState='Screen_at_'+str(int(y2)))
