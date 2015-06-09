@@ -35,8 +35,10 @@ ym =    88.     # capillaries turning point
 hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
+Dmax =  2*hMax  # max diameter
 rIn =   0.01*10     # lens radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
+rMax = Dmax/Din * rIn # Max value of local radius
 wall=   0.0005*50 # make wider walls for structure visibility
 
 # Surce parameters
@@ -52,15 +54,28 @@ dzprime     = 0.1
 
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
-        self.y2 = kwargs.pop("y2")
         self.p  = kwargs.pop("curveCoeffs")
         self.rIn    = kwargs.pop("rIn")
         self.rOut   = kwargs.pop("rOut")
+        self.rMax   = kwargs.pop("rMax")
         self.h_in   = kwargs.pop("h_in")
         roe.OE.__init__(self, *args, **kwargs)
+        self.y1 = self.limPhysY[0]
+        self.y2 = self.limPhysY[1]
+        self.ym = self.bl.ym
 
-        self.ar = (self.rIn - self.rOut) / (y1 - self.y2)
-        self.br = self.rIn - y1 * self.ar
+        # local radius function parameters (linar from rIn ot rOut)
+        # linear solve of 3 equations for parabolic shape
+        # of r(s) currently this curve is the same for each 
+        # capillary, so this could've been done once for lens,
+        # not once for capillary
+        B = [self.rIn, self.rOut, self.rMax]
+        A = []
+        A.append([1., y1, y1**2])
+        A.append([1., y2, y2**2])
+        A.append([1., ym, ym**2])
+        # Polynomial parameters for local radius-position relation
+        self.pr = np.linalg.solve(A,B)
         self.isParametric = True
 
     def local_x0(self, s):
@@ -70,11 +85,10 @@ class BentCapillary(roe.OE):
         return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2 + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
 
     def local_r0(self, s):
-#        return self.rIn
-        return self.ar * s + self.br
+        return self.pr[0] + self.pr[1]*s + self.pr[2]*s**2
 
     def local_r0Prime(self,s):
-        return self.ar
+        return self.pr[1] + 2*self.pr[2]*s
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
@@ -111,6 +125,7 @@ def build_beamline(nrays=1e4):
     beamLine.y1 = y1
     beamLine.y2 = y2
     beamLine.yf = yf
+    beamLine.ym = ym
     beamLine.hMax   = hMax
     beamLine.h1     = Din/2
     beamLine.Dout   = Dout
@@ -126,7 +141,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 0,5
+    layers = 0,8
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -145,7 +160,8 @@ def build_beamline(nrays=1e4):
                 p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
                 capillary = BentCapillary(beamLine, 'BentCapillary',
                         [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
-                        rIn=rIn, rOut=rOut, curveCoeffs=p, y2=y2, h_in=x)
+                        rIn=rIn, rOut=rOut, rMax=rMax,
+                        curveCoeffs=p, h_in=x)
                 beamLine.capillaries.append(capillary)
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
 

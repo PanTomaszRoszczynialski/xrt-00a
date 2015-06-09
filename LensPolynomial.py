@@ -56,6 +56,8 @@ def diff_coeffs(x):
     coeff_array = [0., 1., 2*x, 3*x**2, 4*x**3, 5*x**4]
     return coeff_array
 
+# name __main__ is used only if the file is executed as itself
+# not when it's imported
 if __name__ == '__main__':
     Din, Dout = 4.5, 2.4
     y0,y1,ym,y2,y3,h1 = 0., 40., 85., 140., 155., -1.1
