@@ -39,7 +39,7 @@ Dmax =  2*hMax  # max diameter
 rIn =   0.01*10     # lens radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall=   0.0005 * 6 # |*50 make wider walls for structure visibility
+wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
 
 # Surce parameters
 distx       = 'flat'
@@ -147,14 +147,17 @@ def build_beamline(nrays=1e4):
         if n > 0:
             ms = range(n)
             i6 = range(6)
-        else: # this would happen only if layers were negative?
+        else: # this is for the middle one
             ms = 0,
             i6 = 0,
         beamLine.toPlot.append(len(beamLine.capillaries))
         for i in i6:
             for m in ms:
                 # this seems like h_in
-                x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
+                bonus = 0
+                if n > 4:
+                    bonus = rIn
+                x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5+bonus
                 roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
                 roll = roll1 + i*np.pi/3.
                 p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
