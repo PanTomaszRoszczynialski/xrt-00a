@@ -155,8 +155,7 @@ def build_beamline(nrays=1e4):
             for m in ms:
                 # this seems like h_in
                 bonus = 0
-                if n > 4:
-                    bonus = rIn
+                bonus = rIn * round(n/4)
                 x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5+bonus
                 roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
                 roll = roll1 + i*np.pi/3.
