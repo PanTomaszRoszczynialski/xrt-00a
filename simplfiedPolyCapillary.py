@@ -31,7 +31,7 @@ import scipy.io
 mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 5e4       # number of ray traycing iterations
 E0 = 9000.          # energy in electronoVolts
-nRefl = 150         # number of reflections
+nRefl = 170         # number of reflections
 
 # capillary shape parameters
 rSample = 30.0              # starting position of the lens
@@ -42,18 +42,11 @@ rOut = 0.002*1
 wall = 0.0005
 
 # parameters for local_x0 function for actual shape definition
-# those should get moved to Capillary definition
-y_in    = 1.12              # entrance height
-rS      = float(rSample)    # light source - capillary distance 
-wall = 0.0005
-
-# parameters for local_x0 function for actual shape definition
-# those should get moved to Capillary definition
-y_in    = 1.12              # entrance height
+x_0		= 0.5
 rS      = float(rSample)    # light source - capillary distance 
 # Cosh parameter for tangential ray entrance
-a_      = -L_/2.0/np.arcsinh(-y_in/rS)
-print a_, y_in/rS
+#a_      = -L_/2.0/np.arcsinh(-y_in/rS)
+#print a_, y_in/rS
 
 # image acquisition
 screen1_pos = rSample     # not really used
@@ -61,7 +54,7 @@ screen2_pos = f + 0             # first image position outside capillary
 max_plots = 0                   # for imaging different position at once| 0=off
 
 # Pickle saving: None for no saving
-persistentName='pickle/mono_cap_at_exit.pickle' #'phase_space__energy.pickle'
+persistentName = 'pickle/polyCapExit.pickle' #'realSpae.pickle' 
 
 # Surce parameters
 distx       = 'flat'
@@ -75,14 +68,19 @@ distzprime  = 'normal'
 dzprime     = 0.1
 
 
-class StraightCapillary(roe.OE):
+class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
         self.rSample = kwargs.pop('rSample')
         self.entranceAlpha = kwargs.pop('entranceAlpha')
         self.f = kwargs.pop('f') # 
         self.r0in = kwargs.pop('rIn')
         self.r0out = kwargs.pop('rOut')
+        # New parameters
+        self.x_in   = kwargs.pop('x_in')
         roe.OE.__init__(self, *args, **kwargs)
+
+        self.L_ = self.f - self.rSample
+        self.a_ = -self.L_/2.0/np.arcsinh(-self.x_in/self.rSample)
 
         s0 = self.f - self.rSample * np.cos(self.entranceAlpha)
         self.a0 = -np.tan(self.entranceAlpha) / 2 / s0
@@ -95,10 +93,10 @@ class StraightCapillary(roe.OE):
 
     def local_x0(self, s):  # axis of capillary, x(s)
         # s*0 is needed for this method to act as a function rather than variable?
-        return -a_*np.cosh((s-L_/2.0)/a_) +  a_*np.cosh(L_/2.0/a_) + y_in
+        return -self.a_*np.cosh((s-self.L_/2.0)/self.a_) +  self.a_*np.cosh(self.L_/2.0/self.a_) + self.x_in
 
     def local_x0Prime(self, s):
-        return -np.sinh((s-L_/2.0)/a_)
+        return -np.sinh((s-self.L_/2.0)/self.a_)
 
     def local_r0(self, s):  # radius of capillary (s)
         return self.ar *(s-self.s0)**2 + self.br #+ self.br*(2.0+np.cos(np.pi/2.0*(s-L_/2.0)/L_/2.0))
@@ -133,8 +131,8 @@ class StraightCapillary(roe.OE):
         y = self.f - s
         z = r * np.cos(phi)
         return x, y, z
-        
-def build_beamline(nrays=1e5):
+
+def build_beamline(nrays=1e4):
     beamLine = raycing.BeamLine(height=0)
 #    rs.GeometricSource(
 #        beamLine, 'GeometricSource', (0,0,0), nrays=nrays,
@@ -144,124 +142,198 @@ def build_beamline(nrays=1e5):
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
-        distE='lines', energies=(E0,), polarization='horizontal')         
+        distE='lines', energies=(E0,), polarization='horizontal')
     # yo    
     beamLine.fsm1 = rsc.Screen(beamLine, 'DiamondFSM1', (0,screen1_pos,0))
-    
+
     # try to remove superflous container
-    #beamLine.capillaries = []
-    beamLine.xzMax = 0 # no ide what this does
-    # this parameter should be @line 8
-    alpha = 0.000 # hopefully milliradian
-    roll = 0 # test if this rotates whole object
-    capillary = StraightCapillary(
-        beamLine, 'StraightCapillary', [0,0,0], roll=roll,
-        material=mGlass, limPhysY=[rSample*np.cos(alpha), f],
-        order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
-    beamLine.capillary = capillary         
-#    beamLine.capillaries.append(capillary)         
-    
-    if beamLine.xzMax < capillary.b0:
-        beamLine.xzMax = capillary.b0
-    beamLine.xzMax = 0.0
-    
-#    n=8   # one layer..
-#    beamLine.sources[0].dxprime = 0, np.arcsin((2*n+1) * (r0+wall) / rSample)
+    beamLine.capillaries = []
+
+
+
+    alpha = 0.000   # this is so obsolete
+
+    for h_it in range(0,12):
+        x_in = x_0 - h_it * (2*r0 + 2*wall)
+        Obw_tmp = 2*np.pi*x_in
+        N_ = int(np.floor( Obw_tmp/(2*r0 + 2*wall) ) )
+        print "Number of capillaries: " + str(N_)
+        print "On circle with radius:  " + str(Obw_tmp)
+
+        for it in range(int(N_)):
+            roll = it*2*np.pi/N_
+            capillary = BentCapillary(
+                beamLine, 'BentCapillary', [0,0,0], roll=roll,
+                material=mGlass, limPhysY=[rSample*np.cos(alpha), f], x_in=x_in,
+                order=8, f=f, rSample=rSample, entranceAlpha=alpha, rIn=r0, rOut=rOut)
+            # 
+            beamLine.capillaries.append(capillary) 
+
+    # debug cout print "Total number of capillaries: " + str(len(beamLine.capillaries))
+
+    # prepare screen fo all of them
     beamLine.fsm2 = rsc.Screen(beamLine,'DiamondFSM2', (0,screen2_pos,0))
+
+    # Screen in focal spot
+    beamLine.fsm3 = rsc.Screen(beamLine,'DiamondFSM3', (0,f + rSample,0))
+
+    # Screen where 1:1 image should be
+    beamLine.fsm4 = rsc.Screen(beamLine,'DiamondFSM4', (0,f + 2*rSample,0))
+
+    # Iterate from exit to focus (symmetric atm), save distances for names
     beamLine.myFsms = []
-    for it in range(0,max_plots):
+    beamLine.myScreens_pos = []
+    for it in range(1,max_plots-1):
+        tmp_pos = f + 2*it*rSample/max_plots
+        beamLine.myScreens_pos.append(tmp_pos)
         beamLine.myFsms.append(rsc.Screen(beamLine,
                                           'myScreen{0:02d}'.format(it),
-                                          (0,f +rSample + rSample/10*it,0)))
+                                          (0, tmp_pos, 0)))
 
     return beamLine
-         
+
 def run_process(beamLine, shineOnly1stSource=False):
     beamSource = beamLine.sources[0].shine()
-    # at the entrance
+    # at the entrance | unused
     beamFSM1 = beamLine.fsm1.expose(beamSource)
     outDict = {'beamSource': beamSource, 'beamFSM1': beamFSM1}
-    beamCapillaryGlobalTotal = None
-    capillary = beamLine.capillary
-    beamCapillaryGlobal, beamCapillaryLocalN =\
-        capillary.multiple_reflect(beamSource, maxReflections=nRefl)
-    beamCapillaryLocalN.phi /= np.pi
-    if beamCapillaryGlobalTotal is None:
-        beamCapillaryGlobalTotal = beamCapillaryGlobal 
-    else:
-        good = ((beamCapillaryGlobal.state == 1) |
-                (beamCapillaryGlobal.state == 3))
-        rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
-                     good, includeState=True)
-    outDict['myBeam_after_local'] = beamCapillaryLocalN
-    outDict['myBeam_after_global'] = beamCapillaryGlobalTotal
 
-    # Create second screen
+    # Start collecting capillaries' light
+    beamCapillaryGlobalTotal = None
+    for i, capillary in enumerate(beamLine.capillaries):
+        # Get both type of coordinates (global,local)
+        beamCapillaryGlobal, beamCapillaryLocalN =\
+            capillary.multiple_reflect(beamSource, maxReflections=nRefl)
+        # Not sure what is this for 
+        beamCapillaryLocalN.phi /= np.pi
+
+        if beamCapillaryGlobalTotal is None:
+            beamCapillaryGlobalTotal = beamCapillaryGlobal
+        else:
+            good = ((beamCapillaryGlobal.state == 1) |
+                    (beamCapillaryGlobal.state == 3))
+            # Add photons to GlobalTotal
+            rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
+                         good, includeState=True)
+
+    # Prepare acces to Global beam 
+    # (individual capillaries might be acessed as well)
+    outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal
+
+    # See them on screen 
     beamFSM2 = beamLine.fsm2.expose(beamCapillaryGlobalTotal)
     outDict['beamFSM2'] = beamFSM2
+    beamFSM3 = beamLine.fsm3.expose(beamCapillaryGlobalTotal)
+    outDict['beamFSM3'] = beamFSM3
+    beamFSM4 = beamLine.fsm4.expose(beamCapillaryGlobalTotal)
+    outDict['beamFSM4'] = beamFSM4
+
+    # For future use
     beamFsms = []
-    for it in range(0,max_plots):
+    for it in range(0,max_plots-2):
         beamFsms.append(beamLine.myFsms[it].expose(beamCapillaryGlobalTotal))
         outDict['myExposedScreen{0:02d}'.format(it)] = beamFsms[it]
+
     return outDict
-rr.run_process = run_process  
+
+rr.run_process = run_process
 
 
 def main():
     beamLine = build_beamline()
     plots = []
 
-    limit_r = 1.6 * r0      # visible readius
-    xLimits = [y_in - limit_r, y_in + limit_r]
-    xpLimits = [-2., 2.]
-#    zLimits = xLimits
+    limit_r = 1.05 * x_0 + 1.6 * r0
+    xLimits = [- limit_r, limit_r]
     zLimits = [-limit_r, limit_r]
-#    yLimits=None
-    cLimits = [-3,3] #[8900,9100]
-    # at the entrance
+
     """
-    PHASE SPACE PLOT
-    """
-    plot = xrtp.XYCPlot('beamFSM2', (1,),
-        xaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
-        yaxis=xrtp.XYCAxis(r"$z'$", 'mrad', data=raycing.get_zprime, bins=256, ppb=2, limits=xpLimits),
-#        caxis='category', 
-        caxis=xrtp.XYCAxis("Phse shift", 'rad',data=raycing.get_phase_shift, bins=256, ppb=2, limits=cLimits),
-        beamState='beamFSM2', title='Phase Space', aspect='auto',
-        persistentName=None)
-    # setting persistentName saves data into a python pickle, and might be
-    # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'phaseSpace'
-    plot.saveName = plot.baseName + '.png'
-    plots.append(plot)
-    
-    """
-    REAL SPACE PLOT
+    Lens Exit
     """
     plot = xrtp.XYCPlot('beamFSM2', (1,),
         xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
         yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
 #        caxis='category', 
         caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
-        beamState='beamFSM2', title='Real Space', aspect='auto',
+        beamState='beamFSM2', title='Detector at exit', aspect='auto',
         persistentName=persistentName)
     # setting persistentName saves data into a python pickle, and might be
     # unhealthy if pickle isn't cleared/deleted when plotted data changes
-    plot.baseName = 'realSpace'
-    plot.saveName = plot.baseName + '.png'    
+    plot.baseName = 'Detector_at_' + str(rSample + f)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plots.append(plot)
+      
+    
+    """
+    1:1 Image
+    """
+    plot = xrtp.XYCPlot('beamFSM4', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='beamFSM4', title='Detector at 2f', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'Detector_at_' + str(f + 3*rSample)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
     plots.append(plot)
     
+    """
+    Lens Exit ZOOM
+    """
+    
+    r_lim = 3*r0
+    xLimits = [x_0 - r_lim, x_0 + r_lim ]
+    zLimits = [-r_lim, r_lim]
+    plot = xrtp.XYCPlot('beamFSM2', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='beamFSM2', title='Detector at exit with zoom', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'zoom_Detector_at_' + str(f+rSample)
+    plot.saveName = 'png/' + plot.baseName + '.png'    
+    plots.append(plot)      
+    
+    
+    """
+    Focal Spot Image
+    """
+    xLimits = [-0.1 , 0.1]
+    zLimits = xLimits
+    plot = xrtp.XYCPlot('beamFSM3', (1,),
+        xaxis=xrtp.XYCAxis(r"$x$", 'mm', data=raycing.get_x, bins=256, ppb=2, limits=xLimits),
+        yaxis=xrtp.XYCAxis(r"$z$", 'mm', data=raycing.get_z, bins=256, ppb=2, limits=zLimits),
+#        caxis='category', 
+        caxis=xrtp.XYCAxis("Reflections", 'num of',data=raycing.get_reflection_number, bins=256, ppb=2, limits=[0, nRefl]),
+        beamState='beamFSM3', title='Detector at f', aspect='auto',
+        persistentName=persistentName)
+    # setting persistentName saves data into a python pickle, and might be
+    # unhealthy if pickle isn't cleared/deleted when plotted data changes
+    plot.baseName = 'Detector_at_' + str(f + 2*rSample)
+    plot.saveName = 'png/' + plot.baseName + '.png'
+    plots.append(plot)
+
     # ITERATING OVER PLOTS {}
-    for it in range(0,max_plots):
+    cLimits = [0, nRefl]
+    for it in range(0,max_plots-2):
+        tmp_name = 'Detector_at_' + str(beamLine.myScreens_pos[it])
         plot = xrtp.XYCPlot('myExposedScreen{0:02d}'.format(it), (1,3),
             xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=xLimits),
             yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=zLimits),
-            caxis='category', beamState='myExposedScreen{0:02d}'.format(it), title=str(it))
-        plot.baseName = 'thin_cap_dist_' + str(110+it)
-        plot.saveName = plot.baseName + '.png'
-        plots.append(plot)    
+            caxis=xrtp.XYCAxis('Reflections', 'number', data=raycing.get_reflection_number, bins=256, ppb=2, limits=cLimits),
+            beamState='myExposedScreen{0:02d}'.format(it), title=tmp_name)
+        plot.baseName = tmp_name
+        plot.saveName = 'png/' + plot.baseName + '.png'
+        plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
+        plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=7)
-    
+
     # savemat() takes a dict of names later loaded into matlab and objects
     # we want to save,
 #    scipy.io.savemat('Phase_xrt_data.mat',{'Phase_total2D_RGB':plots[0].total2D_RGB,
@@ -272,10 +344,9 @@ def main():
 #                                 'RSpace_total2D':plots[1].total2D,
 #                                 'RSpace_caxis_total':plots[1].caxis.total1D,
 #                                 'RSpace_caxis_total_RGB':plots[1].caxis.total1D_RGB})                                 
-    # just for debug 
-    return plot                                 
-    
-    
+    # just for debug x`
+    return plot
+
 if __name__ == '__main__':
-    PlotMono.plot2D(build_beamline(),f)
-#    main()
+#    PlotMono.plot2D(build_beamline(),f)
+    main()
