@@ -120,7 +120,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 1,7
+    layers = 0,7
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -205,7 +205,7 @@ def main():
     plot.baseName = 'Entrance_structure'
     plot.saveName = 'png/' + plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=8)
 
 #    return beamLine
 

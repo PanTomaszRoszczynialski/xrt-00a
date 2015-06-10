@@ -5,7 +5,7 @@ Created on Thu May 21 12:40:31 2015
 @author: Vladimir Putin
 """
 import numpy as np
-from sympy import *
+#from sympy import *
 import matplotlib.pyplot as plt
 
 #a = np.array([[3,1.3], [1,2]])
