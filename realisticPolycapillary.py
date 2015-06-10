@@ -39,7 +39,7 @@ Dmax =  2*hMax  # max diameter
 rIn =   0.01*10     # lens radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall=   0.0005 *2 # |*50 make wider walls for structure visibility
+wall=   0.0005 * 6 # |*50 make wider walls for structure visibility
 
 # Surce parameters
 distx       = 'flat'
@@ -141,7 +141,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 0,5
+    layers = 0,10
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
