@@ -141,7 +141,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 0,10
+    layers = 0,7
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -154,9 +154,11 @@ def build_beamline(nrays=1e4):
         for i in i6:
             for m in ms:
                 # this seems like h_in
-                bonus = 0
-                bonus = rIn * round(n/4)
-                x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5+bonus
+                bonus = rIn * round(n/3)
+                if (i==4):
+                    bonus += 2*rIn*round(n/4)
+                x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
+                x += bonus
                 roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
                 roll = roll1 + i*np.pi/3.
                 p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
