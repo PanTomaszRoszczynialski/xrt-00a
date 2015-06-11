@@ -156,7 +156,7 @@ def build_beamline(nrays=1e4):
                 # this seems like h_in
                 #bonus = rIn * round(n/3)
                 bonus = 0
-                if (m==3):
+                if (i==3):
                     bonus += 2*rIn*round(n/4)
                 x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
                 x += bonus
