@@ -234,7 +234,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    scr.createScreens(beamLine,[y2, yf + yf-y2], 4)
+    scr.createScreens(beamLine,[y2, yf + yf-y2], 12)
     # Set screen used before the pinhole
     scr.setUsed(beamLine, [0, ypin])
     # Set used after pinhole as well
