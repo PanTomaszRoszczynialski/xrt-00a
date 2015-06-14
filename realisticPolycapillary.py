@@ -7,7 +7,7 @@ import matplotlib as mpl
 import matplotlib.pyplot as plt
 
 from PlotMono import plot2D
-from screening import *
+import screening as scr
 
 import xrt.backends.raycing as raycing
 import xrt.backends.raycing.sources as rs
@@ -41,7 +41,12 @@ rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
 
-# Surce parameters
+# Pinhole parameters
+ypin    = 155.0         # Optical path position [mm]
+pinlen  = 0.1           # length
+rpin    = 0.005*20         # Pinhole radius [mm] 
+
+# Source parameters
 distx       = 'flat'
 dx          = 0.1
 distxprime  = 'normal'
@@ -51,6 +56,52 @@ distz       = 'flat'
 dz          = 0.1
 distzprime  = 'normal'
 dzprime     = 0.1
+
+class Pinhole(roe.OE):
+    def __init__(self, *args, **kwargs):
+        self.radius = kwargs.pop("radius")
+        roe.OE.__init__(self, *args, **kwargs)
+
+    def local_x0(self, s):
+        return 0.0*s
+
+    def local_x0Prime(self, s):
+        return 0.0
+
+    def local_r0(self, s):
+        return self.radius + 0.0*s
+
+    def local_r0Prime(self, s):
+        return 0.0
+
+    def local_r(self, s, phi):
+        den = np.cos(np.arctan(self.local_x0Prime(s)))**2
+        return self.local_r0(s) / (np.cos(phi)**2/den + np.sin(phi)**2)
+
+    def local_n(self, s, phi):
+        a = -np.sin(phi)
+        b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
+        c = -np.cos(phi)
+        norm = np.sqrt(a**2 + b**2 + c**2)
+        # FIXME: a and c probably should also get minues
+        # but due to symmetry it's not visible for now?
+        return a/norm, -b/norm, c/norm
+
+    def xyz_to_param(self, x, y, z):
+        """ *s*, *r*, *phi* are cynindrc-like coordinates of the capillary.
+        *s* is along y in inverse direction, started at the exit,
+        *r* is measured from the capillary axis x0(s)
+        *phi* is the polar angle measured from the z (vertical) direction."""
+        s = y
+        phi = np.arctan2(x - self.local_x0(s), z)
+        r = np.sqrt((x-self.local_x0(s))**2 + z**2)
+        return s, phi, r
+
+    def param_to_xyz(self, s, phi, r):
+        x = self.local_x0(s) + r*np.sin(phi)
+        y = s
+        z = r * np.cos(phi)
+        return x, y, z
 
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
@@ -64,9 +115,9 @@ class BentCapillary(roe.OE):
         self.y2 = self.limPhysY[1]
         self.ym = self.bl.ym
 
-        # local radius function parameters (linar from rIn ot rOut)
+        # local radius function parameters (quadratic from rIn ot rOut)
         # linear solve of 3 equations for parabolic shape
-        # of r(s) currently this curve is the same for each 
+        # of r(s): currently this curve is the same for each 
         # capillary, so this could've been done once for lens,
         # not once for capillary
         B = [self.rIn, self.rOut, self.rMax]
@@ -131,6 +182,7 @@ def build_beamline(nrays=1e4):
     beamLine.Dout   = Dout
     beamLine.nRefl  = nRefl
 
+    # [0] - Source of light
     rs.GeometricSource(
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
@@ -140,6 +192,7 @@ def build_beamline(nrays=1e4):
     # Insert screen at the lens entrance here
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
+    # [1] - Lens
     beamLine.capillaries = []
     layers = 0,6
     beamLine.toPlot = []
@@ -154,10 +207,7 @@ def build_beamline(nrays=1e4):
         for i in i6:
             for m in ms:
                 # this seems like h_in
-                #bonus = rIn * round(n/3)
-                bonus = 0
-                if (i==3):
-                    bonus += 2*rIn*round(n/4)
+                bonus = 2*rIn * round(n/6)
                 x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
                 x += bonus
                 roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
@@ -172,17 +222,34 @@ def build_beamline(nrays=1e4):
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
+    # [2] Pinhole 
+#    beamLine.pinhole = Pinhole(beamLine, 'Pinhole',
+#                    (0, 0, 0), limPhysY=[ypin, ypin+pinlen], order=8,
+#                    radius=rpin)
+    p_pin = [0, 0, 0, 0, 0, 0]
+    beamLine.pinhole = BentCapillary(beamLine, 'PinHole',
+                    [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
+                    order=8, rIn=rpin, rOut=rpin, rMax=rpin,
+                    curveCoeffs=p_pin, h_in=0)
+
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    createScreens(beamLine,[y2, yf + yf-y2], 3)
+    scr.createScreens(beamLine,[y2, yf + yf-y2], 4)
+    # Set screen used before the pinhole
+    scr.setUsed(beamLine, [0, ypin])
+    # Set used after pinhole as well
+    scr.setUsed(beamLine, [ypin, 200])
+
     return beamLine
 
-
 def run_process(beamLine, shineOnly1stSource=False):
+    # [0]
     beamSource = beamLine.sources[0].shine()
     # at the entrance | unused
     EntranceScreen = beamLine.entScreen.expose(beamSource)
     outDict = {'beamSource': beamSource, 'EntranceScreen': EntranceScreen}
+
+    # [1]
     # Start collecting capillaries' light
     beamCapillaryGlobalTotal = None
     for i, capillary in enumerate(beamLine.capillaries):
@@ -208,8 +275,19 @@ def run_process(beamLine, shineOnly1stSource=False):
     # See them on screen 
     ExitScreen = beamLine.exitScreen.expose(beamCapillaryGlobalTotal)
     outDict['ExitScreen'] = ExitScreen
+
     # Create exposed beamlines in outside module screens.
-    outDict.update(exposeScreens(beamLine, beamCapillaryGlobalTotal))
+    prePinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
+            [0, ypin])
+
+    # [2]
+    pinholeGlobal, pinholeLocal = beamLine.pinhole.multiple_reflect(\
+            beamCapillaryGlobalTotal, maxReflections=5)
+    postPinhole = scr.exposeScreens(beamLine, pinholeGlobal,\
+            [ypin, 200])
+
+    outDict.update(prePinhole)
+    outDict.update(postPinhole)
 
     return outDict
 
@@ -220,7 +298,7 @@ def main():
     plot2D(beamLine)
 
     # Create xrtp.Plots in outside module  
-    plots = createPlots(beamLine)
+    plots = scr.createPlots(beamLine)
     # FIXME: Manually add plot showing entrance structure
     limits = [ - Din/1.9, Din/1.9 ]
     plot = xrtp.XYCPlot(

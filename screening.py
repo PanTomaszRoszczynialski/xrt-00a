@@ -16,21 +16,43 @@ import xrt.plotter as xrtp
 def createScreens(beamLine, ranges, howmany):
     positions = np.linspace(ranges[0], ranges[1], howmany)
     screens = {}
+    isUsed  = {}
     for it in positions:
-        screen = rsc.Screen(beamLine,'Screen_at_'+str(it), (0,it,0))
+        screen = rsc.Screen(beamLine,'Screen_at_'+str(int(it)), (0,it,0))
         screens[it] = screen
+        isUsed[it]  = False
         print 'Screen at ' + str(it)
     # Save ranges as beamline property, no need to keep globally
     beamLine.s_positions = positions
+    beamLine.isUsed = isUsed
     beamLine.screens  = screens
 
-# Next screens need to be exposed in run_process and
+# Special function specyfying whicch screens will be used
+def setUsed(beamLine, _range):
+    for it in beamLine.s_positions:
+        if it >= _range[0] and it < _range[1]:
+            beamLine.isUsed[it] = True
+
+# Next: screens need to be exposed in run_process and
 # dictionary must be prepared
-def exposeScreens(beamLine, beamToBeSeen):
+# FIXME: run_process is apparently being run inside run_ray_traycing,
+# so createScreens doesn't know yet which screens are being used
+cunter = 0
+def exposeScreens(beamLine, beamToBeSeen, _range):
+
+    # Debug utilities
+    global cunter
+    cunter += 1
+    print 'It\'s being run: ' + str(cunter) + ' time!'
+
     partDict = {}
     for it in beamLine.s_positions:
-        partDict['Screen_at_'+str(int(it))] =\
-                beamLine.screens[it].expose(beamToBeSeen)
+        if it >= _range[0] and it < _range[1]:
+
+            partDict[beamLine.screens[it].name] =\
+                    beamLine.screens[it].expose(beamToBeSeen)
+            beamLine.isUsed[it] = True
+
     return partDict
 
 # Prepare plots for raycing
@@ -41,23 +63,27 @@ def createPlots(beamLine):
     plots = []
     # Plots after the exit
     for it in beamLine.s_positions:
-#        print 'current range: ' + str(it)
-#        print 'Screen_at_'+str(it)
-        name = 'Screen_at_'+str(int(it))
-        plot = xrtp.XYCPlot(name, (1,),
-            xaxis=xrtp.XYCAxis(r'$x$', 'mm', data=raycing.get_x,\
-                    bins=256, ppb=2, limits=xLimits),
-            yaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z,\
-                    bins=256, ppb=2, limits=zLimits),
-            caxis=xrtp.XYCAxis('Reflections', 'number',\
-                    data=raycing.get_reflection_number,\
-                    bins=256, ppb=2, limits=cLimits),
-            beamState=name, title=name,\
-                    aspect='auto')
-        plot.baseName = name
-        plot.saveName = 'png/' + plot.baseName + '.png'
-#        plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
-        plots.append(plot)
-#    print 'leaving createPlots()'
+        if beamLine.isUsed[it]:
+
+            name = 'Screen_at_'+str(int(it))
+            print 'Creating plot' + name
+
+            # Plot Construction
+            plot = xrtp.XYCPlot(name, (1,),
+                xaxis=xrtp.XYCAxis(r'$x$', 'mm', data=raycing.get_x,\
+                        bins=256, ppb=2, limits=xLimits),
+                yaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z,\
+                        bins=256, ppb=2, limits=zLimits),
+                caxis=xrtp.XYCAxis('Reflections', 'number',\
+                        data=raycing.get_reflection_number,\
+                        bins=256, ppb=2, limits=cLimits),
+                beamState=name, title=name,\
+                        aspect='auto')
+            # END Plot Construction
+
+            plot.baseName = name
+            plot.saveName = 'png/' + plot.baseName + '.png'
+#            plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
+            plots.append(plot)
 
     return plots

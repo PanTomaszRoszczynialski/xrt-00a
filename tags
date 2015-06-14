@@ -8,6 +8,7 @@ BentCapillary	.\myCapillary0A.py	/^class BentCapillary(roe.OE):$/;"	c
 BentCapillary	.\realisticPolycapillary.py	/^class BentCapillary(roe.OE):$/;"	c
 BentCapillary	.\simplfiedPolyCapillary.py	/^class BentCapillary(roe.OE):$/;"	c
 Din	.\realisticPolycapillary.py	/^Din =   4.5     # lens entrance diameter$/;"	v
+Dmax	.\realisticPolycapillary.py	/^Dmax =  2*hMax  # max diameter$/;"	v
 Dout	.\realisticPolycapillary.py	/^Dout =  2.4     # lens exit diameter$/;"	v
 E0	.\SourceViewer.py	/^E0      = 9000  # [eV]$/;"	v
 E0	.\StraightCapillary.py	/^E0 = 9000.$/;"	v
@@ -18,6 +19,7 @@ E0	.\simplfiedPolyCapillary.py	/^E0 = 9000.          # energy in electronoVolts$
 L_	.\simplfiedMonoCapillary.py	/^L_      = 100.0               # length of the lens$/;"	v
 L_	.\simplfiedPolyCapillary.py	/^L_      = 100.0               # length of the lens$/;"	v
 N_	.\SourceViewer.py	/^N_      = 11    # number of step to take$/;"	v
+Pinhole	.\realisticPolycapillary.py	/^class Pinhole(roe.OE):$/;"	c
 PlotMono	.\simplfiedMonoCapillary.py	/^import PlotMono$/;"	i
 PlotMono	.\simplfiedPolyCapillary.py	/^import PlotMono$/;"	i
 StraightCapillary	.\StraightCapillary.py	/^class StraightCapillary(roe.OE):$/;"	c
@@ -25,6 +27,7 @@ StraightCapillary	.\simplfiedMonoCapillary.py	/^class StraightCapillary(roe.OE):
 __init__	.\StraightCapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:StraightCapillary
 __init__	.\myCapillary0A.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:BentCapillary
 __init__	.\realisticPolycapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:BentCapillary
+__init__	.\realisticPolycapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:Pinhole
 __init__	.\simplfiedMonoCapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:StraightCapillary
 __init__	.\simplfiedPolyCapillary.py	/^    def __init__(self, *args, **kwargs):$/;"	m	class:BentCapillary
 a_	.\simplfiedMonoCapillary.py	/^a_      = -L_\/2.0\/np.arcsinh(-y_in\/rS)$/;"	v
@@ -78,6 +81,7 @@ build_beamline	.\simplfiedMonoCapillary.py	/^def build_beamline(nrays=1e5):$/;"	
 build_beamline	.\simplfiedPolyCapillary.py	/^def build_beamline(nrays=1e4):$/;"	f
 createPlots	.\screening.py	/^def createPlots(beamLine):$/;"	f
 createScreens	.\screening.py	/^def createScreens(beamLine, ranges, howmany):$/;"	f
+cunter	.\screening.py	/^cunter = 0$/;"	v
 diff_coeffs	.\LensPolynomial.py	/^def diff_coeffs(x):$/;"	f
 diff_coeffs	.\solverTesting.py	/^def diff_coeffs(x):$/;"	f
 distx	.\SourceViewer.py	/^distx       = 'flat'$/;"	v
@@ -112,7 +116,7 @@ dzprime	.\SourceViewer.py	/^dzprime     = 0.1$/;"	v
 dzprime	.\realisticPolycapillary.py	/^dzprime     = 0.1$/;"	v
 dzprime	.\simplfiedMonoCapillary.py	/^dzprime     = 0.1$/;"	v
 dzprime	.\simplfiedPolyCapillary.py	/^dzprime     = 0.1$/;"	v
-exposeScreens	.\screening.py	/^def exposeScreens(beamLine, beamToBeSeen):$/;"	f
+exposeScreens	.\screening.py	/^def exposeScreens(beamLine, beamToBeSeen, _range):$/;"	f
 f	.\StraightCapillary.py	/^f = 450. # y length in mm from foucs to the end of the lens$/;"	v
 f	.\myCapillary0A.py	/^f = 500. # y length in mm from foucs to the end of the lens$/;"	v
 f	.\simplfiedMonoCapillary.py	/^f       = rSample + L_     # y length in mm from foucs to the end of the lens$/;"	v
@@ -134,31 +138,37 @@ layers	.\myCapillary0A.py	/^layers = 10 # number of hexagonal layers$/;"	v
 local_n	.\StraightCapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:StraightCapillary
 local_n	.\myCapillary0A.py	/^    def local_n(self, s, phi):$/;"	m	class:BentCapillary
 local_n	.\realisticPolycapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:BentCapillary
+local_n	.\realisticPolycapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:Pinhole
 local_n	.\simplfiedMonoCapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:StraightCapillary
 local_n	.\simplfiedPolyCapillary.py	/^    def local_n(self, s, phi):$/;"	m	class:BentCapillary
 local_r	.\StraightCapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:StraightCapillary
 local_r	.\myCapillary0A.py	/^    def local_r(self, s, phi):$/;"	m	class:BentCapillary
 local_r	.\realisticPolycapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:BentCapillary
+local_r	.\realisticPolycapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:Pinhole
 local_r	.\simplfiedMonoCapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:StraightCapillary
 local_r	.\simplfiedPolyCapillary.py	/^    def local_r(self, s, phi):$/;"	m	class:BentCapillary
 local_r0	.\StraightCapillary.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:StraightCapillary
 local_r0	.\myCapillary0A.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:BentCapillary
 local_r0	.\realisticPolycapillary.py	/^    def local_r0(self, s):$/;"	m	class:BentCapillary
+local_r0	.\realisticPolycapillary.py	/^    def local_r0(self, s):$/;"	m	class:Pinhole
 local_r0	.\simplfiedMonoCapillary.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:StraightCapillary
 local_r0	.\simplfiedPolyCapillary.py	/^    def local_r0(self, s):  # radius of capillary (s)$/;"	m	class:BentCapillary
 local_r0Prime	.\StraightCapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:StraightCapillary
 local_r0Prime	.\myCapillary0A.py	/^    def local_r0Prime(self, s):$/;"	m	class:BentCapillary
+local_r0Prime	.\realisticPolycapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:Pinhole
 local_r0Prime	.\realisticPolycapillary.py	/^    def local_r0Prime(self,s):$/;"	m	class:BentCapillary
 local_r0Prime	.\simplfiedMonoCapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:StraightCapillary
 local_r0Prime	.\simplfiedPolyCapillary.py	/^    def local_r0Prime(self, s):$/;"	m	class:BentCapillary
 local_x0	.\StraightCapillary.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:StraightCapillary
 local_x0	.\myCapillary0A.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:BentCapillary
 local_x0	.\realisticPolycapillary.py	/^    def local_x0(self, s):$/;"	m	class:BentCapillary
+local_x0	.\realisticPolycapillary.py	/^    def local_x0(self, s):$/;"	m	class:Pinhole
 local_x0	.\simplfiedMonoCapillary.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:StraightCapillary
 local_x0	.\simplfiedPolyCapillary.py	/^    def local_x0(self, s):  # axis of capillary, x(s)$/;"	m	class:BentCapillary
 local_x0Prime	.\StraightCapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:StraightCapillary
 local_x0Prime	.\myCapillary0A.py	/^    def local_x0Prime(self, s):$/;"	m	class:BentCapillary
 local_x0Prime	.\realisticPolycapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:BentCapillary
+local_x0Prime	.\realisticPolycapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:Pinhole
 local_x0Prime	.\simplfiedMonoCapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:StraightCapillary
 local_x0Prime	.\simplfiedPolyCapillary.py	/^    def local_x0Prime(self, s):$/;"	m	class:BentCapillary
 mGlass	.\StraightCapillary.py	/^mGlass = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)$/;"	v
@@ -210,10 +220,12 @@ p	.\solverTesting.py	/^    p = getPolyCoeffs(x0,x1,xm,x2,x3,h1,hm,h2)$/;"	v
 param_to_xyz	.\StraightCapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:StraightCapillary
 param_to_xyz	.\myCapillary0A.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:BentCapillary
 param_to_xyz	.\realisticPolycapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:BentCapillary
+param_to_xyz	.\realisticPolycapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:Pinhole
 param_to_xyz	.\simplfiedMonoCapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:StraightCapillary
 param_to_xyz	.\simplfiedPolyCapillary.py	/^    def param_to_xyz(self, s, phi, r):$/;"	m	class:BentCapillary
 persistentName	.\simplfiedMonoCapillary.py	/^persistentName='pickle\/mono_cap_at_exit.pickle' #'phase_space__energy.pickle'$/;"	v
 persistentName	.\simplfiedPolyCapillary.py	/^persistentName = 'pickle\/polyCapExit.pickle' #'realSpae.pickle' $/;"	v
+pinlen	.\realisticPolycapillary.py	/^pinlen  = 0.1           # length$/;"	v
 plot2D	.\PlotMono.py	/^def plot2D(beamLine):$/;"	f
 plot2D	.\StraightCapillary.py	/^def plot2D():$/;"	f
 plot2D	.\myCapillary0A.py	/^def plot2D():$/;"	f
@@ -233,8 +245,10 @@ r0	.\StraightCapillary.py	/^r0 = 0.07$/;"	v
 r0	.\myCapillary0A.py	/^r0 = 0.0030$/;"	v
 r0	.\simplfiedMonoCapillary.py	/^r0 = 0.002*1$/;"	v
 r0	.\simplfiedPolyCapillary.py	/^r0 = 0.002*1$/;"	v
-rIn	.\realisticPolycapillary.py	/^rIn =   0.01     # lens radius$/;"	v
+rIn	.\realisticPolycapillary.py	/^rIn =   0.01*10     # lens radius$/;"	v
+rMax	.\realisticPolycapillary.py	/^rMax = Dmax\/Din * rIn # Max value of local radius$/;"	v
 rOut	.\StraightCapillary.py	/^rOut = 0.02$/;"	v
+rOut	.\realisticPolycapillary.py	/^rOut = Dout\/Din * rIn # Radius must shrink alongside the lens$/;"	v
 rOut	.\simplfiedMonoCapillary.py	/^rOut = 0.002*1$/;"	v
 rOut	.\simplfiedPolyCapillary.py	/^rOut = 0.002*1$/;"	v
 rS	.\simplfiedMonoCapillary.py	/^rS      = float(rSample)    # light source - capillary distance $/;"	v
@@ -298,6 +312,7 @@ roe	.\myCapillary0A.py	/^import xrt.backends.raycing.oes as roe$/;"	i
 roe	.\realisticPolycapillary.py	/^import xrt.backends.raycing.oes as roe$/;"	i
 roe	.\simplfiedMonoCapillary.py	/^import xrt.backends.raycing.oes as roe$/;"	i
 roe	.\simplfiedPolyCapillary.py	/^import xrt.backends.raycing.oes as roe$/;"	i
+rpin	.\realisticPolycapillary.py	/^rpin    = 0.005*20         # Pinhole radius [mm] $/;"	v
 rr	.\SourceViewer.py	/^import xrt.backends.raycing.run as rr$/;"	i
 rr	.\StraightCapillary.py	/^import xrt.backends.raycing.run as rr$/;"	i
 rr	.\myCapillary0A.py	/^import xrt.backends.raycing.run as rr$/;"	i
@@ -325,16 +340,19 @@ run_process	.\simplfiedMonoCapillary.py	/^def run_process(beamLine, shineOnly1st
 run_process	.\simplfiedPolyCapillary.py	/^def run_process(beamLine, shineOnly1stSource=False):$/;"	f
 scipy	.\simplfiedMonoCapillary.py	/^import scipy.io$/;"	i
 scipy	.\simplfiedPolyCapillary.py	/^import scipy.io$/;"	i
+scr	.\realisticPolycapillary.py	/^import screening as scr$/;"	i
 screen1_pos	.\simplfiedMonoCapillary.py	/^screen1_pos = rSample     # not really used$/;"	v
 screen1_pos	.\simplfiedPolyCapillary.py	/^screen1_pos = rSample     # not really used$/;"	v
 screen2_pos	.\StraightCapillary.py	/^screen2_pos = f + 400$/;"	v
 screen2_pos	.\simplfiedMonoCapillary.py	/^screen2_pos = f + 0             # first image position outside capillary$/;"	v
 screen2_pos	.\simplfiedPolyCapillary.py	/^screen2_pos = f + 0             # first image position outside capillary$/;"	v
+setUsed	.\screening.py	/^def setUsed(beamLine, _range):$/;"	f
 shape_coeffs	.\LensPolynomial.py	/^def shape_coeffs(x):$/;"	f
 shape_coeffs	.\solverTesting.py	/^def shape_coeffs(x):$/;"	f
 step	.\SourceViewer.py	/^step    = 4     # [mm] | screen step size$/;"	v
 wall	.\StraightCapillary.py	/^wall = 0.02$/;"	v
 wall	.\myCapillary0A.py	/^wall = 0.02$/;"	v
+wall	.\realisticPolycapillary.py	/^wall=   0.0005 * 4 # |*50 make wider walls for structure visibility$/;"	v
 wall	.\simplfiedMonoCapillary.py	/^wall = 0.0005$/;"	v
 wall	.\simplfiedPolyCapillary.py	/^wall = 0.0005$/;"	v
 x	.\LensPolynomial.py	/^    x = np.linspace(y1,y2,1000)$/;"	v
@@ -408,6 +426,7 @@ xrtr	.\simplfiedPolyCapillary.py	/^import xrt.runner as xrtr$/;"	i
 xyz_to_param	.\StraightCapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:StraightCapillary
 xyz_to_param	.\myCapillary0A.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:BentCapillary
 xyz_to_param	.\realisticPolycapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:BentCapillary
+xyz_to_param	.\realisticPolycapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:Pinhole
 xyz_to_param	.\simplfiedMonoCapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:StraightCapillary
 xyz_to_param	.\simplfiedPolyCapillary.py	/^    def xyz_to_param(self, x, y, z):$/;"	m	class:BentCapillary
 xzPrimeMax	.\StraightCapillary.py	/^xzPrimeMax = 3.$/;"	v
@@ -420,4 +439,5 @@ y2	.\realisticPolycapillary.py	/^y2 =    140.    # lens exit$/;"	v
 y_in	.\simplfiedMonoCapillary.py	/^y_in    = 1.12              # entrance height$/;"	v
 yf	.\realisticPolycapillary.py	/^yf =    155.    # focus position$/;"	v
 ym	.\realisticPolycapillary.py	/^ym =    88.     # capillaries turning point$/;"	v
+ypin	.\realisticPolycapillary.py	/^ypin    = 150.0         # Optical path position [mm]$/;"	v
 zLimits	.\SourceViewer.py	/^zLimits = xLimits       # axis square$/;"	v
