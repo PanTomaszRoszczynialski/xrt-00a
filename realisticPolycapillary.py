@@ -43,7 +43,7 @@ wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
 
 # Pinhole parameters
 ypin    = 155.0         # Optical path position [mm]
-pinlen  = 0.1           # length
+pinlen  = 0.01           # length
 rpin    = 0.005*20         # Pinhole radius [mm] 
 
 # Source parameters
