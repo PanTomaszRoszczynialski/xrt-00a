@@ -36,10 +36,13 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.01*10     # lens radius
+
+# Use realistic value when on master
+rIn =   0.006     # lens radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
+processes = 8
 
 # Surce parameters
 distx       = 'flat'
@@ -64,7 +67,7 @@ class BentCapillary(roe.OE):
         self.y2 = self.limPhysY[1]
         self.ym = self.bl.ym
 
-        # local radius function parameters (linar from rIn ot rOut)
+        # local radius function parameters (linear from rIn ot rOut)
         # linear solve of 3 equations for parabolic shape
         # of r(s) currently this curve is the same for each 
         # capillary, so this could've been done once for lens,
@@ -141,7 +144,7 @@ def build_beamline(nrays=1e4):
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
     beamLine.capillaries = []
-    layers = 0,10
+    layers = 0,100
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -153,9 +156,9 @@ def build_beamline(nrays=1e4):
         beamLine.toPlot.append(len(beamLine.capillaries))
         for i in i6:
             for m in ms:
+                # Adding meta structure here
+                bonus = rIn * round(n/6)
                 # this seems like h_in
-                bonus = 0
-                bonus = rIn * round(n/4)
                 x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5+bonus
                 roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
                 roll = roll1 + i*np.pi/3.
@@ -171,7 +174,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    createScreens(beamLine,[y2, yf + yf-y2], 3)
+    createScreens(beamLine,[y2, yf + yf-y2], 11)
     return beamLine
 
 
@@ -229,7 +232,7 @@ def main():
     plot.baseName = 'Entrance_structure'
     plot.saveName = 'png/' + plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=processes)
 
 #    return beamLine
 
