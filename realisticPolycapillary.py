@@ -22,6 +22,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
+mGold   = rm.Material('Au', rho=19.3)
 repeats = 5e4           # number of ray traycing iterations
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
@@ -36,7 +37,7 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.01*10     # lens radius
+rIn =   0.01     # lens radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
@@ -44,7 +45,7 @@ wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
 # Pinhole parameters
 ypin    = 155.0         # Optical path position [mm]
 pinlen  = 0.01           # length
-rpin    = 0.005*20         # Pinhole radius [mm] 
+rpin    = 0.005*10         # Pinhole radius [mm] 
 
 # Source parameters
 distx       = 'flat'
@@ -194,7 +195,7 @@ def build_beamline(nrays=1e4):
 
     # [1] - Lens
     beamLine.capillaries = []
-    layers = 0,6
+    layers = 0,42
     beamLine.toPlot = []
     for n in range(layers[0], layers[1]):
         if n > 0:
@@ -207,7 +208,7 @@ def build_beamline(nrays=1e4):
         for i in i6:
             for m in ms:
                 # this seems like h_in
-                bonus = 2*rIn * round(n/6)
+                bonus = 2*rIn * round(n/4)
                 x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
                 x += bonus
                 roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
@@ -215,7 +216,7 @@ def build_beamline(nrays=1e4):
                 p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
                 capillary = BentCapillary(beamLine, 'BentCapillary',
                         [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
-                        rIn=rIn, rOut=rOut, rMax=rMax,
+                        rIn=rIn, rOut=rOut, rMax=rMax, material=mGlass,
                         curveCoeffs=p, h_in=x)
                 beamLine.capillaries.append(capillary)
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
@@ -230,6 +231,7 @@ def build_beamline(nrays=1e4):
     beamLine.pinhole = BentCapillary(beamLine, 'PinHole',
                     [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
                     order=8, rIn=rpin, rOut=rpin, rMax=rpin,
+                    material=mGold,
                     curveCoeffs=p_pin, h_in=0)
 
     # Create evenly distributed screens between lens exit
@@ -310,7 +312,7 @@ def main():
     plot.baseName = 'Entrance_structure'
     plot.saveName = 'png/' + plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=1)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=8)
 
 #    return beamLine
 

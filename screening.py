@@ -37,6 +37,8 @@ def setUsed(beamLine, _range):
 # dictionary must be prepared
 # FIXME: run_process is apparently being run inside run_ray_traycing,
 # so createScreens doesn't know yet which screens are being used
+# When using multithreading this file is impporte multiple times
+# and this global variable gets annihilated each time, which isn't helpful
 cunter = 0
 def exposeScreens(beamLine, beamToBeSeen, _range):
 
@@ -69,7 +71,7 @@ def createPlots(beamLine):
             print 'Creating plot' + name
 
             # Plot Construction
-            plot = xrtp.XYCPlot(name, (1,),
+            plot = xrtp.XYCPlot(name, (1,3),
                 xaxis=xrtp.XYCAxis(r'$x$', 'mm', data=raycing.get_x,\
                         bins=256, ppb=2, limits=xLimits),
                 yaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z,\
