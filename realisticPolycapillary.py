@@ -43,6 +43,11 @@ rMax = Dmax/Din * rIn # Max value of local radius
 wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
 processes = 8
 
+# Pinhole parameters
+ypin    = 155.0     # Optical path position
+pinlen  = 0.01      # Length 
+rpin    = 0.005*10  # Pinhole radius [mm]
+
 # Source parameters
 distx       = 'flat'
 dx          = 0.1
@@ -284,8 +289,12 @@ def run_process(beamLine, shineOnly1stSource=False):
     postPinhole = scr.exposeScreens(beamLine, pinholeGlobal,\
             [ypin, 200])
 
+    # [2] - bypass the pinhole
+    postNoPinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
+            [ypin, 200])
     outDict.update(prePinhole)
-    outDict.update(postPinhole)
+#    outDict.update(postPinhole)
+    outDict.update(postNoPinhole)
 
     return outDict
 
