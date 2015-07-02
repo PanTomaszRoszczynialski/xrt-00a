@@ -46,7 +46,7 @@ processes = 8
 # Pinhole parameters
 ypin    = 155.0     # Optical path position
 pinlen  = 0.01      # Length 
-rpin    = 0.005*10  # Pinhole radius [mm]
+rpin    = rIn / 2.0 # Pinhole radius [mm]
 
 # Source parameters
 distx       = 'flat'
@@ -292,9 +292,11 @@ def run_process(beamLine, shineOnly1stSource=False):
     # [2] - bypass the pinhole
     postNoPinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
             [ypin, 200])
+
+    # 
     outDict.update(prePinhole)
-#    outDict.update(postPinhole)
-    outDict.update(postNoPinhole)
+    outDict.update(postPinhole)
+#    outDict.update(postNoPinhole)
 
     return outDict
 
