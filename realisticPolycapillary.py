@@ -59,52 +59,6 @@ dz          = 0.1
 distzprime  = 'normal'
 dzprime     = 0.1
 
-class Pinhole(roe.OE):
-    def __init__(self, *args, **kwargs):
-        self.radius = kwargs.pop("radius")
-        roe.OE.__init__(self, *args, **kwargs)
-
-    def local_x0(self, s):
-        return 0.0*s
-
-    def local_x0Prime(self, s):
-        return 0.0
-
-    def local_r0(self, s):
-        return self.radius + 0.0*s
-
-    def local_r0Prime(self, s):
-        return 0.0
-
-    def local_r(self, s, phi):
-        den = np.cos(np.arctan(self.local_x0Prime(s)))**2
-        return self.local_r0(s) / (np.cos(phi)**2/den + np.sin(phi)**2)
-
-    def local_n(self, s, phi):
-        a = -np.sin(phi)
-        b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
-        c = -np.cos(phi)
-        norm = np.sqrt(a**2 + b**2 + c**2)
-        # FIXME: a and c probably should also get minues
-        # but due to symmetry it's not visible for now?
-        return a/norm, -b/norm, c/norm
-
-    def xyz_to_param(self, x, y, z):
-        """ *s*, *r*, *phi* are cynindrc-like coordinates of the capillary.
-        *s* is along y in inverse direction, started at the exit,
-        *r* is measured from the capillary axis x0(s)
-        *phi* is the polar angle measured from the z (vertical) direction."""
-        s = y
-        phi = np.arctan2(x - self.local_x0(s), z)
-        r = np.sqrt((x-self.local_x0(s))**2 + z**2)
-        return s, phi, r
-
-    def param_to_xyz(self, s, phi, r):
-        x = self.local_x0(s) + r*np.sin(phi)
-        y = s
-        z = r * np.cos(phi)
-        return x, y, z
-
 class BentCapillary(roe.OE):
     def __init__(self, *args, **kwargs):
         self.p  = kwargs.pop("curveCoeffs")
@@ -224,10 +178,8 @@ def build_beamline(nrays=1e4):
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
-    # [2] Pinhole 
-#    beamLine.pinhole = Pinhole(beamLine, 'Pinhole',
-#                    (0, 0, 0), limPhysY=[ypin, ypin+pinlen], order=8,
-#                    radius=rpin)
+    # Insert very short and very thin golden capillary 
+    # into the focus, acting as a proper image sharpening pinhole
     p_pin = [0, 0, 0, 0, 0, 0]
     beamLine.pinhole = BentCapillary(beamLine, 'PinHole',
                     [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
@@ -295,8 +247,8 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # 
     outDict.update(prePinhole)
-    outDict.update(postPinhole)
-#    outDict.update(postNoPinhole)
+#    outDict.update(postPinhole)
+    outDict.update(postNoPinhole)
 
     return outDict
 
