@@ -4,7 +4,7 @@ close all
 % Size of S in pixels - exit surface
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-nS=8192;
+nS=2192;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Capillary parameters
@@ -16,7 +16,7 @@ capillary_diameter=0.0025;
 channel_diameter=capillary_diameter*0.5;
 
 % number of capillaries in bundle along horizontal direction (must be odd)
-nx_capillary=21 ;
+nx_capillary=17 ;
 if ~odd(nx_capillary)
     error('Number of capillaries must be odd!');
 end
@@ -41,14 +41,14 @@ bundlespacing=minbundlespacing;
 
 
 % number of bundles along vertical direction (must be odd)
-ny_bundle=21;
+ny_bundle=5;
 if ~odd(ny_bundle)
     error('Number of bundles must be odd!');
 end
 
 
 
-[Sxbundle,Sybundle,Sx,Sy]=capillary_lens_xy(ny_bundle,bundlespacing,capillary_diameter,channel_diameter,nx_capillary,sigma_position);
+[Sxbundle,Sybundle,Sx,Sy]= capillary_lens_xy(ny_bundle,bundlespacing,capillary_diameter,channel_diameter,nx_capillary,sigma_position);
 
 
 
@@ -68,8 +68,8 @@ Syrot=Sx*sin(alpha)+Sy*cos(alpha);
 Sx=Sxrot;
 Sy=Syrot;
 
-maxxy=max([max2(Sx) max2(Sy)]);
-minxy=min([min2(Sx) min2(Sy)]);
+maxxy=max([max(Sx(:)) max(Sy(:))]);
+minxy=min([min(Sx(:)) min(Sy(:))]);
 
 
 
@@ -86,7 +86,7 @@ Sfull=full(Ssparse);
 % Add intensity fluctuations
 
 Sfull=full(Ssparse);
-maksimum=max2(Sfull);
+maksimum=max(Sfull(:));
 szum=-maksimum*abs(randn(size(Sfull)))*sigma_intensity;
 szum=szum;
 Sfull=Sfull+szum.*(Sfull>0);

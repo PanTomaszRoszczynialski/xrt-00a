@@ -20,11 +20,11 @@ function [xi,yi,xci,yci] = capillary_lens_xy(nY_bundle,bundlespacing,capillary_d
                 (capillary_diameter-channel_diameter);
             
             
-            [in_lens]=isinhexagon(y0,x0,bundlespacing*nypol_bundle);
+            [in_lens] = isinhexagon(y0,x0,bundlespacing*nypol_bundle);
            
             
             if in_lens
-                [xci0,yci0]=capillary_bundle_xy(x0,y0,... 
+                [xci0,yci0]= capillary_bundle_xy(x0,y0,... 
                     capillary_diameter,channel_diameter,... 
                     nx_capillary,sigma);
                 index=index+1;

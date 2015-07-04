@@ -1,0 +1,24 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+Kolo1	.\ks\Kolo1.m	/^function i = Kolo1(r1,r2,value)$/;"	f
+Kolo1Gaus	.\ks\Kolo1Gaus.m	/^function i = Kolo1Gaus(r1,r2,value)$/;"	f
+Kolo3poprawka	.\ks\Kolo3poprawka.m	/^function angleData = Kolo3poprawka(n,r1,r2,value,chaos,gauss,sigmaintens,sigmareject)$/;"	f
+capillary_bundle_xy	.\capillary_bundle_xy.m	/^function [xci,yci] = capillary_bundle_xy(xbundle,ybundle,capillary_diameter,channel_diameter,nx_capillary,sigma)$/;"	f
+capillary_circle	.\capillary_circle.m	/^function [z]=capillary_circle(X,Y,x0,y0,capillary_diameter,channel_diameter)$/;"	f
+capillary_circle	.\capillary_gauss.m	/^function [z]=capillary_circle(X,Y,x0,y0,capillary_diameter,channel_diameter)$/;"	f
+capillary_lens_xy	.\capillary_lens_xy.m	/^function [xi,yi,xci,yci] = capillary_lens_xy(nY_bundle,bundlespacing,capillary_diameter,channel_diameter,nx_capillary,sigma)$/;"	f
+conv_fft2	.\conv_fft2.m	/^function y = conv_fft2(x, m, shape)$/;"	f
+exindex	.\exindex.m	/^function arr = exindex(arr, varargin)$/;"	f
+extend	.\exindex.m	/^function [ind, tofill] = extend(ind, rule, s)$/;"	f
+getinputs	.\exindex.m	/^function [exindices, rules, nd, sz] = getinputs(arr, varargin)$/;"	f
+isinhexagon	.\isinhexagon.m	/^function [ inhexagon ] = isinhexagon(x,y,d)$/;"	f
+matrixResize	.\ks\matrixResize.m	/^function result = matrixResize(image, new_size)$/;"	f
+mvnpdf	.\ks\mvnpdf.m	/^function pdf = mvnpdf(x,mu,sigma)$/;"	f
+nearestpow2	.\ks\nearestpow2.m	/^function y = nearestpow2(x)$/;"	f
+odd	.\odd.m	/^function [out] = odd(number)$/;"	f
+padarrays	.\conv_fft2.m	/^function [x, m, fsize] = padarrays(x, m, shape)$/;"	f
+skryptPoprawka2	.\ks\skryptPoprawka2.m	/^function b = skryptPoprawka2(nhex,nkap,r1,r2,chaos,gauss)$/;"	f
