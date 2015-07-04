@@ -8,7 +8,7 @@ from random import random as rand
 
 class HexStructure(object):
     def __init__(self, capillary_diameter = 0.0025,\
-                nx_capillary = 11,\
+                nx_capillary = 9,\
                 ny_bundle = 7):
         # Outer diameter (touching)
         self.capillary_diameter = capillary_diameter
@@ -85,8 +85,8 @@ class HexStructure(object):
 #            print str(ix)
             for iy in range(-2*nypol_bundle, 2*nypol_bundle +1):
 
-                x0 = np.sqrt(3)/2.0 * self.bundlespacing *\
-                        iy + 0 * sigma_position * (rand()-0.5) *\
+                x0 = np.sqrt(3)/2.0 * self.bundlespacing * iy +\
+                        0 * sigma_position * (rand()-0.5) *\
                         (self.capillary_diameter - self.channel_diameter)
 
                 y0 = self.bundlespacing * ix + \
@@ -116,9 +116,9 @@ class HexStructure(object):
     def isInHexagon(self, y0, x0, d):
         tol = 1.001
 
-        war1 = (abs(y0) <= d * tol * np.sqrt(3)/2)
-        war2 = (abs(np.sqrt(3)/2 * x0 + 1/2. * y0 <= tol * d * np.sqrt(3)/2))
-        war3 = (abs(np.sqrt(3)/2 * x0 - 1/2. * y0 <= tol * d * np.sqrt(3)/2))
+        war1 = abs(y0) <= d * tol * np.sqrt(3)/2
+        war2 = abs(np.sqrt(3)/2* x0 + 1/2. * y0) <= tol * d * np.sqrt(3)/2
+        war3 = abs(np.sqrt(3)/2* x0 - 1/2. * y0) <= tol * d * np.sqrt(3)/2
 
         return war1 and war2 and war3
 
@@ -130,5 +130,5 @@ class HexStructure(object):
 
 if __name__ == '__main__':
 
-    hello = HexStructure()
+    hello = HexStructure(nx_capillary=14, ny_bundle=13 )
     hello.test()
