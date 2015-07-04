@@ -3,6 +3,7 @@ First try to recreate matlab code generating
 lens' hexagonal structure
 """
 import numpy as np
+import matplotlib.pyplot as plt
 from random import random as rand
 
 class HexStructure(object):
@@ -58,7 +59,7 @@ class HexStructure(object):
                     sigma * (rand() - 0.5) * \
                     (self.capillary_diameter - self.channel_diameter)
 
-                in_bundle = self.isInHexagon(x0,y0,\
+                in_bundle = self.isInHexagon(y0,x0,\
                                 self.capillary_diameter*nxpol_capillary)
 
                 if in_bundle:
@@ -81,7 +82,7 @@ class HexStructure(object):
 
         # Add + 1 because range is 0 based...
         for ix in range(-2*nypol_bundle, 2*nypol_bundle +1):
-            print str(ix)
+#            print str(ix)
             for iy in range(-2*nypol_bundle, 2*nypol_bundle +1):
 
                 x0 = np.sqrt(3)/2.0 * self.bundlespacing *\
@@ -97,13 +98,14 @@ class HexStructure(object):
                                             nypol_bundle)
 
                 if in_lens:
-                    print x0, y0
+                    #print x0, y0
                     xci0, yci0 = self.capillary_bundle_xy(x0, y0,\
                                     sigma_position)
                     xci.append(xci0)
                     yci.append(yci0)
                     xi.append(x0)
                     yi.append(y0)
+
         self.xi = xi
         self.yi = yi
         self.xci = xci
@@ -115,12 +117,15 @@ class HexStructure(object):
         tol = 1.001
 
         war1 = (abs(y0) <= d * tol * np.sqrt(3)/2)
-        war2 = (abs(np.sqrt(3)/2 * x0 + 1/2 * y0 <= tol * d * np.sqrt(3)/2))
-        war3 = (abs(np.sqrt(3)/2 * x0 - 1/2 * y0 <= tol * d * np.sqrt(3)/2))
+        war2 = (abs(np.sqrt(3)/2 * x0 + 1/2. * y0 <= tol * d * np.sqrt(3)/2))
+        war3 = (abs(np.sqrt(3)/2 * x0 - 1/2. * y0 <= tol * d * np.sqrt(3)/2))
 
         return war1 and war2 and war3
+
     def test(self):
         print len(self.xci)
+        plt.plot(self.xi, self.yi,'ko')
+        plt.show()
 
 
 if __name__ == '__main__':
