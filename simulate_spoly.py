@@ -67,8 +67,6 @@ class HexStructure(object):
                     yci.append(ybundle + y0)
         return xci, yci
 
-
-
     def capillary_lens_xy(self, sigma_position = 0.1):
 
         # This has to be an integer, do not add dots
@@ -101,8 +99,11 @@ class HexStructure(object):
                     #print x0, y0
                     xci0, yci0 = self.capillary_bundle_xy(x0, y0,\
                                     sigma_position)
-                    xci.append(xci0)
-                    yci.append(yci0)
+                    # Appending creates a list of lists, but we want
+                    # just a single vector, joining lists is simply
+                    # adding
+                    xci = xci + xci0
+                    yci = yci + yci0
                     xi.append(x0)
                     yi.append(y0)
 
@@ -110,8 +111,6 @@ class HexStructure(object):
         self.yi = yi
         self.xci = xci
         self.yci = yci
-        return xi, yi, xci, yci
-
 
     def isInHexagon(self, y0, x0, d):
         tol = 1.001
@@ -124,11 +123,11 @@ class HexStructure(object):
 
     def test(self):
         print len(self.xci)
-        plt.plot(self.xi, self.yi,'ko')
+        plt.plot(self.xci, self.yci,'ko')
         plt.show()
 
 
 if __name__ == '__main__':
 
-    hello = HexStructure(nx_capillary=14, ny_bundle=13 )
+    hello = HexStructure(nx_capillary=17, ny_bundle=5 )
     hello.test()

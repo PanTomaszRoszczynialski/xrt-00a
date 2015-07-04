@@ -143,7 +143,7 @@ h2	.\LensPolynomial.py	/^    h2 = h1 * Dout\/Din$/;"	v
 h2	.\solverTesting.py	/^    h2 = h1 * Dout\/Din$/;"	v
 hMax	.\LensPolynomial.py	/^    hMax = 4.$/;"	v
 hMax	.\realisticPolycapillary.py	/^hMax =  4.0     # maximum possible distance from y = 0 axis$/;"	v
-hello	.\simulate_spoly.py	/^    hello = HexStructure()$/;"	v	class:HexStructure
+hello	.\simulate_spoly.py	/^    hello = HexStructure(nx_capillary=14, ny_bundle=13 )$/;"	v
 hm	.\solverTesting.py	/^    hm = 4. * h1\/(Din\/2.)$/;"	v
 io	.\simplfiedMonoCapillary.py	/^import scipy.io$/;"	i
 io	.\simplfiedPolyCapillary.py	/^import scipy.io$/;"	i
@@ -200,6 +200,7 @@ matplotlib	.\myCapillary0A.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	.\realisticPolycapillary.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	.\simplfiedMonoCapillary.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	.\simplfiedPolyCapillary.py	/^import matplotlib.pyplot as plt$/;"	i
+matplotlib	.\simulate_spoly.py	/^import matplotlib.pyplot as plt$/;"	i
 matplotlib	.\solverTesting.py	/^import matplotlib.pyplot as plt$/;"	i
 matrixResize	.\hex_shape_m\ks\matrixResize.m	/^function result = matrixResize(image, new_size)$/;"	f
 max_plots	.\simplfiedMonoCapillary.py	/^max_plots = 0                   # for imaging different position at once| 0=off$/;"	v
@@ -255,6 +256,7 @@ plt	.\myCapillary0A.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	.\realisticPolycapillary.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	.\simplfiedMonoCapillary.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	.\simplfiedPolyCapillary.py	/^import matplotlib.pyplot as plt$/;"	i
+plt	.\simulate_spoly.py	/^import matplotlib.pyplot as plt$/;"	i
 plt	.\solverTesting.py	/^import matplotlib.pyplot as plt$/;"	i
 processes	.\SourceViewer.py	/^processes = 8$/;"	v
 processes	.\realisticPolycapillary.py	/^processes = 8$/;"	v
@@ -369,6 +371,7 @@ shape_coeffs	.\LensPolynomial.py	/^def shape_coeffs(x):$/;"	f
 shape_coeffs	.\solverTesting.py	/^def shape_coeffs(x):$/;"	f
 skryptPoprawka2	.\hex_shape_m\ks\skryptPoprawka2.m	/^function b = skryptPoprawka2(nhex,nkap,r1,r2,chaos,gauss)$/;"	f
 step	.\SourceViewer.py	/^step    = 4     # [mm] | screen step size$/;"	v
+test	.\simulate_spoly.py	/^    def test(self):$/;"	m	class:HexStructure
 wall	.\StraightCapillary.py	/^wall = 0.02$/;"	v
 wall	.\myCapillary0A.py	/^wall = 0.02$/;"	v
 wall	.\realisticPolycapillary.py	/^wall=   0.0005 * 4 # |*50 make wider walls for structure visibility$/;"	v
