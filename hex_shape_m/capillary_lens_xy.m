@@ -8,7 +8,7 @@ function [xi,yi,xci,yci] = capillary_lens_xy(nY_bundle,bundlespacing,capillary_d
 
     index=0;
     for ix=-2*nypol_bundle:2*nypol_bundle
-        ix
+        %ix
         for iy=-2*nypol_bundle:2*nypol_bundle       
      
             x0 = sqrt(3)/2*bundlespacing*iy+0*sigma* ... 
@@ -32,6 +32,8 @@ function [xi,yi,xci,yci] = capillary_lens_xy(nY_bundle,bundlespacing,capillary_d
                 yi(index)=y0;
                 xci=[xci xci0];
                 yci=[yci yci0];
+                fprintf(['in lens:\nx = ' num2str(x0) '\n'...
+                        'y = ' num2str(y0) '\n'])
             end
         end
     end

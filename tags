@@ -143,11 +143,11 @@ h2	.\LensPolynomial.py	/^    h2 = h1 * Dout\/Din$/;"	v
 h2	.\solverTesting.py	/^    h2 = h1 * Dout\/Din$/;"	v
 hMax	.\LensPolynomial.py	/^    hMax = 4.$/;"	v
 hMax	.\realisticPolycapillary.py	/^hMax =  4.0     # maximum possible distance from y = 0 axis$/;"	v
-hello	.\simulate_spoly.py	/^    hello = HexStructure(nx_capillary=14, ny_bundle=13 )$/;"	v
+hello	.\simulate_spoly.py	/^    hello = HexStructure(nx_capillary=17, ny_bundle=5 )$/;"	v
 hm	.\solverTesting.py	/^    hm = 4. * h1\/(Din\/2.)$/;"	v
 io	.\simplfiedMonoCapillary.py	/^import scipy.io$/;"	i
 io	.\simplfiedPolyCapillary.py	/^import scipy.io$/;"	i
-isInHexagon	.\simulate_spoly.py	/^    def isInHexagon(self, y0, x0, d):$/;"	m	class:HexStructure
+isInHexagon	.\simulate_spoly.py	/^    def isInHexagon(self, x, y, d):$/;"	m	class:HexStructure
 isinhexagon	.\hex_shape_m\isinhexagon.m	/^function [ inhexagon ] = isinhexagon(x,y,d)$/;"	f
 layers	.\StraightCapillary.py	/^layers = 10 # number of hexagonal layers$/;"	v
 layers	.\myCapillary0A.py	/^layers = 10 # number of hexagonal layers$/;"	v

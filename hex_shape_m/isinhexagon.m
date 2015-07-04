@@ -9,5 +9,13 @@ war1 = (abs(y) <= d*tol*sqrt(3)/2);
 war2 = (abs(sqrt(3)/2*x+1/2*y)) <= tol*d*sqrt(3)/2;
 war3 = (abs(sqrt(3)/2*x-1/2*y)) <= tol*d*sqrt(3)/2;
 
+if (x==0 & y>0.07)
+    x
+    y
+    war1
+    war2
+    war3
+end
+
 inhexagon=war1&war2&war3;
 

@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 from random import random as rand
 
 class HexStructure(object):
-    def __init__(self, capillary_diameter = 0.0025,\
+    def __init__(self, capillary_diameter = 0.01,\
                 nx_capillary = 9,\
                 ny_bundle = 7):
         # Outer diameter (touching)
@@ -39,7 +39,7 @@ class HexStructure(object):
         self.capillary_lens_xy()
 
     def capillary_bundle_xy(self, xbundle, ybundle, sigma):
-        index = 0
+        #index = 0
         nxpol_capillary = (self.nx_capillary - 1)/2
 
         atemp = self.capillary_diameter * nxpol_capillary
@@ -51,7 +51,7 @@ class HexStructure(object):
             for iy in range(-2*nxpol_capillary, 2*nxpol_capillary +1):
 
                 x0 = self.capillary_diameter * ix +\
-                    self.capillary_diameter/2*iy + \
+                    self.capillary_diameter/2.*iy + \
                     sigma * (rand() - 0.5) * \
                     (self.capillary_diameter - self.channel_diameter)
 
@@ -59,7 +59,7 @@ class HexStructure(object):
                     sigma * (rand() - 0.5) * \
                     (self.capillary_diameter - self.channel_diameter)
 
-                in_bundle = self.isInHexagon(y0,x0,\
+                in_bundle = self.isInHexagon(x0,y0,\
                                 self.capillary_diameter*nxpol_capillary)
 
                 if in_bundle:
@@ -80,18 +80,19 @@ class HexStructure(object):
 
         # Add + 1 because range is 0 based...
         for ix in range(-2*nypol_bundle, 2*nypol_bundle +1):
-#            print str(ix)
+            #print str(ix)
             for iy in range(-2*nypol_bundle, 2*nypol_bundle +1):
 
                 x0 = np.sqrt(3)/2.0 * self.bundlespacing * iy +\
                         0 * sigma_position * (rand()-0.5) *\
                         (self.capillary_diameter - self.channel_diameter)
 
-                y0 = self.bundlespacing * ix + \
-                        self.bundlespacing * iy / 2.0 + \
+                y0 = ix * self.bundlespacing + \
+                        iy * self.bundlespacing / 2.0 + \
                         0 * sigma_position * (rand()-0.5) *\
                         (self.capillary_diameter - self.channel_diameter)
 
+                # NOTE - look out for order of arguments (x and y)
                 in_lens = self.isInHexagon(y0, x0, self.bundlespacing *\
                                             nypol_bundle)
 
@@ -99,35 +100,39 @@ class HexStructure(object):
                     #print x0, y0
                     xci0, yci0 = self.capillary_bundle_xy(x0, y0,\
                                     sigma_position)
-                    # Appending creates a list of lists, but we want
-                    # just a single vector, joining lists is simply
-                    # adding
-                    xci = xci + xci0
-                    yci = yci + yci0
                     xi.append(x0)
                     yi.append(y0)
+                    # Appending creates a list of lists, we want
+                    # just a single vectors of capillaries' positions (?)
+                    # Joining lists is simply adding them
+                    xci = xci + xci0
+                    yci = yci + yci0
 
         self.xi = xi
         self.yi = yi
         self.xci = xci
         self.yci = yci
 
-    def isInHexagon(self, y0, x0, d):
+    def isInHexagon(self, x, y, d):
         tol = 1.001
 
-        war1 = abs(y0) <= d * tol * np.sqrt(3)/2
-        war2 = abs(np.sqrt(3)/2* x0 + 1/2. * y0) <= tol * d * np.sqrt(3)/2
-        war3 = abs(np.sqrt(3)/2* x0 - 1/2. * y0) <= tol * d * np.sqrt(3)/2
+        war1 = abs(y) <= d * tol * np.sqrt(3)/2
+        war2 = abs(np.sqrt(3)/2* x + 1/2. * y) <= tol * d * np.sqrt(3)/2
+        war3 = abs(np.sqrt(3)/2* x - 1/2. * y) <= tol * d * np.sqrt(3)/2
 
         return war1 and war2 and war3
 
     def test(self):
+        # This should print the total number of capillaries
         print len(self.xci)
         plt.plot(self.xci, self.yci,'ko')
+        #plt.xlim(-.1,.1)
+        #plt.ylim(-.1,.1)
+        plt.savefig('entrance_stucture_pointplot.png')
         plt.show()
 
 
 if __name__ == '__main__':
 
-    hello = HexStructure(nx_capillary=17, ny_bundle=5 )
+    hello = HexStructure(nx_capillary=17, ny_bundle=7)
     hello.test()
