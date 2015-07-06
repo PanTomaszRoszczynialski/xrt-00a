@@ -100,10 +100,11 @@ class HexStructure(object):
                     #print x0, y0
                     xci0, yci0 = self.capillary_bundle_xy(x0, y0,\
                                     sigma_position)
+                    # Appending single values simply extends the list
                     xi.append(x0)
                     yi.append(y0)
-                    # Appending creates a list of lists, we want
-                    # just a single vectors of capillaries' positions (?)
+                    # Appending lists creates a list of lists, we want
+                    # just a 1D vectors of capillaries' positions (?)
                     # Joining lists is simply adding them
                     xci = xci + xci0
                     yci = yci + yci0
@@ -121,6 +122,13 @@ class HexStructure(object):
         war3 = abs(np.sqrt(3)/2* x - 1/2. * y) <= tol * d * np.sqrt(3)/2
 
         return war1 and war2 and war3
+
+    # Generator to iterate over the whole structure
+    def genPolars(self):
+        for x, y in zip(self.xci, self.yci):
+            r = np.sqrt(x**2 + y**2)
+            phi = np.arctan2(y,x)
+            yield r, phi
 
     def test(self):
         # This should print the total number of capillaries

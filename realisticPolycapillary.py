@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 
 from PlotMono import plot2D
 import screening as scr
+from simulate_spoly import HexStructure
+import multiprocessing as mp
 
 import xrt.backends.raycing as raycing
 import xrt.backends.raycing.sources as rs
@@ -20,12 +22,21 @@ import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 from LensPolynomial import getPolyCoeffs
 
-# ray traycing settings    
+# ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 mGold   = rm.Material('Au', rho=19.3)
 repeats = 5e4           # number of ray traycing iterations
+processes = 88          # number of processes used
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
+
+# Lower expectations for home computers
+if mp.cpu_count() <= 2:
+    repeats = 100
+    processes = 1
+    print "Running on a slow machine"
+else:
+    print "Running on a fast machine"
 
 # Constant capillary/setup parameters [mm]
 y0 =    0.      # relative light source position
@@ -37,11 +48,11 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.01     # lens radius
+rIn =   0.05     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall=   0.0005 * 4 # |*50 make wider walls for structure visibility
-processes = 8
+wall =   0.025 # |*50 make wider walls for structure visibility
+
 
 # Pinhole parameters
 ypin    = 155.0     # Optical path position
@@ -150,30 +161,25 @@ def build_beamline(nrays=1e4):
 
     # [1] - Lens
     beamLine.capillaries = []
-    layers = 0,42
     beamLine.toPlot = []
-    for n in range(layers[0], layers[1]):
-        if n > 0:
-            ms = range(n)
-            i6 = range(6)
-        else: # this is for the middle one
-            ms = 0,
-            i6 = 0,
-        beamLine.toPlot.append(len(beamLine.capillaries))
-        for i in i6:
-            for m in ms:
-                # this seems like h_in
-                bonus = 2*rIn * round(n/4)
-                x = 2*(rIn + wall) * (n**2 + m**2 - n*m)**0.5
-                x += bonus
-                roll1 = -np.arctan2(np.sqrt(3)*m, 2*n - m)
-                roll = roll1 + i*np.pi/3.
-                p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
-                capillary = BentCapillary(beamLine, 'BentCapillary',
-                        [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
-                        rIn=rIn, rOut=rOut, rMax=rMax, material=mGlass,
-                        curveCoeffs=p, h_in=x)
-                beamLine.capillaries.append(capillary)
+    # TODO - replace this mechanism with the HexStructure class
+    entrance_Structure = HexStructure(nx_capillary=9, \
+                                    ny_bundle=3, \
+                                    capillary_diameter=2*(rIn + wall))
+    entrance_Structure.test()
+    for r, phi in entrance_Structure.genPolars():
+        roll = phi
+        x = r
+
+        p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
+        capillary = BentCapillary(beamLine, 'BentCapillary',
+                [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
+                rIn=rIn, rOut=rOut, rMax=rMax, material=mGlass,
+                curveCoeffs=p, h_in=x)
+        beamLine.capillaries.append(capillary)
+        if abs(phi - np.pi/3) < 0.05:
+            beamLine.toPlot.append(len(beamLine.capillaries))
+
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
@@ -189,7 +195,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    scr.createScreens(beamLine,[y2, yf + yf-y2], 12)
+    scr.createScreens(beamLine,[y2, yf + yf-y2], 4)
     # Set screen used before the pinhole
     scr.setUsed(beamLine, [0, ypin])
     # Set used after pinhole as well
@@ -271,7 +277,8 @@ def main():
     plot.baseName = 'Entrance_structure'
     plot.saveName = 'png/' + plot.baseName + '.png'
     plots.append(plot)
-    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=8)
+    xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine,\
+            processes=processes)
 
 #    return beamLine
 
