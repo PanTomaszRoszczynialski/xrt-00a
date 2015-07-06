@@ -48,10 +48,10 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.05     # capillary radius
+rIn =   0.01     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall =   0.025 # |*50 make wider walls for structure visibility
+wall =   0.005 # |*50 make wider walls for structure visibility
 
 
 # Pinhole parameters
@@ -162,11 +162,16 @@ def build_beamline(nrays=1e4):
     # [1] - Lens
     beamLine.capillaries = []
     beamLine.toPlot = []
-    # TODO - replace this mechanism with the HexStructure class
-    entrance_Structure = HexStructure(nx_capillary=9, \
-                                    ny_bundle=3, \
+
+    # Create object with (x,y) points describing hexagonal structure of polycapillary optics
+    entrance_Structure = HexStructure(nx_capillary=13, \
+                                    ny_bundle=10, \
                                     capillary_diameter=2*(rIn + wall))
+
+    # Show obtained structure and save as png
     entrance_Structure.test()
+
+    # Iterate through polar coordinates of those capillaries provided by a pythonic (?) generator
     for r, phi in entrance_Structure.genPolars():
         roll = phi
         x = r
@@ -177,6 +182,10 @@ def build_beamline(nrays=1e4):
                 rIn=rIn, rOut=rOut, rMax=rMax, material=mGlass,
                 curveCoeffs=p, h_in=x)
         beamLine.capillaries.append(capillary)
+
+        # Save capillaries shown on z=0 coss-section ? Z = 0 is no longer special
+        # and as it is clear neither is phi = pi/3, so some other idea for crosssection plot
+        # is needed TODO
         if abs(phi - np.pi/3) < 0.05:
             beamLine.toPlot.append(len(beamLine.capillaries))
 
