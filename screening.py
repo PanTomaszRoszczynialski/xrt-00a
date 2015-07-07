@@ -68,7 +68,7 @@ def createPlots(beamLine):
         if beamLine.isUsed[it]:
 
             name = 'Screen_at_'+str(int(it))
-            print 'Creating plot' + name
+            print 'Creating plot ' + name
 
             # Plot Construction
             plot = xrtp.XYCPlot(name, (1,3),

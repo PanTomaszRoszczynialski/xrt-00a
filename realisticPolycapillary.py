@@ -26,7 +26,7 @@ from LensPolynomial import getPolyCoeffs
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 mGold   = rm.Material('Au', rho=19.3)
 repeats = 5e4           # number of ray traycing iterations
-processes = 88          # number of processes used
+processes = 8          # number of processes used
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
 
@@ -164,7 +164,7 @@ def build_beamline(nrays=1e4):
     beamLine.toPlot = []
 
     # Create object with (x,y) points describing hexagonal structure of polycapillary optics
-    entrance_Structure = HexStructure(nx_capillary=13, \
+    entrance_Structure = HexStructure(nx_capillary=15, \
                                     ny_bundle=10, \
                                     capillary_diameter=2*(rIn + wall))
 
@@ -186,7 +186,9 @@ def build_beamline(nrays=1e4):
         # Save capillaries shown on z=0 coss-section ? Z = 0 is no longer special
         # and as it is clear neither is phi = pi/3, so some other idea for crosssection plot
         # is needed TODO
-        if abs(phi - np.pi/3) < 0.05:
+        # TEST quick polar to cartesian re-transformation
+        x_cap = r * np.cos(phi)
+        if abs(x_cap) < 0.005:
             beamLine.toPlot.append(len(beamLine.capillaries))
 
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
