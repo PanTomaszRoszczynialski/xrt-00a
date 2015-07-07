@@ -26,7 +26,7 @@ from LensPolynomial import getPolyCoeffs
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 mGold   = rm.Material('Au', rho=19.3)
 repeats = 5e4           # number of ray traycing iterations
-processes = 8          # number of processes used
+processes = 8           # number of processes used
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
 
@@ -48,7 +48,7 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.01     # capillary radius
+rIn =   0.006     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall =   0.005 # |*50 make wider walls for structure visibility
@@ -62,12 +62,12 @@ rpin    = rIn / 2.0 # Pinhole radius [mm]
 # Source parameters
 distx       = 'flat'
 dx          = 0.1
-distxprime  = 'normal'
+distxprime  = 'flat'
 dxprime     = 0.1
 # z-direction
 distz       = 'flat'
 dz          = 0.1
-distzprime  = 'normal'
+distzprime  = 'flat'
 dzprime     = 0.1
 
 class BentCapillary(roe.OE):
@@ -186,7 +186,7 @@ def build_beamline(nrays=1e4):
         # Save capillaries shown on z=0 coss-section ? Z = 0 is no longer special
         # and as it is clear neither is phi = pi/3, so some other idea for crosssection plot
         # is needed TODO
-        # TEST quick polar to cartesian re-transformation
+        # DEBUG quick polar to cartesian re-transformation
         x_cap = r * np.cos(phi)
         if abs(x_cap) < 0.005:
             beamLine.toPlot.append(len(beamLine.capillaries))
@@ -252,7 +252,7 @@ def run_process(beamLine, shineOnly1stSource=False):
     prePinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
             [0, ypin])
 
-    # [2]
+    # [2] - TODO - insert multiple pinholes mechanism (just like at [1])
     pinholeGlobal, pinholeLocal = beamLine.pinhole.multiple_reflect(\
             beamCapillaryGlobalTotal, maxReflections=5)
     postPinhole = scr.exposeScreens(beamLine, pinholeGlobal,\
@@ -291,6 +291,7 @@ def main():
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine,\
             processes=processes)
 
+    print 'Number of used capillaries: ', len(beamLine.capillaries)
 #    return beamLine
 
 if __name__ == '__main__':

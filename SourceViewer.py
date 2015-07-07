@@ -21,8 +21,8 @@ import xrt.backends.raycing.screens as rsc
 repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 min_d   = 0     # [mm] | source - screen distance
-step    = 4     # [mm] | screen step size
-N_      = 11    # number of step to take
+step    = 10    # [mm] | screen step size
+N_      = 5     # number of step to take
 
 xLimits = [-6.05, 6.05] # Plot limits
 zLimits = xLimits       # axis square
@@ -36,12 +36,12 @@ bl_xzMax    = 0.
 # x-direction parameters
 distx       = 'flat'
 dx          = 0.1
-distxprime  = 'normal'
+distxprime  = 'flat'
 dxprime     = 0.1
 # z-direction
 distz       = 'flat'
 dz          = 0.1
-distzprime  = 'normal'
+distzprime  = 'flat'
 dzprime     = 0.1
 
 def build_beamline(nrays=1000):
@@ -95,7 +95,10 @@ def main():
             caxis='category', beamState='screen_{0:02d}'.format(it),
             title='Distance from source = {0:02d} [mm]'.format(c_dist))
         plot.baseName = 'dist_' + str(1000 + c_dist)
-        plot.saveName = plot.baseName + '.png'
+        plot.saveName = 'png/source/' + plot.baseName + '.png'
+	# Also save pickle for lens' entrance position to calculate transmission
+	if c_dist == step * (N_ - 1):
+		plot.persistentName = 'pickle/source/' + plot.baseName + '.pickle'
         plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine, processes=processes)
 
