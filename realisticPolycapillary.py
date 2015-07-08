@@ -51,7 +51,7 @@ Dmax =  2*hMax  # max diameter
 rIn =   0.006     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall =   0.005 # |*50 make wider walls for structure visibility
+wall =   0.001 # |*50 make wider walls for structure visibility
 
 
 # Pinhole parameters
@@ -206,7 +206,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    scr.createScreens(beamLine,[y2, yf + yf-y2], 4)
+    scr.createScreens(beamLine,[y2, yf + yf-y2], 14)
     # Set screen used before the pinhole
     scr.setUsed(beamLine, [0, ypin])
     # Set used after pinhole as well
