@@ -53,6 +53,9 @@ rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
+# Hex structure parameters
+nx_capillary = 19
+ny_bundle = 15
 
 # Pinhole parameters
 ypin    = 155.0     # Optical path position
@@ -159,13 +162,13 @@ def build_beamline(nrays=1e4):
     # Insert screen at the lens entrance here
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
-    # [1] - Lens
+    # [1] - Lens related containers
     beamLine.capillaries = []
     beamLine.toPlot = []
 
     # Create object with (x,y) points describing hexagonal structure of polycapillary optics
-    entrance_Structure = HexStructure(nx_capillary=15, \
-                                    ny_bundle=10, \
+    entrance_Structure = HexStructure(nx_capillary=nx_capillary, \
+                                    ny_bundle=ny_bundle, \
                                     capillary_diameter=2*(rIn + wall))
 
     # Show obtained structure and save as png
@@ -206,7 +209,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    scr.createScreens(beamLine,[y2, yf + yf-y2], 14)
+    scr.createScreens(beamLine,[y2, yf + yf-y2], 3)
     # Set screen used before the pinhole
     scr.setUsed(beamLine, [0, ypin])
     # Set used after pinhole as well
@@ -225,7 +228,7 @@ def run_process(beamLine, shineOnly1stSource=False):
     # Start collecting capillaries' light
     beamCapillaryGlobalTotal = None
     for i, capillary in enumerate(beamLine.capillaries):
-        # Get both type of coordinates (global,local)
+        # Get both types of coordinates (global,local)
         beamCapillaryGlobal, beamCapillaryLocalN =\
             capillary.multiple_reflect(beamSource, maxReflections=nRefl)
         # Not sure what is this for 
