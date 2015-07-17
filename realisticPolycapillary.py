@@ -58,9 +58,9 @@ nx_capillary = 19
 ny_bundle = 15
 
 # Pinhole parameters
-ypin    = 155.0     # Optical path position
-pinlen  = 0.01      # Length 
-rpin    = rIn / 2.0 # Pinhole radius [mm]
+pinlen  = 0.005                 # Length 
+rpin    = rIn / 2.0             # Pinhole radius [mm]
+ypin    = 155.0 - pinlen        # Optical path position
 
 # Source parameters
 distx       = 'flat'
@@ -198,14 +198,29 @@ def build_beamline(nrays=1e4):
 
     beamLine.exitScreen = rsc.Screen(beamLine,'ExitScreen', (0,y2,0))
 
-    # Insert very short and very thin golden capillary 
-    # into the focus, acting as a proper image sharpening pinhole
+    # Pinhole structure related container(s)
+    beamLine.pinholes = []
+    
+    # Insert very short and very thin golden and lined capillaries 
+    # into the focus, acting as a proper one way image sharpening pinhole
+
+    # Straight-Bent capillary polynomial factors:
     p_pin = [0, 0, 0, 0, 0, 0]
-    beamLine.pinhole = BentCapillary(beamLine, 'PinHole',
-                    [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
-                    order=8, rIn=rpin, rOut=rpin, rMax=rpin,
-                    material=mGold,
-                    curveCoeffs=p_pin, h_in=0)
+
+    # Focus size radius estimation
+    focus_r = 0.09  # ? 
+
+    for it in np.linspace(-1,1,11):
+        x_in = it * focus_r
+        pinhole = BentCapillary(beamLine, 'PinHole',
+                        [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
+                        order=8, rIn=rpin, rOut=rpin, rMax=rpin,
+                        material=mGold,
+                        curveCoeffs=p_pin, h_in=x_in)
+        beamLine.pinholes.append(pinhole)
+
+    # Helpful print
+    print 'Number of pinholes: ' + str(len(beamLine.pinholes))
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
@@ -255,10 +270,22 @@ def run_process(beamLine, shineOnly1stSource=False):
     prePinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
             [0, ypin])
 
-    # [2] - TODO - insert multiple pinholes mechanism (just like at [1])
-    pinholeGlobal, pinholeLocal = beamLine.pinhole.multiple_reflect(\
-            beamCapillaryGlobalTotal, maxReflections=5)
-    postPinhole = scr.exposeScreens(beamLine, pinholeGlobal,\
+    # [2] - Light hits pinholes
+    pinholeGlobalTotal = None
+    for i, pinhole in enumerate(beamLine.pinholes):
+        pinholeGlobal, pinholeLocal = pinhole.multiple_reflect(\
+                beamCapillaryGlobalTotal, maxReflections=5)
+
+        if pinholeGlobalTotal is None:
+            pinholeGlobalTotal = pinholeGlobal
+        else:
+            good = (( pinholeGlobal.state == 1 ) |
+                    ( pinholeGlobal.state == 3))
+            # Accumulate photons at global beam
+            rs.copy_beam(pinholeGlobalTotal, pinholeGlobal, good, includeState=True)
+
+    # Expose screens to post pinholes beam
+    postPinhole = scr.exposeScreens(beamLine, pinholeGlobalTotal,\
             [ypin, 200])
 
     # [2] - bypass the pinhole
@@ -267,8 +294,8 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # 
     outDict.update(prePinhole)
-#    outDict.update(postPinhole)
-    outDict.update(postNoPinhole)
+    outDict.update(postPinhole)
+#    outDict.update(postNoPinhole)
 
     return outDict
 
@@ -279,7 +306,7 @@ def main():
     plot2D(beamLine)
 
     # Create xrtp.Plots in outside module  
-    plots = scr.createPlots(beamLine)
+    plots = scr.createPlots(beamLine, save=True)
     # FIXME: Manually add plot showing entrance structure
     limits = [ - Din/1.9, Din/1.9 ]
     plot = xrtp.XYCPlot(
@@ -290,6 +317,7 @@ def main():
     plot.title = 'Entrance structure'
     plot.baseName = 'Entrance_structure'
     plot.saveName = 'png/' + plot.baseName + '.png'
+    plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
     plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine,\
             processes=processes)

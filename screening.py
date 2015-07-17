@@ -58,7 +58,7 @@ def exposeScreens(beamLine, beamToBeSeen, _range):
     return partDict
 
 # Prepare plots for raycing
-def createPlots(beamLine):
+def createPlots(beamLine, save=False):
     xLimits = [-beamLine.Dout/1.9, beamLine.Dout/1.9]
     zLimits = xLimits
     cLimits = [0, beamLine.nRefl]
@@ -85,7 +85,11 @@ def createPlots(beamLine):
 
             plot.baseName = name
             plot.saveName = 'png/' + plot.baseName + '.png'
-#            plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
+
+	    # Save as pickles for more advanced analysis
+	    if save:
+		    plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
+
             plots.append(plot)
 
     return plots
