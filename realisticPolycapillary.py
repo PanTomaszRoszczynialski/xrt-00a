@@ -48,17 +48,17 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.006     # capillary radius
+rIn =   0.1     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
-wall =   0.001 # |*50 make wider walls for structure visibility
+wall =   0.01   # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 19
-ny_bundle = 15
+nx_capillary = 9
+ny_bundle =3 
 
 # Pinhole parameters
-pinlen  = 0.005                 # Length 
+pinlen  = 0.05                 # Length 
 rpin    = rIn / 2.0             # Pinhole radius [mm]
 ypin    = 155.0 - pinlen        # Optical path position
 
