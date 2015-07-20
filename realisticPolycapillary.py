@@ -48,14 +48,14 @@ hMax =  4.0     # maximum possible distance from y = 0 axis
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  2*hMax  # max diameter
-rIn =   0.006     # capillary radius
+rIn =   0.006*30     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 19
-ny_bundle = 15
+nx_capillary = 3
+ny_bundle = 3
 
 # Pinhole parameters
 pinlen  = 0.005                 # Length 
@@ -79,7 +79,6 @@ class BentCapillary(roe.OE):
         self.rIn    = kwargs.pop("rIn")
         self.rOut   = kwargs.pop("rOut")
         self.rMax   = kwargs.pop("rMax")
-        self.h_in   = kwargs.pop("h_in")
         roe.OE.__init__(self, *args, **kwargs)
         self.y1 = self.limPhysY[0]
         self.y2 = self.limPhysY[1]
@@ -166,7 +165,8 @@ def build_beamline(nrays=1e4):
     beamLine.capillaries = []
     beamLine.toPlot = []
 
-    # Create object with (x,y) points describing hexagonal structure of polycapillary optics
+    # Create object with (x,y) points describing hexagonal 
+    # structure of polycapillary optics
     entrance_Structure = HexStructure(nx_capillary=nx_capillary, \
                                     ny_bundle=ny_bundle, \
                                     capillary_diameter=2*(rIn + wall))
@@ -174,7 +174,8 @@ def build_beamline(nrays=1e4):
     # Show obtained structure and save as png
     entrance_Structure.test()
 
-    # Iterate through polar coordinates of those capillaries provided by a pythonic (?) generator
+    # Iterate through polar coordinates of those capillaries 
+    # provided by a pythonic (?) generator
     for r, phi in entrance_Structure.genPolars():
         roll = phi
         x = r
@@ -183,11 +184,13 @@ def build_beamline(nrays=1e4):
         capillary = BentCapillary(beamLine, 'BentCapillary',
                 [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
                 rIn=rIn, rOut=rOut, rMax=rMax, material=mGlass,
-                curveCoeffs=p, h_in=x)
+                curveCoeffs=p)
         beamLine.capillaries.append(capillary)
 
-        # Save capillaries shown on z=0 coss-section ? Z = 0 is no longer special
-        # and as it is clear neither is phi = pi/3, so some other idea for crosssection plot
+        # Save capillaries shown on z=0 coss-section ? 
+        # Z = 0 is no longer special
+        # and as it is clear neither is phi = pi/3,
+        # so some other idea for crosssection plot
         # is needed TODO
         # DEBUG quick polar to cartesian re-transformation
         x_cap = r * np.cos(phi)
@@ -219,7 +222,7 @@ def build_beamline(nrays=1e4):
                         [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
                         order=8, rIn=rpin, rOut=rpin, rMax=rpin,
                         material=mGold,
-                        curveCoeffs=p_pin, h_in=x_in)
+                        curveCoeffs=p_pin)
         beamLine.pinholes.append(pinhole)
 
     # Helpful print

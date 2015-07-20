@@ -7,13 +7,11 @@ Created on Thu May 21 12:40:31 2015
 import numpy as np
 import matplotlib.pyplot as plt
 
-#a = np.array([[3,1.3], [1,2]])
-#b = np.array([9,8])
-#x = np.linalg.solve(a, b)
-
-# y(x) - lens describing function
-# S1(x) - ray path from light source to lens entrance
-# S2(x) - ray path from lens exit to the point of focus
+"""
+Here we are calculation polynomial coefficient describing
+bent shape of a single capillary inside a Lens with
+provided parameters
+"""
 
 # Make a picture explaining those
 def getPolyCoeffs(y0,y1,ym,y2,y3,h1,Din,Dout,hMax):

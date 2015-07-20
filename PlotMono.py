@@ -20,7 +20,7 @@ def plot2D(beamLine):
         capillary = beamLine.capillaries[it]
         x = capillary.local_x0(s)
         r = capillary.local_r0(s)
-        ax1.plot([0, beamLine.y1],[0 , capillary.h_in],'k-', lw=0.5)
+        ax1.plot([0, beamLine.y1],[0 , x[0]],'k-', lw=0.5)
         ax1.plot([beamLine.y2, beamLine.yf],[x[-1] , 0],'k-', lw=0.5)
         ax1.plot(s, x+r,'r-', lw=1)
         ax1.plot(s, x-r,'r-', lw=1)
