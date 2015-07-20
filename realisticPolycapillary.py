@@ -5,6 +5,8 @@
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import glob
+import os
 
 from PlotMono import plot2D
 import screening as scr
@@ -29,6 +31,14 @@ repeats = 5e4           # number of ray traycing iterations
 processes = 8           # number of processes used
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
+save    = True          # save results as pickles?
+
+# Delete all pickle files (they can always be recovered from git)
+picklePaths = glob.glob('pickle/*.pickle')
+
+for path in picklePaths:
+    print 'Deleting pickle:', path
+    os.remove(path)
 
 # Lower expectations for home computers
 if mp.cpu_count() <= 2:
@@ -312,7 +322,7 @@ def main():
     plot2D(beamLine)
 
     # Create xrtp.Plots in outside module  
-    plots = scr.createPlots(beamLine, save=True)
+    plots = scr.createPlots(beamLine, save=save)
     # FIXME: Manually add plot showing entrance structure
     limits = [ - Din/1.9, Din/1.9 ]
     plot = xrtp.XYCPlot(
@@ -323,7 +333,8 @@ def main():
     plot.title = 'Entrance structure'
     plot.baseName = 'Entrance_structure'
     plot.saveName = 'png/' + plot.baseName + '.png'
-    plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
+    if save:
+        plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
     plots.append(plot)
     xrtr.run_ray_tracing(plots, repeats=repeats, beamLine=beamLine,\
             processes=processes)
