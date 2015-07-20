@@ -204,6 +204,7 @@ def build_beamline(nrays=1e4):
     # Insert very short and very thin golden and lined capillaries 
     # into the focus, acting as a proper one way image sharpening pinhole
 
+    # FIXME - this is wrong!
     # Straight-Bent capillary polynomial factors:
     p_pin = [0, 0, 0, 0, 0, 0]
 
@@ -212,6 +213,8 @@ def build_beamline(nrays=1e4):
 
     for it in np.linspace(-1,1,11):
         x_in = it * focus_r
+        # FIXME - this has to be changed into proper straight and short capillary
+        # Because as it turns out h_in parameter is not producing expected behavior
         pinhole = BentCapillary(beamLine, 'PinHole',
                         [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
                         order=8, rIn=rpin, rOut=rpin, rMax=rpin,
