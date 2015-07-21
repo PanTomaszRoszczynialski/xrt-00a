@@ -150,6 +150,8 @@ class BentCapillary(roe.OE):
         return x, y, z
 
 def build_beamline(nrays=1e4):
+    # Those parameters should be hel by some Lens object
+    # FIXME - unfortunately they are used somewhere in screening ?
     beamLine = raycing.BeamLine(height=0)
     beamLine.y0 = y0
     beamLine.y1 = y1
@@ -177,6 +179,7 @@ def build_beamline(nrays=1e4):
 
     # Create object with (x,y) points describing hexagonal 
     # structure of polycapillary optics
+    # This also should be a part of bigger Lens object
     entrance_Structure = HexStructure(nx_capillary=nx_capillary, \
                                     ny_bundle=ny_bundle, \
                                     capillary_diameter=2*(rIn + wall))
@@ -186,10 +189,12 @@ def build_beamline(nrays=1e4):
 
     # Iterate through polar coordinates of those capillaries 
     # provided by a pythonic (?) generator
+    # TODO - beamline.capillaries should be given from the Lens object
     for r, phi in entrance_Structure.genPolars():
         roll = phi
         x = r
 
+        # Only x is changing here! Very bad design FIXME now
         p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
         capillary = BentCapillary(beamLine, 'BentCapillary',
                 [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
@@ -226,8 +231,9 @@ def build_beamline(nrays=1e4):
 
     for it in np.linspace(-1,1,11):
         x_in = it * focus_r
-        # FIXME - this has to be changed into proper straight and short capillary
-        # Because as it turns out h_in parameter is not producing expected behavior
+        # FIXME - this has to be changed into proper straight 
+        # and short capillary because as it turns out h_in parameter 
+        # is not producing expected behavior
         pinhole = BentCapillary(beamLine, 'PinHole',
                         [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
                         order=8, rIn=rpin, rOut=rpin, rMax=rpin,
@@ -298,7 +304,8 @@ def run_process(beamLine, shineOnly1stSource=False):
             good = (( pinholeGlobal.state == 1 ) |
                     ( pinholeGlobal.state == 3))
             # Accumulate photons at global beam
-            rs.copy_beam(pinholeGlobalTotal, pinholeGlobal, good, includeState=True)
+            rs.copy_beam(pinholeGlobalTotal, pinholeGlobal,\
+                    good, includeState=True)
 
     # Expose screens to post pinholes beam
     postPinhole = scr.exposeScreens(beamLine, pinholeGlobalTotal,\
