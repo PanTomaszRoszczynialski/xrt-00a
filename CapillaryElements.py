@@ -1,7 +1,10 @@
 import numpy as np
 from LensPolynomial import getPolyCoeffs, getRadiusCoeffs
 import xrt.backends.raycing.oes as roe
+import xrt.backends.raycing.materials as rm
 
+# Constant materials
+mGold   = rm.Material('Au', rho=19.3)
 
 # Creating pythonic dictionaries to store struct like data 
 # about separate sections of logic, like
@@ -90,6 +93,17 @@ class StraightCapillary(Capillary):
 
         # Init parent capillary class
         Capillary.__init__(self, *args, **kwargs)
+
+class Pinhole(StraightCapillary):
+    def __init__(self, *args, **kwargs):
+        self.pinlen = 0.01 #const
+        self.y_in   = kwargs.pop('y_in')
+        limPhysY = [self.y_in - self.pinlen, self.y_in]
+        kwargs.update({'limPhysY' : limPhysY})
+        kwargs.update({'material' : mGold})
+
+        # Init parent classes
+        StraightCapillary.__init__(self, *args, **kwargs)
 
 class PolyCapillaryLens(object):
     def __init__(self, **kwargs):

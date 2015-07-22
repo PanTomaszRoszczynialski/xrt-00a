@@ -86,9 +86,9 @@ def createPlots(beamLine, save=False):
             plot.baseName = name
             plot.saveName = 'png/' + plot.baseName + '.png'
 
-	    # Save as pickles for more advanced analysis
-	    if save:
-		    plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
+            # Save as pickles for more advanced analysis
+            if save:
+                plot.persistentName = 'pickle/' + plot.baseName + '.pickle'
 
             plots.append(plot)
 

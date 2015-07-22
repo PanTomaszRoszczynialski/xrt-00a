@@ -9,6 +9,7 @@ import glob
 import os
 
 from CapillaryElements import PolyCapillaryLens, StraightCapillary
+from CapillaryElements import Pinhole
 
 from PlotMono import plot2D
 import screening as scr
@@ -61,7 +62,7 @@ Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  8.      # max diameter
 D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
-rIn =   0.006*30     # capillary radius
+rIn =   0.006*20     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall =   0.001 # |*50 make wider walls for structure visibility
@@ -71,9 +72,9 @@ nx_capillary = 5
 ny_bundle = 3
 
 # Pinhole parameters
-pinlen  = 0.005                 # Length 
-rpin    = rIn / 2.0             # Pinhole radius [mm]
-ypin    = 155.0 - pinlen        # Optical path position
+pinlen  = 0.01                 # Length 
+rpin    = Dout/10. #rIn * 2.0             # Pinhole radius [mm]
+ypin    = 169.9 - pinlen        # Optical path position
 
 # Source parameters
 distx       = 'flat'
@@ -142,16 +143,17 @@ def build_beamline(nrays=1e4):
     # Insert very short and very thin golden and lined capillaries 
     # into the focus, acting as a proper one way image sharpening pinhole
     # Focus size radius estimation
-    focus_r = 0.09  # ? 
+    focus_r = 2*rpin# ? 
 
-    for it in np.linspace(-1,1,11):
+    for it in np.linspace(-4,4,11):
         x_in = it * focus_r
-        # FIXME - this has to be changed into proper straight 
-        # and short capillary because as it turns out h_in parameter 
-        # is not producing expected behavior
-        pinhole = StraightCapillary(beamLine, 'PinHole',\
-                [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],\
-                order = 8, r=rpin, material=mGold, x_in=x_in)
+
+        print 'Inserting pinhole on z = 0, x =', str(x_in)
+        # Pinholes
+        pinhole = Pinhole(beamLine, 'pinh',\
+#                roll = np.pi * np.cos(np.pi*it),\
+                roll = 0,\
+                x_in = x_in, r = rpin, y_in = ypin)
         beamLine.pinholes.append(pinhole)
 
     # Helpful print
