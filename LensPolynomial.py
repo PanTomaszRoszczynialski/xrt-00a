@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 """
-Here we are calculation polynomial coefficient describing
+Here we are calculating polynomial coefficients describing
 bent shape of a single capillary inside a Lens with
 provided parameters
 """
@@ -19,7 +19,7 @@ def getPolyCoeffs(x,y,D):
     y1 = y['y1']
     ym = y['ym']
     y2 = y['y2']
-    y3 = y['y3']
+    yf = y['yf']
     h1 = x
     Din     = D['Din']
     Dout    = D['Dout']
@@ -45,7 +45,7 @@ def getPolyCoeffs(x,y,D):
     a.append(diff_coeffs(y1))
     b.append(s1)
     # y'(y2) == S2'(x)
-    s2 = -h2/(y3-y2)
+    s2 = -h2/(yf-y2)
     a.append(diff_coeffs(y2))
     b.append(s2)
     # y'(ym) == 0
@@ -54,18 +54,35 @@ def getPolyCoeffs(x,y,D):
     p = np.linalg.solve(a,b)
     return p
 
+# This is for capillary shape
 def shape_coeffs(x):
     coeff_array = [1., x, x**2, x**3, x**4, x**5]
     return coeff_array
 
+# As is this
 def diff_coeffs(x):
     coeff_array = [0., 1., 2*x, 3*x**2, 4*x**3, 5*x**4]
     return coeff_array
 
+# But this is for capillary radius shape
+# For now it is run way to often, but this function might
+# get new dependencies later
+def getRadiusCoeffs(y, r):
+    B = [r['rIn'], r['rOut'], r['rMax'] ]
+    A = []
+    y1 = y['y1']
+    A.append([1., y1, y1**2])
+    y2 = y['y2']
+    A.append([1., y2, y2**2])
+    ym = y['ym']
+    A.append([1., ym, ym**2])
+
+    return np.linalg.solve(A,B)
+
 # NOTE - name __main__ is used only if the file is executed as itself
 # not when it's imported
 if __name__ == '__main__':
-    y = {'y0' : 0., 'y1' : 40., 'ym' : 85, 'y2' : 140, 'y3' : 155}
+    y = {'y0' : 0., 'y1' : 40., 'ym' : 85, 'y2' : 140, 'yf' : 155}
     D = {'Din' : 4.5, 'Dout' : 2.4, 'Dmax' : 8.0}
     x_in = -1.1
     p = getPolyCoeffs(x_in,y,D)
@@ -74,10 +91,10 @@ if __name__ == '__main__':
     yfin = p[0] + p[1]*x + p[2]*x**2 + p[3]*x**3 + p[4]*x**4 + p[5]*x**5
     fig1 = plt.figure(1,figsize=(10,4))
     ax1 = plt.subplot(111, label='dupa')
-    ax1.set_xlim([y['y0'],y['y3']])
+    ax1.set_xlim([y['y0'],y['yf']])
     ax1.set_ylim([-4, 4])
     ax1.plot(x,yfin,'r-', lw=2)
     ax1.plot([y['y0'],y['y1']],[0,x_in],'k-',lw=0.5)
     x2 = x_in * D['Dout'] / D['Din']
-    ax1.plot([y['y2'], y['y3']],[x2,0],'k-',lw=0.5)
+    ax1.plot([y['y2'], y['yf']],[x2,0],'k-',lw=0.5)
     plt.show()

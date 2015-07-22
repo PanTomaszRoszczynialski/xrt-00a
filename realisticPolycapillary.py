@@ -8,6 +8,8 @@ import matplotlib.pyplot as plt
 import glob
 import os
 
+from CapillaryElements import PolyCapillaryLens, StraightCapillary
+
 from PlotMono import plot2D
 import screening as scr
 from simulate_spoly import HexStructure
@@ -54,17 +56,18 @@ y1 =    40.     # lens entrance
 y2 =    140.    # lens exit
 yf =    155.    # focus position
 ym =    88.     # capillaries turning point
-hMax =  4.0     # maximum possible distance from y = 0 axis
+y_settings = {'y0' : y0, 'y1' : y1, 'y2' : y2, 'ym' : ym, 'yf' : yf}
 Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
-Dmax =  2*hMax  # max diameter
+Dmax =  8.      # max diameter
+D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
 rIn =   0.006*30     # capillary radius
 rOut = Dout/Din * rIn # Radius must shrink alongside the lens
 rMax = Dmax/Din * rIn # Max value of local radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 3
+nx_capillary = 5
 ny_bundle = 3
 
 # Pinhole parameters
@@ -83,72 +86,6 @@ dz          = 0.1
 distzprime  = 'flat'
 dzprime     = 0.1
 
-class BentCapillary(roe.OE):
-    def __init__(self, *args, **kwargs):
-        self.p  = kwargs.pop("curveCoeffs")
-        self.rIn    = kwargs.pop("rIn")
-        self.rOut   = kwargs.pop("rOut")
-        self.rMax   = kwargs.pop("rMax")
-        roe.OE.__init__(self, *args, **kwargs)
-        self.y1 = self.limPhysY[0]
-        self.y2 = self.limPhysY[1]
-        self.ym = self.bl.ym
-
-        # local radius function parameters (quadratic from rIn ot rOut)
-        # linear solve of 3 equations for parabolic shape
-        # of r(s): currently this curve is the same for each 
-        # capillary, so this could've been done once for lens,
-        # not once for capillary
-        B = [self.rIn, self.rOut, self.rMax]
-        A = []
-        A.append([1., y1, y1**2])
-        A.append([1., y2, y2**2])
-        A.append([1., ym, ym**2])
-        # Polynomial parameters for local radius-position relation
-        self.pr = np.linalg.solve(A,B)
-        self.isParametric = True
-
-    def local_x0(self, s):
-        return self.p[0] + self.p[1]*s + self.p[2]*s**2 + self.p[3]*s**3 + self.p[4]*s**4 + self.p[5]*s**5
-
-    def local_x0Prime(self, s):
-        return self.p[1] + 2*self.p[2]*s + 3*self.p[3]*s**2 + 4*self.p[4]*s**3 + 5*self.p[5]*s**4
-
-    def local_r0(self, s):
-        return self.pr[0] + self.pr[1]*s + self.pr[2]*s**2
-
-    def local_r0Prime(self,s):
-        return self.pr[1] + 2*self.pr[2]*s
-
-    def local_r(self, s, phi):
-        den = np.cos(np.arctan(self.local_x0Prime(s)))**2
-        return self.local_r0(s) / (np.cos(phi)**2/den + np.sin(phi)**2)
-
-    def local_n(self, s, phi):
-        a = -np.sin(phi)
-        b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
-        c = -np.cos(phi)
-        norm = np.sqrt(a**2 + b**2 + c**2)
-        # FIXME: a and c probably should also get minues
-        # but due to symmetry it's not visible for now?
-        return a/norm, -b/norm, c/norm
-
-    def xyz_to_param(self, x, y, z):
-        """ *s*, *r*, *phi* are cynindrc-like coordinates of the capillary.
-        *s* is along y in inverse direction, started at the exit,
-        *r* is measured from the capillary axis x0(s)
-        *phi* is the polar angle measured from the z (vertical) direction."""
-        s = y
-        phi = np.arctan2(x - self.local_x0(s), z)
-        r = np.sqrt((x-self.local_x0(s))**2 + z**2)
-        return s, phi, r
-
-    def param_to_xyz(self, s, phi, r):
-        x = self.local_x0(s) + r*np.sin(phi)
-        y = s
-        z = r * np.cos(phi)
-        return x, y, z
-
 def build_beamline(nrays=1e4):
     # Those parameters should be hel by some Lens object
     # FIXME - unfortunately they are used somewhere in screening ?
@@ -158,7 +95,6 @@ def build_beamline(nrays=1e4):
     beamLine.y2 = y2
     beamLine.yf = yf
     beamLine.ym = ym
-    beamLine.hMax   = hMax
     beamLine.h1     = Din/2
     beamLine.Dout   = Dout
     beamLine.nRefl  = nRefl
@@ -173,9 +109,11 @@ def build_beamline(nrays=1e4):
     # Insert screen at the lens entrance here
     beamLine.entScreen = rsc.Screen(beamLine, 'EntranceScreen',(0,y1,0))
 
-    # [1] - Lens related containers
-    beamLine.capillaries = []
-    beamLine.toPlot = []
+    # [1] - Create Lens object used for merging entrance
+    # structure of capillaries and their shape in z direction 
+    Lens = PolyCapillaryLens(y_settings = y_settings, \
+                            D_settings = D_settings,\
+                            material = mGlass)
 
     # Create object with (x,y) points describing hexagonal 
     # structure of polycapillary optics
@@ -184,33 +122,15 @@ def build_beamline(nrays=1e4):
                                     ny_bundle=ny_bundle, \
                                     rIn=rIn, wall=wall)
 
+    # Self explanatory, TODO - pickle save|load this structure
+    Lens.setStructure(entrance_Structure)
+
     # Show obtained structure and save as png
     entrance_Structure.test()
 
-    # Iterate through polar coordinates of those capillaries 
-    # provided by a pythonic (?) generator
-    # TODO - beamline.capillaries should be given from the Lens object
-    for r, phi in entrance_Structure.genPolars():
-        roll = phi
-        x = r
-
-        # Only x is changing here! Very bad design FIXME now
-        p = getPolyCoeffs(y0,y1,ym,y2,yf,x,Din,Dout,hMax)
-        capillary = BentCapillary(beamLine, 'BentCapillary',
-                [0,0,0], roll=roll, limPhysY=[y1, y2], order=8,
-                rIn=rIn, rOut=rOut, rMax=rMax, material=mGlass,
-                curveCoeffs=p)
-        beamLine.capillaries.append(capillary)
-
-        # Save capillaries shown on z=0 coss-section ? 
-        # Z = 0 is no longer special
-        # and as it is clear neither is phi = pi/3,
-        # so some other idea for crosssection plot
-        # is needed TODO
-        # DEBUG quick polar to cartesian re-transformation
-        x_cap = r * np.cos(phi)
-        if abs(x_cap) < 0.005:
-            beamLine.toPlot.append(len(beamLine.capillaries))
+    # Total automatization of inserting capillaries:
+    # it is now done by te lens object, as logic suggests
+    beamLine = Lens.getCapillaries(beamLine)
 
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
 
@@ -221,11 +141,6 @@ def build_beamline(nrays=1e4):
 
     # Insert very short and very thin golden and lined capillaries 
     # into the focus, acting as a proper one way image sharpening pinhole
-
-    # FIXME - this is wrong!
-    # Straight-Bent capillary polynomial factors:
-    p_pin = [0, 0, 0, 0, 0, 0]
-
     # Focus size radius estimation
     focus_r = 0.09  # ? 
 
@@ -234,11 +149,9 @@ def build_beamline(nrays=1e4):
         # FIXME - this has to be changed into proper straight 
         # and short capillary because as it turns out h_in parameter 
         # is not producing expected behavior
-        pinhole = BentCapillary(beamLine, 'PinHole',
-                        [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],
-                        order=8, rIn=rpin, rOut=rpin, rMax=rpin,
-                        material=mGold,
-                        curveCoeffs=p_pin)
+        pinhole = StraightCapillary(beamLine, 'PinHole',\
+                [0,0,0], roll=0, limPhysY=[ypin, ypin+pinlen],\
+                order = 8, r=rpin, material=mGold, x_in=x_in)
         beamLine.pinholes.append(pinhole)
 
     # Helpful print

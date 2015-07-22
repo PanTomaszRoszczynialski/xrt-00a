@@ -25,6 +25,7 @@ def plot2D(beamLine):
         ax1.plot(s, x+r,'r-', lw=1)
         ax1.plot(s, x-r,'r-', lw=1)
     ax1.set_xlim(0,beamLine.yf)
-    ax1.set_ylim(-beamLine.hMax,beamLine.hMax)
+    # FIXME - ylim should come from outside
+    ax1.set_ylim(-8,8)
     plt.show()
     fig1.savefig('Z0crosssection.png')
