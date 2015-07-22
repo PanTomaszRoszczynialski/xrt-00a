@@ -182,7 +182,7 @@ def build_beamline(nrays=1e4):
     # This also should be a part of bigger Lens object
     entrance_Structure = HexStructure(nx_capillary=nx_capillary, \
                                     ny_bundle=ny_bundle, \
-                                    capillary_diameter=2*(rIn + wall))
+                                    rIn=rIn, wall=wall)
 
     # Show obtained structure and save as png
     entrance_Structure.test()
@@ -218,7 +218,7 @@ def build_beamline(nrays=1e4):
 
     # Pinhole structure related container(s)
     beamLine.pinholes = []
-    
+
     # Insert very short and very thin golden and lined capillaries 
     # into the focus, acting as a proper one way image sharpening pinhole
 

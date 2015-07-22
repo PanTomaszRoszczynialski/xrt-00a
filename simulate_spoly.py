@@ -8,10 +8,14 @@ from random import random as rand
 
 class HexStructure(object):
     def __init__(self, capillary_diameter = 0.01,\
+                rIn = 0.005,\
+                wall= 0.005,\
                 nx_capillary = 9,\
                 ny_bundle = 7):
         # Outer diameter (touching)
-        self.capillary_diameter = capillary_diameter
+        self.rIn = rIn
+        self.wall= wall
+        self.capillary_diameter = 2*(self.rIn+self.wall)
 
         # Number of bundles along vertical direction (must be odd)
         self.ny_bundle = ny_bundle
@@ -130,9 +134,14 @@ class HexStructure(object):
             phi = np.arctan2(y,x)
             yield r, phi
 
+    # Capillary radius seems to be logicaly part of the 
+    # entrance structure, so we get it from here
+    def getCapillaryRadius(self):
+        return self.rIn
+
     def test(self):
         # This should print the total number of capillaries
-        print len(self.xci)
+        print 'Number of entrance channels:', len(self.xci)
         plt.plot(self.xci, self.yci,'ko')
         #plt.xlim(-.1,.1)
         #plt.ylim(-.1,.1)
