@@ -232,8 +232,8 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # 
     outDict.update(prePinhole)
-    outDict.update(postPinhole)
-#    outDict.update(postNoPinhole)
+#    outDict.update(postPinhole)
+    outDict.update(postNoPinhole)
 
     return outDict
 
