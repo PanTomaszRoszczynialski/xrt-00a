@@ -62,19 +62,17 @@ Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  8.      # max diameter
 D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
-rIn =   0.006*20     # capillary radius
-rOut = Dout/Din * rIn # Radius must shrink alongside the lens
-rMax = Dmax/Din * rIn # Max value of local radius
+rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 5
-ny_bundle = 3
+nx_capillary = 13 
+ny_bundle = 17
 
 # Pinhole parameters
-pinlen  = 0.01                 # Length 
-rpin    = Dout/10. #rIn * 2.0             # Pinhole radius [mm]
-ypin    = 169.9 - pinlen        # Optical path position
+pinlen  = 0.01                # Length 
+rpin    = 0.015               # Pinhole radius [mm] | =Dout/10. 
+ypin    = 155 - pinlen        # Optical path position
 
 # Source parameters
 distx       = 'flat'
@@ -145,7 +143,7 @@ def build_beamline(nrays=1e4):
     # Focus size radius estimation
     focus_r = 2*rpin# ? 
 
-    for it in np.linspace(-4,4,11):
+    for it in range(-10,11):
         x_in = it * focus_r
 
         print 'Inserting pinhole on z = 0, x =', str(x_in)
@@ -232,8 +230,8 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # 
     outDict.update(prePinhole)
-#    outDict.update(postPinhole)
-    outDict.update(postNoPinhole)
+    outDict.update(postPinhole)
+#    outDict.update(postNoPinhole)
 
     return outDict
 
