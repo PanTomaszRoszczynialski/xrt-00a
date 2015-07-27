@@ -29,7 +29,6 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-mGold   = rm.Material('Au', rho=19.3)
 repeats = 5e4           # number of ray traycing iterations
 processes = 8           # number of processes used
 E0      = 9000.         # energy in electronoVolts
@@ -127,8 +126,7 @@ def build_beamline(nrays=1e4):
     # Show obtained structure and save as png
     entrance_Structure.test()
 
-    # Total automatization of inserting capillaries:
-    # it is now done by te lens object, as logic suggests
+    # Total automatization of inserting capillaries
     beamLine = Lens.getCapillaries(beamLine)
 
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
@@ -141,7 +139,7 @@ def build_beamline(nrays=1e4):
     # Insert very short and very thin golden and lined capillaries 
     # into the focus, acting as a proper one way image sharpening pinhole
     # Focus size radius estimation
-    focus_r = 2*rpin# ? 
+    focus_r = 2*rpin    # ? 
 
     for it in range(-10,11):
         x_in = it * focus_r
