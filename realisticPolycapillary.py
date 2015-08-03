@@ -65,12 +65,12 @@ rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 13 
+nx_capillary = 15 
 ny_bundle = 17
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
-rpin    = 0.015               # Pinhole radius [mm] | =Dout/10. 
+rpin    = 0.005               # Pinhole radius [mm] | =Dout/10. 
 ypin    = 155 - pinlen        # Optical path position
 
 # Source parameters
@@ -141,14 +141,16 @@ def build_beamline(nrays=1e4):
     # Focus size radius estimation
     focus_r = 2*rpin    # ? 
 
-    for it in range(-10,11):
+    for it in range(-15,16):
         x_in = it * focus_r
 
-        print 'Inserting pinhole on z = 0, x =', str(x_in)
+        roll = np.pi/2
+
+        print 'Inserting pinhole on x = 0, z =', str(x_in)
         # Pinholes
         pinhole = Pinhole(beamLine, 'pinh',\
 #                roll = np.pi * np.cos(np.pi*it),\
-                roll = 0,\
+                roll = roll,\
                 x_in = x_in, r = rpin, y_in = ypin)
         beamLine.pinholes.append(pinhole)
 
@@ -228,8 +230,8 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # 
     outDict.update(prePinhole)
-#    outDict.update(postPinhole)
-    outDict.update(postNoPinhole)
+    outDict.update(postPinhole)
+#    outDict.update(postNoPinhole)
 
     return outDict
 

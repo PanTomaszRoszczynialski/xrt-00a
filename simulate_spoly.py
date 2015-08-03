@@ -130,11 +130,14 @@ class HexStructure(object):
     # Generator to iterate over the whole structure
     def genPolars(self):
         for x, y in zip(self.xci, self.yci):
-            if not (abs(x) < self.capillary_diameter and\
-                    abs(y) < self.capillary_diameter):
-                r = np.sqrt(x**2 + y**2)
-                phi = np.arctan2(y,x)
-                yield r, phi
+	# FIXME - this is here for debug possibilities 
+	# (takes out middle capillaries so no direct
+	# light hits the screen
+            #if not (abs(x) < self.capillary_diameter and\
+            #   abs(y) < self.capillary_diameter):
+		r = np.sqrt(x**2 + y**2)
+		phi = np.arctan2(y,x)
+		yield r, phi
 
     # Capillary radius seems to be logicaly part of the 
     # entrance structure, so we get it from here
