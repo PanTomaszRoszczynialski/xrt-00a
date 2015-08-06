@@ -107,7 +107,7 @@ class Pinhole(StraightCapillary):
 
 class ShapedPinhole(Pinhole):
     def local_r0(self, s, phi):
-        return self.pr[0] * (1 + np.cos(0.5*phi))
+        return self.pr[0] * (1 + np.cos(phi))
 
     def local_r(self, s, phi):
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
