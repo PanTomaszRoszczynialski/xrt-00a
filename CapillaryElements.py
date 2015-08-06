@@ -105,6 +105,14 @@ class Pinhole(StraightCapillary):
         # Init parent classes
         StraightCapillary.__init__(self, *args, **kwargs)
 
+class ShapedPinhole(Pinhole):
+    def local_r0(self, s, phi):
+        return self.pr[0] * (1 + np.sin(0.5*phi))
+
+    def local_r(self, s, phi):
+        den = np.cos(np.arctan(self.local_x0Prime(s)))**2
+        return self.local_r0(s, phi) / (np.cos(phi)**2/den + np.sin(phi)**2)
+
 class PolyCapillaryLens(object):
     def __init__(self, **kwargs):
         # Elements' positions in y direction

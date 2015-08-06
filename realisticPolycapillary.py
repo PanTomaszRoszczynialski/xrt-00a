@@ -10,6 +10,7 @@ import os
 
 from CapillaryElements import PolyCapillaryLens, StraightCapillary
 from CapillaryElements import Pinhole
+from CapillaryElements import ShapedPinhole
 
 from PlotMono import plot2D
 import screening as scr
@@ -61,16 +62,16 @@ Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  8.      # max diameter
 D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
-rIn =   0.006     # capillary radius
+rIn =   0.6     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 15 
-ny_bundle = 17
+nx_capillary = 5
+ny_bundle = 3
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
-rpin    = 0.005               # Pinhole radius [mm] | =Dout/10. 
+rpin    = 0.5               # Pinhole radius [mm] | =Dout/10. 
 ypin    = 155 - pinlen        # Optical path position
 
 # Source parameters
@@ -141,14 +142,15 @@ def build_beamline(nrays=1e4):
     # Focus size radius estimation
     focus_r = 2*rpin    # ? 
 
-    for it in range(-15,16):
+    # range(1) = [0]
+    for it in range(1):
         x_in = it * focus_r
 
-        roll = np.pi/2
+        roll = 0
 
-        print 'Inserting pinhole on x = 0, z =', str(x_in)
+        print 'Inserting shaped hole on z = 0, x =', str(x_in)
         # Pinholes
-        pinhole = Pinhole(beamLine, 'pinh',\
+        pinhole = ShapedPinhole(beamLine, 'pinh',\
 #                roll = np.pi * np.cos(np.pi*it),\
                 roll = roll,\
                 x_in = x_in, r = rpin, y_in = ypin)
