@@ -71,7 +71,7 @@ ny_bundle = 3
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
-rpin    = 0.5               # Pinhole radius [mm] | =Dout/10. 
+rpin    = 0.25               # Pinhole radius [mm] | =Dout/10. 
 ypin    = 155 - pinlen        # Optical path position
 
 # Source parameters
