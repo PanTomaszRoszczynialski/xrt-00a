@@ -62,7 +62,7 @@ Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  8.      # max diameter
 D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
-rIn =   0.6     # capillary radius
+rIn =   1.6     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
@@ -71,7 +71,7 @@ ny_bundle = 3
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
-rpin    = 0.25               # Pinhole radius [mm] | =Dout/10. 
+rpin    = 0.05               # Pinhole radius [mm] | =Dout/10. 
 ypin    = 155 - pinlen        # Optical path position
 
 # Source parameters
