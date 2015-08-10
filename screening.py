@@ -58,7 +58,7 @@ def exposeScreens(beamLine, beamToBeSeen, _range):
     return partDict
 
 # Prepare plots for raycing
-def createPlots(beamLine, save=False):
+def createPlots(beamLine, bins=256, save=False):
     xLimits = [-beamLine.Dout/1.9, beamLine.Dout/1.9]
     zLimits = xLimits
     cLimits = [0, beamLine.nRefl]
@@ -73,12 +73,12 @@ def createPlots(beamLine, save=False):
             # Plot Construction
             plot = xrtp.XYCPlot(name, (1,3),
                 xaxis=xrtp.XYCAxis(r'$x$', 'mm', data=raycing.get_x,\
-                        bins=256, ppb=2, limits=xLimits),
+                        bins=bins, ppb=2, limits=xLimits),
                 yaxis=xrtp.XYCAxis(r'$z$', 'mm', data=raycing.get_z,\
-                        bins=256, ppb=2, limits=zLimits),
+                        bins=bins, ppb=2, limits=zLimits),
                 caxis=xrtp.XYCAxis('Reflections', 'number',\
                         data=raycing.get_reflection_number,\
-                        bins=256, ppb=2, limits=cLimits),
+                        bins=bins, ppb=2, limits=cLimits),
                 beamState=name, title=name,\
                         aspect='auto')
             # END Plot Construction

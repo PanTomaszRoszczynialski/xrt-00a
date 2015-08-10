@@ -241,14 +241,19 @@ def main():
     beamLine = build_beamline()
     plot2D(beamLine)
 
+    # Resulotion
+    bins = 512
+
     # Create xrtp.Plots in outside module  
-    plots = scr.createPlots(beamLine, save=save)
+    plots = scr.createPlots(beamLine, bins=bins, save=save)
+
+
     # FIXME: Manually add plot showing entrance structure
     limits = [ - Din/1.9, Din/1.9 ]
     plot = xrtp.XYCPlot(
         'EntranceScreen', (1, 3,),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=limits),
-        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=256, ppb=2, limits=limits),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=bins, ppb=2, limits=limits),
+        yaxis=xrtp.XYCAxis(r'$z$', 'mm', bins=bins, ppb=2, limits=limits),
         caxis='category', beamState='Screen_at_'+str(int(y2)))
     plot.title = 'Entrance structure'
     plot.baseName = 'Entrance_structure'
