@@ -141,17 +141,18 @@ def build_beamline(nrays=1e4):
     # Focus size radius estimation
     focus_r = 2*rpin    # ? 
 
-    for it in range(-15,16):
+    for it in range(-7,8):
         x_in = it * focus_r
 
-        roll = np.pi/2
+        roll = np.pi/2 + np.pi * it / 20.
 
-        print 'Inserting pinhole on x = 0, z =', str(x_in)
-        # Pinholes
+        print 'Inserting pinhole on r = ', str(x_in), ', phi = ', str(roll)
+        # Pinholes create object differentiated in y direction for laminography possibilities
+        y_in = ypin + it*0.02
         pinhole = Pinhole(beamLine, 'pinh',\
 #                roll = np.pi * np.cos(np.pi*it),\
                 roll = roll,\
-                x_in = x_in, r = rpin, y_in = ypin)
+                x_in = x_in, r = rpin, y_in = y_in)
         beamLine.pinholes.append(pinhole)
 
     # Helpful print
@@ -159,7 +160,7 @@ def build_beamline(nrays=1e4):
 
     # Create evenly distributed screens between lens exit
     # and M=1 spot
-    scr.createScreens(beamLine,[y2, yf + yf-y2], 3)
+    scr.createScreens(beamLine,[y2, yf + 0.5, yf + yf-y2])
     # Set screen used before the pinhole
     scr.setUsed(beamLine, [0, ypin])
     # Set used after pinhole as well

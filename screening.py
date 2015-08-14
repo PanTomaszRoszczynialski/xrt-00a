@@ -13,8 +13,8 @@ import xrt.plotter as xrtp
 # p_range = min, max
 # N = number of screens spanned on that distance
 
-def createScreens(beamLine, ranges, howmany):
-    positions = np.linspace(ranges[0], ranges[1], howmany)
+def createScreens(beamLine, positions):
+#    positions = np.linspace(ranges[0], ranges[1], howmany)
     screens = {}
     isUsed  = {}
     for it in positions:
