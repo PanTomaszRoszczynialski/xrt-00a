@@ -1,0 +1,150 @@
+""" 
+Copied from source viewer
+hoping for easy modifications for testing various
+object parameters and putting them directle between 
+source and detector
+"""
+
+import numpy as np
+
+import xrt.backends.raycing as raycing
+import xrt.backends.raycing.sources as rs
+#import xrt.backends.raycing.apertures as ra
+import xrt.backends.raycing.oes as roe
+import xrt.backends.raycing.run as rr
+import xrt.backends.raycing.materials as rm
+import xrt.plotter as xrtp
+import xrt.runner as xrtr
+import xrt.backends.raycing.screens as rsc
+
+""" WELL DOCUMENTED PARAMETERS """
+repeats = 1e4   # liczba
+E0      = 9000  # [eV]
+D_      = 40    # [mm] | constant screen position
+
+xLimits = [-6.05, 6.05] # Plot limits
+zLimits = xLimits       # axis square
+
+processes = 4 
+
+""" GeometricSource():: PARAMETERS TO CHECK: """
+bl_height   = 0.
+bl_xzMax    = 0.
+
+# x-direction parameters
+distx       = 'flat'
+dx          = 0.1
+distxprime  = 'flat'
+dxprime     = 0.1
+# z-direction
+distz       = 'flat'
+dz          = 0.1
+distzprime  = 'flat'
+dzprime     = 0.1
+
+def build_beamline(nrays=1000):
+    beamLine = raycing.BeamLine(height=bl_height)
+
+    # source appends itself to the provided beamline
+    rs.GeometricSource(
+        beamLine,'GeometricSource',(0,0,0), nrays=nrays,
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+        distE='lines', energies=(E0,), polarization='horizontal')
+
+    # some mysterious parameters
+    beamLine.xzMax = bl_xzMax
+
+    # Container for multiple things
+    beamLine.things = []
+
+    # XXX - Tested object is inserted here
+    shape = [
+        (0., 0.), 
+        (0., 3.),
+        (1., 3.),
+        (1., 1.),
+        (2., 1.),
+        (2., 3.),
+        (3., 3.),
+        (3., 0.),
+        (2., 0.),
+        (2., -2),
+        (1., -2),
+        (1., 0.),
+        (0., 0.),
+        ]
+
+    shape = [(v[0] - 1.5, v[1]) for v in shape]
+    shape = [(0.3*v[0], 0.3*v[1]) for v in shape]
+
+    # Set position and thickness
+    limPhysY = [38.0, 38.1]
+
+    # Tested material
+    mGold = rm.Material('Au', rho=19.3)
+
+    thing = roe.OE(beamLine, 'thing', material=mGold,\
+                   shape=shape, limPhysY=limPhysY,\
+                   roll=0*np.pi/3.)
+    
+    # Contain
+    beamLine.things.append(thing)
+
+    # One screen is enough to see if object made any difference
+    beamLine.myScreens = []
+    beamLine.myScreens.append(rsc.Screen(\
+                              beamLine,\
+                              'd = {0:02d}'.format(D_),\
+                              (0,D_,0)))
+    
+    return beamLine
+
+def run_process(beamLine, shineOnly1stSource=False):
+    beamSource = beamLine.sources[0].shine()
+
+    # prepare empty python - dictionary for screens
+    outDict = {}
+
+    # Expose the thing
+    # Global and local beams
+    glob, loca = beamLine.things[0].reflect(beamSource)
+
+    
+
+    # Exposing screen to the beam
+    outBeam = beamLine.myScreens[0].expose(glob)
+    outDict['screen_{0:02d}'.format(D_)] = outBeam
+
+    return outDict
+rr.run_process = run_process
+
+def main():
+    beamLine = build_beamline()
+    plots = []
+
+    # Plot creation
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,3,-1),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
+                           bins=256, ppb=2,\
+                           limits=xLimits),
+        yaxis=xrtp.XYCAxis(r'$z$', 'mm',\
+                           bins=256, ppb=2,\
+                           limits=zLimits),
+        caxis='category', beamState='screen_{0:02d}'.format(D_),
+        title='Distance from source = {0:02d} [mm]'.format(D_))
+
+    # Names
+    plot.baseName = 'dist_' + str(1000 + D_)
+    plot.saveName = 'png/source/' + plot.baseName + '.png'
+
+
+    plots.append(plot)
+
+
+    xrtr.run_ray_tracing(plots, repeats=repeats,\
+                         beamLine=beamLine,\
+                         processes=processes)
+
+if __name__ == '__main__':
+    main()

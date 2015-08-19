@@ -127,7 +127,7 @@ def build_beamline(nrays=1e4):
     # Show obtained structure and save as png
     entrance_Structure.test()
 
-    # Total automatization of inserting capillaries
+    # Total automatization of capilaries insertion
     beamLine = Lens.getCapillaries(beamLine)
 
     print 'Number of capillaries: ' + str(len(beamLine.capillaries))
