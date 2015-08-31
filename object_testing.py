@@ -117,7 +117,7 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # Expose the thing
     # Global and local beams
-    glob, loca = beamLine.things[0].reflect(beamSource)
+    glob, loca = beamLine.things[0].multiple_reflect(beamSource)
 
 
     # Exposing screen to the beam
