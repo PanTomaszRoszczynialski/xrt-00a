@@ -83,7 +83,7 @@ def build_beamline(nrays=1000):
 
     # Set position and thickness
     limPhysY = [35.94, 39.95]
-    limPhysX = [-1.0, 1.0]
+    limPhysX = [-2.0, 2.0]
 
     # Tested material
     mGold = rm.Material('Au', rho=19.3)
