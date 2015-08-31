@@ -87,7 +87,7 @@ def build_beamline(nrays=1000):
 
     # Tested material
     mGold = rm.Material('Au', rho=19.3)
-    mGlass  = rm.Material(('Si', 'O'), kind='plate',\
+    mGlass  = rm.Material(('Si', 'O'), kind='mirror',\
                           quantities=(1, 2), rho=2.2)
 
 #    thing = roe.OE(beamLine, 'thing', material=mGold,\
@@ -131,9 +131,8 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    rays_shown = (3,)
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,3,-1),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(-1,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
@@ -144,7 +143,24 @@ def main():
         title='Distance from source = {0:02d} [mm]'.format(D_))
 
     # Names
-    plot.baseName = 'dist_' + str(1000 + D_)
+    plot.baseName = 'objec_dead'
+    plot.saveName = 'png/object/' + plot.baseName + '.png'
+
+    plots.append(plot)
+
+    # Plot creation
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,),
+        xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
+                           bins=256, ppb=2,\
+                           limits=xLimits),
+        yaxis=xrtp.XYCAxis(r'$z$', 'mm',\
+                           bins=256, ppb=2,\
+                           limits=zLimits),
+        caxis='category', beamState='screen_{0:02d}'.format(D_),
+        title='Distance from source = {0:02d} [mm]'.format(D_))
+
+    # Names
+    plot.baseName = 'object_out'
     plot.saveName = 'png/object/' + plot.baseName + '.png'
 
     plots.append(plot)

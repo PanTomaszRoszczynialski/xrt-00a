@@ -13,14 +13,14 @@ class CustomShape(roe.OE):
         # x
         a = 1.0
         # y
-        b = - 1.0
+        b = 4.0
         # z
         c = 1.0
         norm = (a**2 + c**2)**0.5
         return [a/norm, b/norm, c/norm]
 
     def local_z(self, x, y):
-        return x - 1.*(y - self.limPhysY[0])
+        return x + 4.*(y - self.limPhysY[0])
 
 if __name__ == '__main__':
     verts = [
