@@ -93,7 +93,7 @@ def build_beamline(nrays=1000):
 #                   roll=0*np.pi/3., limPhysX=limPhysX)
     thing = CustomShape(beamLine, 'thing', material=mGold,\
                    R = 1.0, limPhysY=limPhysY,\
-                   roll=1*np.pi/3., limPhysX=limPhysX)
+                   roll=0*np.pi/3., limPhysX=limPhysX)
     
     # Contain
     beamLine.things.append(thing)
@@ -129,8 +129,9 @@ def main():
     beamLine = build_beamline()
     plots = []
 
+    rays_shown = (3,)
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,3,-1),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
