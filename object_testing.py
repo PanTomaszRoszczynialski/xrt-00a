@@ -87,11 +87,12 @@ def build_beamline(nrays=1000):
 
     # Tested material
     mGold = rm.Material('Au', rho=19.3)
+    mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 #    thing = roe.OE(beamLine, 'thing', material=mGold,\
 #                   shape=shape, limPhysY=limPhysY,\
 #                   roll=0*np.pi/3., limPhysX=limPhysX)
-    thing = CustomShape(beamLine, 'thing', material=mGold,\
+    thing = CustomShape(beamLine, 'thing', material=mGlass,\
                    R = 1.0, limPhysY=limPhysY,\
                    roll=0*np.pi/3., limPhysX=limPhysX)
     
