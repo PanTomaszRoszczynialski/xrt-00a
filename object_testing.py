@@ -1,7 +1,7 @@
 """ 
 Copied from source viewer
 hoping for easy modifications for testing various
-object parameters and putting them directle between 
+object parameters and putting them directly between 
 source and detector
 """
 
@@ -16,6 +16,9 @@ import xrt.backends.raycing.materials as rm
 import xrt.plotter as xrtp
 import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
+
+# Import custom shaped object
+from customobjects import CustomShape
 
 """ WELL DOCUMENTED PARAMETERS """
 repeats = 1e4   # liczba
@@ -76,17 +79,21 @@ def build_beamline(nrays=1000):
         ]
 
     shape = [(v[0] - 1.5, v[1]) for v in shape]
-    shape = [(0.3*v[0], 0.3*v[1]) for v in shape]
+    shape = [(0.1*v[0], 0.1*v[1]) for v in shape]
 
     # Set position and thickness
-    limPhysY = [38.0, 38.1]
+    limPhysY = [39.9, 39.95]
+    limPhysX = [-1.0, 1.0]
 
     # Tested material
     mGold = rm.Material('Au', rho=19.3)
 
-    thing = roe.OE(beamLine, 'thing', material=mGold,\
-                   shape=shape, limPhysY=limPhysY,\
-                   roll=0*np.pi/3.)
+#    thing = roe.OE(beamLine, 'thing', material=mGold,\
+#                   shape=shape, limPhysY=limPhysY,\
+#                   roll=0*np.pi/3., limPhysX=limPhysX)
+    thing = CustomShape(beamLine, 'thing', material=mGold,\
+                   R = 1.0, limPhysY=limPhysY,\
+                   roll=0*np.pi/3., limPhysX=limPhysX)
     
     # Contain
     beamLine.things.append(thing)
@@ -110,7 +117,6 @@ def run_process(beamLine, shineOnly1stSource=False):
     # Global and local beams
     glob, loca = beamLine.things[0].reflect(beamSource)
 
-    
 
     # Exposing screen to the beam
     outBeam = beamLine.myScreens[0].expose(glob)
@@ -136,11 +142,9 @@ def main():
 
     # Names
     plot.baseName = 'dist_' + str(1000 + D_)
-    plot.saveName = 'png/source/' + plot.baseName + '.png'
-
+    plot.saveName = 'png/object/' + plot.baseName + '.png'
 
     plots.append(plot)
-
 
     xrtr.run_ray_tracing(plots, repeats=repeats,\
                          beamLine=beamLine,\
