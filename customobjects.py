@@ -9,9 +9,9 @@ class CustomShape(roe.OE):
         self.R = kwargs.pop('R', 0.5)
         roe.OE.__init__(self, *args, **kwargs)
     def local_n(self, x, y):
-        a = - x/self.R
-        b = np.zeros_like(y)
-        c = (self.R**2 - x**2)**(0.5) / self.R
+        a = 1./np.sqrt(3)
+        b = 1./np.sqrt(3)
+        c = 1./np.sqrt(3)
         return a, b, c
 
     def local_z(self, x, y):

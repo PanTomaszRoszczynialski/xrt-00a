@@ -25,7 +25,7 @@ repeats = 1e4   # liczba
 E0      = 9000  # [eV]
 D_      = 40    # [mm] | constant screen position
 
-xLimits = [-6.05, 6.05] # Plot limits
+xLimits = [-4.05, 4.05] # Plot limits
 zLimits = xLimits       # axis square
 
 processes = 4 
@@ -82,7 +82,7 @@ def build_beamline(nrays=1000):
     shape = [(0.1*v[0], 0.1*v[1]) for v in shape]
 
     # Set position and thickness
-    limPhysY = [39.9, 39.95]
+    limPhysY = [35.94, 39.95]
     limPhysX = [-1.0, 1.0]
 
     # Tested material
@@ -93,7 +93,7 @@ def build_beamline(nrays=1000):
 #                   roll=0*np.pi/3., limPhysX=limPhysX)
     thing = CustomShape(beamLine, 'thing', material=mGold,\
                    R = 1.0, limPhysY=limPhysY,\
-                   roll=0*np.pi/3., limPhysX=limPhysX)
+                   roll=1*np.pi/3., limPhysX=limPhysX)
     
     # Contain
     beamLine.things.append(thing)
