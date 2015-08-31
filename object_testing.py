@@ -131,7 +131,7 @@ def main():
 
     rays_shown = (3,)
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,3,-1),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
