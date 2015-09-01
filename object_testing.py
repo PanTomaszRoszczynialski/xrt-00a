@@ -28,7 +28,7 @@ D_      = 40    # [mm] | constant screen position
 xLimits = [-4.05, 4.05] # Plot limits
 zLimits = xLimits       # axis square
 
-processes = 4 
+processes = 4
 
 """ GeometricSource():: PARAMETERS TO CHECK: """
 bl_height   = 0.
@@ -63,7 +63,7 @@ def build_beamline(nrays=1000):
 
     # XXX - Tested object is inserted here
     shape = [
-        (0., 0.), 
+        (0., 0.),
         (0., 3.),
         (1., 3.),
         (1., 1.),
@@ -82,7 +82,7 @@ def build_beamline(nrays=1000):
     shape = [(0.1*v[0], 0.1*v[1]) for v in shape]
 
     # Set position and thickness
-    limPhysY = [37.8, 39.95]
+    limPhysY = [35.95, 39.95]
     limPhysX = [-2.0, 2.0]
 
     # Tested material
