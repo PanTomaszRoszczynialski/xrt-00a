@@ -22,11 +22,12 @@ from customobjects import CustomShape
 
 """ WELL DOCUMENTED PARAMETERS """
 repeats = 1e4   # liczba
-E0      = 9000  # [eV]
+E0      = 29000  # [eV]
 D_      = 40    # [mm] | constant screen position
 
 xLimits = [-4.05, 4.05] # Plot limits
-zLimits = xLimits       # axis square
+zLimits = [4*x for x in xLimits]
+#zLimits = xLimits       # axis square
 
 processes = 4
 
@@ -73,7 +74,7 @@ def build_beamline(nrays=1000):
 #    thing = roe.OE(beamLine, 'thing', material=mGold,\
 #                   shape=shape, limPhysY=limPhysY,\
 #                   roll=0*np.pi/3., limPhysX=limPhysX)
-    thing = CustomShape(beamLine, 'thing', material=mGold,\
+    thing = CustomShape(beamLine, 'thing', material=mGlass,\
                    R = 1.0, limPhysY=limPhysY,\
                    roll=0.*np.pi, limPhysX=limPhysX)
 
@@ -110,23 +111,6 @@ rr.run_process = run_process
 def main():
     beamLine = build_beamline()
     plots = []
-
-    # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(-1,3,),
-        xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
-                           bins=256, ppb=2,\
-                           limits=xLimits),
-        yaxis=xrtp.XYCAxis(r'$z$', 'mm',\
-                           bins=256, ppb=2,\
-                           limits=zLimits),
-        caxis='category', beamState='screen_{0:02d}'.format(D_),
-        title='Distance from source = {0:02d} [mm]'.format(D_))
-
-    # Names
-    plot.baseName = 'object_over'
-    plot.saveName = 'png/object/' + plot.baseName + '.png'
-
-    plots.append(plot)
 
     # Plot creation
     plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,3,),
