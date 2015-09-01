@@ -95,7 +95,7 @@ def build_beamline(nrays=1000):
 #                   roll=0*np.pi/3., limPhysX=limPhysX)
     thing = CustomShape(beamLine, 'thing', material=mGlass,\
                    R = 1.0, limPhysY=limPhysY,\
-                   roll=0*np.pi/3., limPhysX=limPhysX)
+                   roll=0.*np.pi, limPhysX=limPhysX)
     
     # Contain
     beamLine.things.append(thing)
@@ -132,7 +132,7 @@ def main():
     plots = []
 
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(-1,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(3,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
@@ -143,13 +143,13 @@ def main():
         title='Distance from source = {0:02d} [mm]'.format(D_))
 
     # Names
-    plot.baseName = 'objec_dead'
+    plot.baseName = 'object_over'
     plot.saveName = 'png/object/' + plot.baseName + '.png'
 
     plots.append(plot)
 
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,-1,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),

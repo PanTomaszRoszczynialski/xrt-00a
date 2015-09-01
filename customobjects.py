@@ -11,7 +11,7 @@ class CustomShape(roe.OE):
 
     def local_n(self, x, y):
         # x
-        a = 1.0
+        a = 0.0
         # y
         b = 4.0
         # z
@@ -20,7 +20,7 @@ class CustomShape(roe.OE):
         return [a/norm, b/norm, c/norm]
 
     def local_z(self, x, y):
-        return x + 4.*(y - self.limPhysY[0])
+        return -2. + 1.*(y - self.limPhysY[0])
 
 if __name__ == '__main__':
     verts = [
