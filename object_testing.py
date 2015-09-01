@@ -61,29 +61,9 @@ def build_beamline(nrays=1000):
     # Container for multiple things
     beamLine.things = []
 
-    # XXX - Tested object is inserted here
-    shape = [
-        (0., 0.),
-        (0., 3.),
-        (1., 3.),
-        (1., 1.),
-        (2., 1.),
-        (2., 3.),
-        (3., 3.),
-        (3., 0.),
-        (2., 0.),
-        (2., -2),
-        (1., -2),
-        (1., 0.),
-        (0., 0.),
-        ]
-
-    shape = [(v[0] - 1.5, v[1]) for v in shape]
-    shape = [(0.1*v[0], 0.1*v[1]) for v in shape]
-
     # Set position and thickness
-    limPhysY = [37.95, 39.95]
-    limPhysX = [-2.0, 2.0]
+    limPhysY = [36.95, 39.95]
+    limPhysX = [-3.0, 1.0]
 
     # Tested material
     mGold = rm.Material('Au', rho=19.3)
@@ -93,10 +73,10 @@ def build_beamline(nrays=1000):
 #    thing = roe.OE(beamLine, 'thing', material=mGold,\
 #                   shape=shape, limPhysY=limPhysY,\
 #                   roll=0*np.pi/3., limPhysX=limPhysX)
-    thing = CustomShape(beamLine, 'thing', material=mGlass,\
+    thing = CustomShape(beamLine, 'thing', material=mGold,\
                    R = 1.0, limPhysY=limPhysY,\
                    roll=0.*np.pi, limPhysX=limPhysX)
-    
+
     # Contain
     beamLine.things.append(thing)
 
@@ -132,7 +112,7 @@ def main():
     plots = []
 
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(3,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(3,-1,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
@@ -149,14 +129,17 @@ def main():
     plots.append(plot)
 
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,-1,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
         yaxis=xrtp.XYCAxis(r'$z$', 'mm',\
                            bins=256, ppb=2,\
                            limits=zLimits),
-        caxis='category', beamState='screen_{0:02d}'.format(D_),
+        caxis=xrtp.XYCAxis('Reflections', 'number',\
+                data=raycing.get_reflection_number,\
+                bins=256, ppb=2, limits=None),
+#        caxis='category', beamState='screen_{0:02d}'.format(D_),
         title='Distance from source = {0:02d} [mm]'.format(D_))
 
     # Names
