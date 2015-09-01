@@ -62,8 +62,8 @@ def build_beamline(nrays=1000):
     beamLine.things = []
 
     # Set position and thickness
-    limPhysY = [36.95, 39.95]
-    limPhysX = [-3.0, 1.0]
+    limPhysY = [29.95, 39.95]
+    limPhysX = [-3.0, 3.0]
 
     # Tested material
     mGold = rm.Material('Au', rho=19.3)
@@ -112,7 +112,7 @@ def main():
     plots = []
 
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(3,-1,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(-1,3,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
@@ -129,7 +129,7 @@ def main():
     plots.append(plot)
 
     # Plot creation
-    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,),
+    plot = xrtp.XYCPlot('screen_{0:02d}'.format(D_),(1,3,),
         xaxis=xrtp.XYCAxis(r'$x$', 'mm',\
                            bins=256, ppb=2,\
                            limits=xLimits),
