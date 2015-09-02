@@ -22,12 +22,12 @@ from customobjects import CustomShape
 
 """ WELL DOCUMENTED PARAMETERS """
 repeats = 1e4   # liczba
-E0      = 29000  # [eV]
+E0      = 9000  # [eV]
 D_      = 40    # [mm] | constant screen position
 
 xLimits = [-4.05, 4.05] # Plot limits
 zLimits = [4*x for x in xLimits]
-#zLimits = xLimits       # axis square
+zLimits = xLimits       # axis square
 
 processes = 4
 
@@ -63,7 +63,7 @@ def build_beamline(nrays=1000):
     beamLine.things = []
 
     # Set position and thickness
-    limPhysY = [29.95, 39.95]
+    limPhysY = [34.95, 39.95]
     limPhysX = [-3.0, 3.0]
 
     # Tested material
