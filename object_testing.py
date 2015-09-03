@@ -63,11 +63,12 @@ def build_beamline(nrays=1000):
     beamLine.things = []
 
     # Set position and thickness
-    limPhysY = [34.95, 39.95]
+    limPhysY = [29.95, 39.95]
     limPhysX = [-3.0, 3.0]
 
     # Tested material
-    mGold = rm.Material('Au', rho=19.3)
+    mGold = rm.Material('Au', kind='mirror', rho=19.3)
+    mLead = rm.Material('Pb', kind='plate', rho=11.34)
     mGlass  = rm.Material(('Si', 'O'), kind='mirror',\
                           quantities=(1, 2), rho=2.2)
 
@@ -87,7 +88,7 @@ def build_beamline(nrays=1000):
                               beamLine,\
                               'd = {0:02d}'.format(D_),\
                               (0,D_,0)))
-    
+
     return beamLine
 
 def run_process(beamLine, shineOnly1stSource=False):
