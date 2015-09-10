@@ -4,6 +4,7 @@
 
 import numpy as np
 import matplotlib as mpl
+#mpl.use('Agg')
 import matplotlib.pyplot as plt
 import glob
 import os
@@ -231,8 +232,8 @@ def run_process(beamLine, shineOnly1stSource=False):
 
     # 
     outDict.update(prePinhole)
-    outDict.update(postPinhole)
-#    outDict.update(postNoPinhole)
+#    outDict.update(postPinhole)
+    outDict.update(postNoPinhole)
 
     return outDict
 

@@ -45,7 +45,8 @@ def exposeScreens(beamLine, beamToBeSeen, _range):
     # Debug utilities
     global cunter
     cunter += 1
-    print 'It\'s being run: ' + str(cunter) + ' time!'
+    # This is useless when multithreading
+    #print 'It\'s being run: ' + str(cunter) + ' time!'
 
     partDict = {}
     for it in beamLine.s_positions:
