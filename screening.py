@@ -7,6 +7,7 @@ import xrt.backends.raycing.screens as rsc
 #import xrt.backends.raycing.run as rr
 import xrt.backends.raycing as raycing
 import xrt.plotter as xrtp
+import csv  # For saving photons' coordinates
 
 # Insert screens in build_beamline() function
 # Usage: beamLine.myScreens = screens.createScreens()
@@ -57,6 +58,10 @@ def exposeScreens(beamLine, beamToBeSeen, _range):
             beamLine.isUsed[it] = True
 
     return partDict
+
+def extract_photons(beam, file):
+    writer = csv.writer(file, delimiter = '\t')
+    writer.writerows(zip(beam.x, beam.z, beam.a, beam.b, beam.c))
 
 # Prepare plots for raycing
 def createPlots(beamLine, bins=256, save=False):

@@ -18,16 +18,16 @@ import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 
 """ WELL DOCUMENTED PARAMETERS """
-repeats = 1e4   # liczba
+repeats = 1e1   # liczba
 E0      = 9000  # [eV]
-min_d   = 0     # [mm] | source - screen distance
+min_d   = 50    # [mm] | source - screen distance
 step    = 10    # [mm] | screen step size
 N_      = 5     # number of step to take
 
 xLimits = [-6.05, 6.05] # Plot limits
 zLimits = xLimits       # axis square
 
-processes = 8
+processes = 1
 
 """ GeometricSource():: PARAMETERS TO CHECK: """
 bl_height   = 0.
@@ -44,41 +44,49 @@ dz          = 0.1
 distzprime  = 'flat'
 dzprime     = 0.1
 
-def build_beamline(nrays=1000):
+def build_beamline(nrays=10):
     beamLine = raycing.BeamLine(height=bl_height)
-    
+
     # source appends itself to the provided beamline
     rs.GeometricSource(
         beamLine,'GeometricSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')
-        
+
     # some mysterious parameters
     beamLine.xzMax = bl_xzMax
-        
+
     # prepare container for multiple screens
     beamLine.myScreens = []
-    for it in range(0,N_):
+    for it in range(1):
         c_dist = min_d + it * step
         beamLine.myScreens.append(rsc.Screen(beamLine,
                                              'd = {0:02d}'.format(it),
                                             (0,c_dist,0)))
-                                            
     return beamLine
-    
+
+def ExtrancPhotons(beam):
+    blo = rs.Beam(copyFrom=beam, withNumberOfReflections=True)
+    print len(blo.x)
+    print blo.x
+    print 'dupa'
+
 def run_process(beamLine, shineOnly1stSource=False):
     beamSource = beamLine.sources[0].shine()
-    
+
     # prepare empty python - dictionary for screens
     outDict = {}
     # and for beames?
     outBeams = []
-    
-    for it in range(0,N_):
+
+    # Get positions and momentas
+    ExtrancPhotons(beamSource)
+
+    for it in range(1):
         outBeams.append(beamLine.myScreens[it].expose(beamSource))
         outDict['screen_{0:02d}'.format(it)] = outBeams[it]
-        
+
     return outDict
 rr.run_process = run_process
 
@@ -86,8 +94,8 @@ def main():
     beamLine = build_beamline()
     plots = []
 
-    
-    for it in range(0,N_):
+
+    for it in range(1):
         c_dist = min_d + it * step
         plot = xrtp.XYCPlot('screen_{0:02d}'.format(it),(1,3),
             xaxis=xrtp.XYCAxis(r'$x$', 'mm', bins=256, ppb=2, limits=xLimits),

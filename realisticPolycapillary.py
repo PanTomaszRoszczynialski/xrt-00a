@@ -66,8 +66,8 @@ rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 15 
-ny_bundle = 17
+nx_capillary = 5
+ny_bundle = 7
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -200,8 +200,13 @@ def run_process(beamLine, shineOnly1stSource=False):
     outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal
 
     # See them on screen 
+    # Connect here for individual photon extraction
     ExitScreen = beamLine.exitScreen.expose(beamCapillaryGlobalTotal)
     outDict['ExitScreen'] = ExitScreen
+
+    # Save photons from exit screen into the file
+    with open('photons.csv', 'a') as file:
+        scr.extract_photons(ExitScreen, file)
 
     # Create exposed beamlines in outside module screens.
     prePinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
@@ -230,7 +235,7 @@ def run_process(beamLine, shineOnly1stSource=False):
     postNoPinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
             [ypin, 200])
 
-    # 
+    # Choose whether to use pinholes or not
     outDict.update(prePinhole)
 #    outDict.update(postPinhole)
     outDict.update(postNoPinhole)
