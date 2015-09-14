@@ -60,8 +60,14 @@ def exposeScreens(beamLine, beamToBeSeen, _range):
     return partDict
 
 def extract_photons(beam, file):
+    good = (beam.state == 1) | (beam.state == 3)
+    x = beam.x[good]
+    z = beam.z[good]
+    a = beam.a[good]
+    b = beam.b[good]
+    c = beam.c[good]
     writer = csv.writer(file, delimiter = '\t')
-    writer.writerows(zip(beam.x, beam.z, beam.a, beam.b, beam.c))
+    writer.writerows(zip(x, z, a, b, c))
 
 # Prepare plots for raycing
 def createPlots(beamLine, bins=256, save=False):
