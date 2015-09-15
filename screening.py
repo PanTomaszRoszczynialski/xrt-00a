@@ -66,6 +66,11 @@ def extract_photons(beam, file):
     a = beam.a[good]
     b = beam.b[good]
     c = beam.c[good]
+
+    # Multithreading problems occur here
+    # when multiple threads try to write
+    # at the same time and messed up rows
+    # appear in the csv file...
     writer = csv.writer(file, delimiter = '\t')
     writer.writerows(zip(x, z, a, b, c))
 

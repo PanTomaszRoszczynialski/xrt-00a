@@ -66,8 +66,8 @@ rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 5
-ny_bundle = 7
+nx_capillary = 15
+ny_bundle = 17
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 

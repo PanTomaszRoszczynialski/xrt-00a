@@ -19,8 +19,9 @@ def photo_positions(photons):
     xx = []
     zz = []
     for row in photons:
-        xx.append(row[0])
-        zz.append(row[1])
+	if len(row) == 5:
+	    xx.append(row[0])
+	    zz.append(row[1])
 
     print "Number of saved photons:", len(xx)
     plt.scatter(xx,zz)
@@ -35,11 +36,12 @@ def photo_momenta(photons):
     bb = []
     cc = []
     for row in photons:
-        xx.append(row[0])
-        zz.append(row[1])
-        aa.append(row[2])
-        bb.append(row[3])
-        cc.append(row[4])
+	if len(row) == 5:
+	    xx.append(row[0])
+	    zz.append(row[1])
+	    aa.append(row[2])
+	    bb.append(row[3])
+	    cc.append(row[4])
     plt.quiver(xx, zz, aa, cc)
     plt.show()
 
