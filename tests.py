@@ -2,6 +2,39 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
+import xrt.backends.raycing as raycing
+from special_sources import DirectedSource
+from xrt.backends.raycing.screens import Screen
+
+
+def view_source():
+    E0 = 20000
+    # Source parameters
+    distx       = 'flat'
+    dx          = 0.1
+    distxprime  = 'flat'
+    dxprime     = 0.1
+    # z-direction
+    distz       = 'flat'
+    dz          = 0.1
+    distzprime  = 'flat'
+    dzprime     = 0.1
+    # Make beamline
+    beamLine = raycing.BeamLine(height=0)
+    # [0] - Source of light
+    DirectedSource(
+        beamLine,'DirectedSource',(0,0,0), nrays=1000,
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+        distE='lines', energies=(E0,), polarization=None)
+    # Screen
+    screen = Screen(beamLine, 'dupa', (0,40,0))
+    shining = beamLine.sources[0].shine(hitpoint = (3,40,1))
+    show = screen.expose(shining)
+    plt.scatter(show.x, show.z)
+    plt.show()
+
+
 def get_photons():
     file = open('photons.csv', 'r')
     csv_reader = csv.reader(file, delimiter = '\t',\
