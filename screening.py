@@ -7,7 +7,9 @@ import xrt.backends.raycing.screens as rsc
 #import xrt.backends.raycing.run as rr
 import xrt.backends.raycing as raycing
 import xrt.plotter as xrtp
-import csv  # For saving photons' coordinates
+import csv       # For saving photons' coordinates
+import threading # in one file from multiple threads
+lock = threading.Lock()
 
 # Insert screens in build_beamline() function
 # Usage: beamLine.myScreens = screens.createScreens()
@@ -59,6 +61,7 @@ def exposeScreens(beamLine, beamToBeSeen, _range):
 
     return partDict
 
+# Save each photon coordinates and momentum
 def extract_photons(beam, file):
     good = (beam.state == 1) | (beam.state == 3)
     x = beam.x[good]
@@ -71,8 +74,10 @@ def extract_photons(beam, file):
     # when multiple threads try to write
     # at the same time and messed up rows
     # appear in the csv file...
+    lock.acquire()
     writer = csv.writer(file, delimiter = '\t')
     writer.writerows(zip(x, z, a, b, c))
+    lock.release()
 
 # Prepare plots for raycing
 def createPlots(beamLine, bins=256, save=False):
