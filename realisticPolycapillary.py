@@ -76,18 +76,19 @@ pinlen  = 0.01                # Length
 rpin    = 0.005               # Pinhole radius [mm] | =Dout/10. 
 ypin    = 155 - pinlen        # Optical path position
 
+# FIXME - source parameters must be tuned for DirectedSource case
 # Source parameters
 distx       = 'flat'
-dx          = 0.1
+dx          = 0.01
 distxprime  = 'flat'
-dxprime     = 0.1
+dxprime     = 0.0002
 # z-direction
 distz       = 'flat'
-dz          = 0.1
+dz          = 0.01
 distzprime  = 'flat'
-dzprime     = 0.1
+dzprime     = 0.0002
 
-def build_beamline(nrays=1e4):
+def build_beamline(nrays=1e2):
     # Those parameters should be hel by some Lens object
     # FIXME - unfortunately they are used somewhere in screening ?
     beamLine = raycing.BeamLine(height=0)
@@ -173,10 +174,7 @@ def build_beamline(nrays=1e4):
 
 def run_process(beamLine, shineOnly1stSource=False):
     # [0]
-    beamSource = beamLine.sources[0].shine()
-    # at the entrance | unused
-    EntranceScreen = beamLine.entScreen.expose(beamSource)
-    outDict = {'beamSource': beamSource, 'EntranceScreen': EntranceScreen}
+    beamSource = beamLine.sources[0].shine(hitpoint = (0,10,0))
 
     # [1]
     # Start collecting capillaries' light
@@ -194,6 +192,10 @@ def run_process(beamLine, shineOnly1stSource=False):
             beamCapillaryGlobalTotal = beamCapillaryGlobal
         else:
             beamCapillaryGlobalTotal.concatenate(beamCapillaryGlobal)
+
+    # at the entrance | unused
+    EntranceScreen = beamLine.entScreen.expose(beamCapillaryGlobalTotal)
+    outDict = {'EntranceScreen': EntranceScreen}
 
     # Prepare acces to Global beam 
     # (individual capillaries might be acessed as well)
