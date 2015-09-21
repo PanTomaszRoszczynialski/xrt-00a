@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import glob
 import os
 
+from special_sources import DirectedSource
+
 from CapillaryElements import PolyCapillaryLens, StraightCapillary
 from CapillaryElements import Pinhole
 
@@ -99,8 +101,8 @@ def build_beamline(nrays=1e4):
     beamLine.nRefl  = nRefl
 
     # [0] - Source of light
-    rs.GeometricSource(
-        beamLine,'GeometricSource',(0,0,0), nrays=nrays,
+    DirectedSource(
+        beamLine,'DirectedSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')
@@ -180,6 +182,10 @@ def run_process(beamLine, shineOnly1stSource=False):
     # Start collecting capillaries' light
     beamCapillaryGlobalTotal = None
     for i, capillary in enumerate(beamLine.capillaries):
+        # FIXME - x,y,z confusion!
+        hitpoint = (capillary.x, y1, capillary.y)
+        # Shine source directly into the capillary
+        beamSource = beamLine.sources[0].shine(hitpoint=hitpoint)
         # Get both types of coordinates (global,local)
         beamCapillaryGlobal, beamCapillaryLocalN =\
             capillary.multiple_reflect(beamSource, maxReflections=nRefl)
@@ -187,11 +193,7 @@ def run_process(beamLine, shineOnly1stSource=False):
         if beamCapillaryGlobalTotal is None:
             beamCapillaryGlobalTotal = beamCapillaryGlobal
         else:
-            good = ((beamCapillaryGlobal.state == 1) |
-                    (beamCapillaryGlobal.state == 3))
-            # Add photons to GlobalTotal
-            rs.copy_beam(beamCapillaryGlobalTotal, beamCapillaryGlobal,
-                         good, includeState=True)
+            beamCapillaryGlobalTotal.concatenate(beamCapillaryGlobal)
 
     # Prepare acces to Global beam 
     # (individual capillaries might be acessed as well)
