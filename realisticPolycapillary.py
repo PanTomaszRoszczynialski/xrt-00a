@@ -183,8 +183,6 @@ def run_process(beamLine, shineOnly1stSource=False):
         # Get both types of coordinates (global,local)
         beamCapillaryGlobal, beamCapillaryLocalN =\
             capillary.multiple_reflect(beamSource, maxReflections=nRefl)
-        # Not sure what is this for 
-        beamCapillaryLocalN.phi /= np.pi
 
         if beamCapillaryGlobalTotal is None:
             beamCapillaryGlobalTotal = beamCapillaryGlobal
