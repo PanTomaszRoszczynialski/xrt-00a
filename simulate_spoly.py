@@ -56,11 +56,11 @@ class HexStructure(object):
 
                 x0 = self.capillary_diameter * ix +\
                     self.capillary_diameter/2.*iy + \
-                    1.* sigma * (rand() - 0.5) * \
+                    0.* sigma * (rand() - 0.5) * \
                     (self.capillary_diameter - self.channel_diameter)
 
                 y0 = np.sqrt(3)/2 * self.capillary_diameter * iy +\
-                    1.* sigma * (rand() - 0.5) * \
+                    0.* sigma * (rand() - 0.5) * \
                     (self.capillary_diameter - self.channel_diameter)
 
                 in_bundle = self.isInHexagon(x0,y0,\

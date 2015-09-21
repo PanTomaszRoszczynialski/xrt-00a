@@ -63,8 +63,14 @@ class BentCapillary(Capillary):
         # Prepare z direction polynomial of focusing capillary
         y = kwargs.pop('y')
         D = kwargs.pop('D')
-        x_in = kwargs.pop('x_in')
-        self.p = getPolyCoeffs(x_in, y, D)
+        r_in = kwargs.pop('r_in')
+        phi = kwargs['roll']
+        self.p = getPolyCoeffs(r_in, y, D)
+
+        # Save cartesian coordinates of capillary entrance
+        # (used for directed source)
+        self.x = r_in * np.cos(phi)
+        self.y = r_in * np.sin(phi)
 
         # Prepare variable radius
         r = kwargs.pop('radius')
@@ -120,13 +126,13 @@ class PolyCapillaryLens(object):
         # class at instantiation 
         self.structure = structure
 
-    def capillaryParameters(self, x_in, roll, beamLine):
+    def capillaryParameters(self, r_in, roll, beamLine):
         # Default 'positional' parameters
         args = [beamLine, 'bent', [0,0,0]]
 
         # Named parameters (dict of them)
         # Position of capillary in polar coordinates
-        kwargs = {'roll' : roll, 'x_in' : x_in}
+        kwargs = {'roll' : roll, 'r_in' : r_in}
 
         # Physical limit in y direction
         limPhysY = [self.y['y1'], self.y['y2'] ]
@@ -157,10 +163,10 @@ class PolyCapillaryLens(object):
         # by the lens structure
         for r, phi in self.structure.genPolars():
             roll = phi
-            x    = r
+            r_in    = r
 
-            # Capillary should care only about x and phi variable
-            args, kwargs = self.capillaryParameters(x, roll, beamLine)
+            # Capillary should care only about r_in and phi variable
+            args, kwargs = self.capillaryParameters(r_in, roll, beamLine)
             capillary = BentCapillary(*args, **kwargs)
             capillaries.append(capillary)
 

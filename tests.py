@@ -6,30 +6,38 @@ import xrt.backends.raycing as raycing
 from special_sources import DirectedSource
 from xrt.backends.raycing.screens import Screen
 
-
-def view_source():
+def add_source(beamLine):
     E0 = 20000
     # Source parameters
     distx       = 'flat'
     dx          = 0.1
     distxprime  = 'flat'
-    dxprime     = 0.1
+    dxprime     = 0.1/4
     # z-direction
     distz       = 'flat'
     dz          = 0.1
     distzprime  = 'flat'
-    dzprime     = 0.1
-    # Make beamline
-    beamLine = raycing.BeamLine(height=0)
+    dzprime     = 0.1/4
     # [0] - Source of light
     DirectedSource(
         beamLine,'DirectedSource',(0,0,0), nrays=1000,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization=None)
+
+
+def view_source():
+    # Make beamline
+    beamLine = raycing.BeamLine(height=0)
+    # [0] - Source of light
+    add_source(beamLine)
     # Screen
     screen = Screen(beamLine, 'dupa', (0,40,0))
+    # Multiple hitpoints
     shining = beamLine.sources[0].shine(hitpoint = (3,40,1))
+    shining_b = beamLine.sources[0].shine(hitpoint = (-1,40,1))
+    # Join 2 shining sources (or 1 shining in multiple directions)
+    shining.concatenate(shining_b)
     show = screen.expose(shining)
     plt.scatter(show.x, show.z)
     plt.show()

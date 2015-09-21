@@ -74,7 +74,7 @@ class DirectedSource(object):
         self._apply_distribution(bo.x, self.distx, self.dx)
         self._apply_distribution(bo.z, self.distz, self.dz)
 
-        # Only momentum distribution is different then in normal
+        # Only momentum distribution is different than in normal
         # source
         normfactor = np.sqrt(sum([x**2 for x in hitpoint]))
         a0 = 1. * hitpoint[0] / normfactor
