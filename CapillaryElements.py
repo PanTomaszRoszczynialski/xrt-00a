@@ -163,7 +163,7 @@ class PolyCapillaryLens(object):
         # by the lens structure
         for r, phi in self.structure.genPolars():
             roll = phi
-            r_in    = r
+            r_in = r
 
             # Capillary should care only about r_in and phi variable
             args, kwargs = self.capillaryParameters(r_in, roll, beamLine)
