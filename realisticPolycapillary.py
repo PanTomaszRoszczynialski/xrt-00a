@@ -81,12 +81,12 @@ ypin    = 155 - pinlen        # Optical path position
 distx       = 'flat'
 dx          = 0.01
 distxprime  = 'flat'
-dxprime     = 0.0002
+dxprime     = 0.002
 # z-direction
 distz       = 'flat'
 dz          = 0.01
 distzprime  = 'flat'
-dzprime     = 0.0002
+dzprime     = 0.005
 
 def build_beamline(nrays=1e2):
     # Those parameters should be hel by some Lens object
@@ -174,7 +174,7 @@ def build_beamline(nrays=1e2):
 
 def run_process(beamLine, shineOnly1stSource=False):
     # [0]
-    beamSource = beamLine.sources[0].shine(hitpoint = (0,10,0))
+    #beamSource = beamLine.sources[0].shine(hitpoint = (0,10,0))
 
     # [1]
     # Start collecting capillaries' light
