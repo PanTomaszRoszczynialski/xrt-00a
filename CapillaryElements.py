@@ -64,13 +64,13 @@ class BentCapillary(Capillary):
         y = kwargs.pop('y')
         D = kwargs.pop('D')
         r_in = kwargs.pop('r_in')
-        phi = kwargs['roll']
         self.p = getPolyCoeffs(r_in, y, D)
 
         # Save cartesian coordinates of capillary entrance
         # (used for directed source)
-        self.x = r_in * np.cos(phi)
-        self.y = r_in * np.sin(phi)
+        phi = - kwargs['roll']
+        self.xx = r_in * np.cos(phi)
+        self.zz = r_in * np.sin(phi)
 
         # Prepare variable radius
         r = kwargs.pop('radius')

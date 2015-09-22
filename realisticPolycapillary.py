@@ -81,12 +81,12 @@ ypin    = 155 - pinlen        # Optical path position
 distx       = 'flat'
 dx          = 0.01
 distxprime  = 'flat'
-dxprime     = 0.002
+dxprime     = 0.0002
 # z-direction
 distz       = 'flat'
 dz          = 0.01
 distzprime  = 'flat'
-dzprime     = 0.005
+dzprime     = 0.0002
 
 def build_beamline(nrays=1e2):
     # Those parameters should be hel by some Lens object
@@ -179,14 +179,20 @@ def run_process(beamLine, shineOnly1stSource=False):
     # [1]
     # Start collecting capillaries' light
     beamCapillaryGlobalTotal = None
+    sourceTotal = None
     for i, capillary in enumerate(beamLine.capillaries):
         # FIXME - x,y,z confusion!
-        hitpoint = (capillary.x, y1, capillary.y)
+        hitpoint = (capillary.xx, y1, capillary.zz)
         # Shine source directly into the capillary
         beamSource = beamLine.sources[0].shine(hitpoint=hitpoint)
         # Get both types of coordinates (global,local)
         beamCapillaryGlobal, beamCapillaryLocalN =\
             capillary.multiple_reflect(beamSource, maxReflections=nRefl)
+
+        if sourceTotal is None:
+            sourceTotal = beamSource
+        else:
+            sourceTotal.concatenate(beamSource)
 
         if beamCapillaryGlobalTotal is None:
             beamCapillaryGlobalTotal = beamCapillaryGlobal
@@ -194,14 +200,13 @@ def run_process(beamLine, shineOnly1stSource=False):
             beamCapillaryGlobalTotal.concatenate(beamCapillaryGlobal)
 
     # at the entrance | unused
-    EntranceScreen = beamLine.entScreen.expose(beamCapillaryGlobalTotal)
+    EntranceScreen = beamLine.entScreen.expose(sourceTotal)
     outDict = {'EntranceScreen': EntranceScreen}
 
     # Prepare acces to Global beam 
     # (individual capillaries might be acessed as well)
     outDict['beamCapillaryGlobalTotal'] = beamCapillaryGlobalTotal
-
-    # See them on screen 
+# See them on screen 
     # Connect here for individual photon extraction
     ExitScreen = beamLine.exitScreen.expose(beamCapillaryGlobalTotal)
     outDict['ExitScreen'] = ExitScreen

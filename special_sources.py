@@ -3,7 +3,6 @@ import xrt.backends.raycing.sources as rs
 from xrt.backends.raycing.sources import *
 import numpy as np
 
-defaultEnergy = 9.0e3
 
 class DirectedSource(object):
     """Implements a geometric source with given direction"""
@@ -12,7 +11,7 @@ class DirectedSource(object):
         self, bl, name, center=(0, 0, 0), nrays=raycing.nrays, distx='normal',
         dx=0.32, disty=None, dy=0, distz='normal', dz=0.018,
         distxprime='normal', dxprime=1e-3, distzprime='normal', dzprime=1e-4,
-        distE='lines', energies=(defaultEnergy,),
+        distE='lines', energies=(9.0e3,),
             polarization='horizontal', filamentBeam=False):
 
         self.bl = bl
@@ -81,9 +80,9 @@ class DirectedSource(object):
         aMin, aMax = a0 - self.dxprime, a0 + self.dxprime
         bo.a = np.random.uniform(aMin, aMax, self.nrays)
 
-        b0 = 1. * hitpoint[2] / normfactor
-        bMin, bMax = b0 - self.dzprime, b0 + self.dzprime
-        bo.c = np.random.uniform(bMin, bMax, self.nrays)
+        c0 = 1. * hitpoint[2] / normfactor
+        cMin, cMax = c0 - self.dzprime, c0 + self.dzprime
+        bo.c = np.random.uniform(cMin, cMax, self.nrays)
 
 # normalize (a,b,c):
         ac = bo.a**2 + bo.c**2
