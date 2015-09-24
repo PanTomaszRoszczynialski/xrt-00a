@@ -1,0 +1,8 @@
+16 iterations took 1333.0 s
+finished
+Number of used capillaries:  3721
+CPU times: user 3.88 s, sys: 355 ms, total: 4.23 s
+Wall time: 22min 17s
+
+good photons: 148 853 
+all photons:  372 100

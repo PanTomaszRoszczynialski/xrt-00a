@@ -4,10 +4,11 @@
 
 import numpy as np
 import matplotlib as mpl
-#mpl.use('Agg')
+mpl.use('Agg')
 import matplotlib.pyplot as plt
 import glob
 import os
+import thread
 
 from special_sources import DirectedSource
 
@@ -32,11 +33,12 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 5e4           # number of ray traycing iterations
+repeats = 10           # number of ray traycing iterations
 processes = 8           # number of processes used
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
 save    = True          # save results as pickles?
+_pinholes = False       # put fake object into focus
 
 # Delete all pickle files (they can always be recovered from git)
 picklePaths = glob.glob('pickle/*.pickle')
@@ -69,7 +71,7 @@ wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
 nx_capillary = 9
-ny_bundle = 7
+ny_bundle = 9
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -88,7 +90,7 @@ dz          = 0.01
 distzprime  = 'flat'
 dzprime     = 0.0002
 
-def build_beamline(nrays=1e2):
+def build_beamline(nrays=1e1):
     # Those parameters should be hel by some Lens object
     # FIXME - unfortunately they are used somewhere in screening ?
     beamLine = raycing.BeamLine(height=0)
@@ -199,6 +201,12 @@ def run_process(beamLine, shineOnly1stSource=False):
         else:
             beamCapillaryGlobalTotal.concatenate(beamCapillaryGlobal)
 
+        # Debug output
+        if i%1000 is 23:
+            print "{2} capillary reached in thread {0}, and process {1}".format(thread.get_ident(), os.getpid(), i)
+
+    print "run done"
+
     # at the entrance | unused
     EntranceScreen = beamLine.entScreen.expose(sourceTotal)
     outDict = {'EntranceScreen': EntranceScreen}
@@ -234,18 +242,19 @@ def run_process(beamLine, shineOnly1stSource=False):
             rs.copy_beam(pinholeGlobalTotal, pinholeGlobal,\
                     good, includeState=True)
 
-    # Expose screens to post pinholes beam
-    postPinhole = scr.exposeScreens(beamLine, pinholeGlobalTotal,\
-            [ypin, 200])
-
-    # [2] - bypass the pinhole
-    postNoPinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
-            [ypin, 200])
+    if _pinholes:
+        # Expose screens to post pinholes beam
+        postPinhole = scr.exposeScreens(beamLine, pinholeGlobalTotal,\
+                [ypin, 200])
+        outDict.update(postPinhole)
+    else:
+        # [2] - bypass the pinhole
+        postNoPinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
+                [ypin, 200])
+        outDict.update(postNoPinhole)
 
     # Choose whether to use pinholes or not
     outDict.update(prePinhole)
-#    outDict.update(postPinhole)
-    outDict.update(postNoPinhole)
 
     return outDict
 
