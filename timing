@@ -1,8 +1,8 @@
-th 16 iterations took 5492.4 s
+th 16 iterations took 11950.1 s
 finished
-Number of used capillaries:  11557
-CPU times: user 4.97 s, sys: 328 ms, total: 5.3 s
-Wall time: 1h 31min 35s
+Number of used capillaries:  21463
+CPU times: user 6.38 s, sys: 389 ms, total: 6.77 s
+Wall time: 3h 19min 14s
 
-good : 738 387
-all  : 1 849 120
+good : 1 371 172
+all  : 3 434 080
