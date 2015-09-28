@@ -9,6 +9,7 @@ import matplotlib.pyplot as plt
 import glob
 import os
 import thread
+from datetime import datetime
 
 from special_sources import DirectedSource
 
@@ -70,8 +71,8 @@ rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 13
-ny_bundle = 15
+nx_capillary = 15
+ny_bundle = 21
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -203,7 +204,10 @@ def run_process(beamLine, shineOnly1stSource=False):
 
         # Debug output
         if i%1000 is 23:
-            print "{2} capillary reached in thread {0}, and process {1}".format(thread.get_ident(), os.getpid(), i)
+            print "{2} capillary reached in thread {0}, and process {1}. Time: {3}".format(thread.get_ident(),\
+                                                                                           os.getpid(),\
+                                                                                           i,\
+                                                                                           datetime.now())
 
     print "run done"
 
