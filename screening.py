@@ -75,9 +75,12 @@ def extract_photons(beam, file):
     # at the same time and messed up rows
     # appear in the csv file...
     lock.acquire()
+    print 'acquire'
     writer = csv.writer(file, delimiter = '\t')
     writer.writerows(zip(x, z, a, b, c))
+    print 'release'
     lock.release()
+    
 
 # Prepare plots for raycing
 def createPlots(beamLine, bins=256, save=False):
