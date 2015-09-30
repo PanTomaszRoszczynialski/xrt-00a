@@ -36,6 +36,7 @@ from LensPolynomial import getPolyCoeffs
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 16**2           # number of ray traycing iterations
 processes = 8           # number of processes used
+threads = 8
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
 save    = True          # save results as pickles?
@@ -224,8 +225,8 @@ def run_process(beamLine, shineOnly1stSource=False):
     outDict['ExitScreen'] = ExitScreen
 
     # Save photons from exit screen into the file
-    with open('photons.csv', 'a') as file:
-        scr.extract_photons(ExitScreen, file)
+    filename = 'photons.csv'
+    scr.extract_photons(ExitScreen, filename)
 
     # Create exposed beamlines in outside module screens.
     prePinhole = scr.exposeScreens(beamLine, beamCapillaryGlobalTotal,\
