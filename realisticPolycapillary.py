@@ -4,7 +4,7 @@
 
 import numpy as np
 import matplotlib as mpl
-mpl.use('Agg')
+#mpl.use('Agg')
 import matplotlib.pyplot as plt
 import glob
 import os
@@ -39,11 +39,12 @@ processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
 nRefl   = 125           # number of reflections
+_clear   = True
 save    = True          # save results as pickles?
 _pinholes = False       # put fake object into focus
 
 # Delete all pickle files (they can always be recovered from git)
-if False:
+if _clear:
     picklePaths = glob.glob('pickle/*.pickle')
 
     for path in picklePaths:
@@ -84,12 +85,12 @@ ypin    = 155 - pinlen        # Optical path position
 # FIXME - source parameters must be tuned for DirectedSource case
 # Source parameters
 distx       = 'flat'
-dx          = 0.01*10
+dx          = 1e-9
 distxprime  = 'flat'
 dxprime     = 0.0002
 # z-direction
 distz       = 'flat'
-dz          = 0.01*10
+dz          = 1e-9
 distzprime  = 'flat'
 dzprime     = 0.0002
 

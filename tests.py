@@ -10,12 +10,12 @@ def add_source(beamLine):
     E0 = 20000
     # Source parameters
     distx       = 'flat'
-    dx          = 0.01
+    dx          = 1e-9
     distxprime  = 'flat'
     dxprime     = 0.0002
     # z-direction
     distz       = 'flat'
-    dz          = 0.01
+    dz          = 1e-9
     distzprime  = 'flat'
     dzprime     = 0.0002
     # [0] - Source of light
@@ -87,6 +87,10 @@ def photo_momenta(photons):
     plt.show()
 
 if __name__ == '__main__':
-    photons = get_photons()
-    photo_positions(photons)
-    photo_momenta(photons)
+    if False:
+	photons = get_photons()
+	photo_positions(photons)
+	photo_momenta(photons)
+
+    if True:
+	view_source()
