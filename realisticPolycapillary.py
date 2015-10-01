@@ -34,7 +34,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 16**2           # number of ray traycing iterations
+repeats = 16*8           # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
@@ -43,19 +43,20 @@ save    = True          # save results as pickles?
 _pinholes = False       # put fake object into focus
 
 # Delete all pickle files (they can always be recovered from git)
-picklePaths = glob.glob('pickle/*.pickle')
+if False:
+    picklePaths = glob.glob('pickle/*.pickle')
 
-for path in picklePaths:
-    print 'Deleting pickle:', path
-    os.remove(path)
+    for path in picklePaths:
+        print 'Deleting pickle:', path
+        os.remove(path)
 
-# Lower expectations for home computers
-if mp.cpu_count() <= 2:
-    repeats = 100
-    processes = 1
-    print "Running on a slow machine"
-else:
-    print "Running on a fast machine"
+    # Lower expectations for home computers
+    if mp.cpu_count() <= 2:
+        repeats = 100
+        processes = 1
+        print "Running on a slow machine"
+    else:
+        print "Running on a fast machine"
 
 # Constant capillary/setup parameters [mm]
 y0 =    0.      # relative light source position
@@ -72,8 +73,8 @@ rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 5
-ny_bundle = 3
+nx_capillary = 11
+ny_bundle = 13
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -83,12 +84,12 @@ ypin    = 155 - pinlen        # Optical path position
 # FIXME - source parameters must be tuned for DirectedSource case
 # Source parameters
 distx       = 'flat'
-dx          = 0.01
+dx          = 0.01*10
 distxprime  = 'flat'
 dxprime     = 0.0002
 # z-direction
 distz       = 'flat'
-dz          = 0.01
+dz          = 0.01*10
 distzprime  = 'flat'
 dzprime     = 0.0002
 
