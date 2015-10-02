@@ -12,12 +12,12 @@ def add_source(beamLine):
     distx       = 'flat'
     dx          = 1e-9
     distxprime  = 'flat'
-    dxprime     = 0.0002
+    dxprime     = 0.002
     # z-direction
     distz       = 'flat'
     dz          = 1e-9
     distzprime  = 'flat'
-    dzprime     = 0.0002
+    dzprime     = 0.002
     # [0] - Source of light
     DirectedSource(
         beamLine,'DirectedSource',(0,0,0), nrays=3000,
