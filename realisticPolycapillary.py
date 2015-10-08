@@ -12,6 +12,7 @@ import thread
 from datetime import datetime
 
 from special_sources import DirectedSource
+from special_sources import FittedSource
 
 from CapillaryElements import PolyCapillaryLens, StraightCapillary
 from CapillaryElements import Pinhole
@@ -34,7 +35,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 16*3           # number of ray traycing iterations
+repeats = 8             # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
@@ -70,12 +71,12 @@ Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  8.      # max diameter
 D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
-rIn =   0.006     # capillary radius
+rIn =   0.06     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 11
-ny_bundle = 9
+nx_capillary = 3
+ny_bundle = 5
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -83,18 +84,19 @@ rpin    = 0.005               # Pinhole radius [mm] | =Dout/10.
 ypin    = 155 - pinlen        # Optical path position
 
 # FIXME - source parameters must be tuned for DirectedSource case
+# for FittedSource as well, and critical angle should not be guessed
 # Source parameters
 _rays       = 300
 # x-direction
 distx       = 'flat'
-dx          = 1e-9
+dx          = rIn
 distxprime  = 'flat'
-dxprime     = 0.002
+dxprime     = 0.00002
 # z-direction
 distz       = 'flat'
-dz          = 1e-9
+dz          = rIn
 distzprime  = 'flat'
-dzprime     = 0.002
+dzprime     = 0.02
 
 def build_beamline(nrays=_rays):
     # Those parameters should be hel by some Lens object
@@ -110,7 +112,7 @@ def build_beamline(nrays=_rays):
     beamLine.nRefl  = nRefl
 
     # [0] - Source of light
-    DirectedSource(
+    FittedSource(
         beamLine,'DirectedSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,

@@ -4,9 +4,30 @@ import matplotlib.pyplot as plt
 
 import xrt.backends.raycing as raycing
 from special_sources import DirectedSource
+from special_sources import FittedSource
 from xrt.backends.raycing.screens import Screen
 
-def add_source(beamLine):
+def add_FittedSource(beamLine):
+    E0 = 20000
+    # Source parameters
+    distx       = 'flat'
+    dx          = 0.006
+    distxprime  = 'flat'
+    dxprime     = 0.03
+    # z-direction
+    distz       = 'flat'
+    dz          = 0.006
+    distzprime  = 'flat'
+    dzprime     = 0.03
+    # [0] - Source of light
+    FittedSource(
+        beamLine,'FittedSource',(0,40,0), nrays=3000,
+        distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+        distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+        distE='lines', energies=(E0,), polarization=None)
+
+
+def add_DirectedSource(beamLine):
     E0 = 20000
     # Source parameters
     distx       = 'flat'
@@ -30,7 +51,7 @@ def view_source():
     # Make beamline
     beamLine = raycing.BeamLine(height=0)
     # [0] - Source of light
-    add_source(beamLine)
+    add_FittedSource(beamLine)
     # Screen
     screen = Screen(beamLine, 'dupa', (0,40,0))
     # Multiple hitpoints
