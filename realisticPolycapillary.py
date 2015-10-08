@@ -76,7 +76,7 @@ wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
 nx_capillary = 3
-ny_bundle = 5
+ny_bundle = 7
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -91,7 +91,7 @@ _rays       = 300
 distx       = 'flat'
 dx          = rIn
 distxprime  = 'flat'
-dxprime     = 0.00002
+dxprime     = 0.02
 # z-direction
 distz       = 'flat'
 dz          = rIn
