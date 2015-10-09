@@ -35,7 +35,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 64            # number of ray traycing iterations
+repeats = 8            # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
@@ -71,12 +71,12 @@ Din =   4.5     # lens entrance diameter
 Dout =  2.4     # lens exit diameter
 Dmax =  8.      # max diameter
 D_settings = {'Din' : Din, 'Dout' : Dout, 'Dmax' : Dmax}
-rIn =   0.06     # capillary radius
+rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 5
-ny_bundle = 5
+nx_capillary = 11
+ny_bundle = 11
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -86,7 +86,7 @@ ypin    = 155 - pinlen        # Optical path position
 # FIXME - source parameters must be tuned for DirectedSource case
 # for FittedSource as well, and critical angle should not be guessed
 # Source parameters
-_rays       = 300
+_rays       = 100
 _tmp_factor = 0.1
 # x-direction
 distx       = 'flat'
@@ -100,9 +100,11 @@ distzprime  = 'flat'
 dzprime     = 0.01 * _tmp_factor
 
 def build_beamline(nrays=_rays):
+    # This is necessary
+    beamLine = raycing.BeamLine(height=0)
+
     # Those parameters should be hel by some Lens object
     # FIXME - unfortunately they are used somewhere in screening ?
-    beamLine = raycing.BeamLine(height=0)
     beamLine.y0 = y0
     beamLine.y1 = y1
     beamLine.y2 = y2
