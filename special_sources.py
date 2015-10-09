@@ -173,10 +173,10 @@ class FittedSource(object):
         # distx and such doesn't matter in this kind of source
         # everything is flat FIXME ?
         xMin, xMax = hitpoint[0] - self.dx, hitpoint[0] + self.dx
-        bo.x = np.random.uniform(xMin, xMax, self.nrays)
+	bo.x[:] = np.random.uniform(xMin, xMax, self.nrays)
 
         yMin, yMax = hitpoint[2] - self.dz, hitpoint[2] + self.dz
-        bo.z = np.random.uniform(yMin, yMax, self.nrays)
+	bo.z[:] = np.random.uniform(yMin, yMax, self.nrays)
 
         # Only momentum distribution is different than in normal
         # source

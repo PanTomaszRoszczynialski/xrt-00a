@@ -52,13 +52,13 @@ if _clear:
         print 'Deleting pickle:', path
         os.remove(path)
 
-    # Lower expectations for home computers
-    if mp.cpu_count() <= 2:
-        repeats = 8
-        processes = 1
-        print "Running on a slow machine"
-    else:
-        print "Running on a fast machine"
+# Lower expectations for home computers
+if mp.cpu_count() <= 2:
+    repeats = 8
+    processes = 1
+    print "Running on a slow machine"
+else:
+    print "Running on a fast machine"
 
 # Constant capillary/setup parameters [mm]
 y0 =    0.      # relative light source position
@@ -76,7 +76,7 @@ wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
 nx_capillary = 3
-ny_bundle = 7
+ny_bundle = 3
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -91,12 +91,12 @@ _rays       = 300
 distx       = 'flat'
 dx          = rIn*1.5
 distxprime  = 'flat'
-dxprime     = 0.02
+dxprime     = 0.000002
 # z-direction
 distz       = 'flat'
 dz          = rIn * 1.5
 distzprime  = 'flat'
-dzprime     = 0.02
+dzprime     = 0.000002
 
 def build_beamline(nrays=_rays):
     # Those parameters should be hel by some Lens object
@@ -113,7 +113,7 @@ def build_beamline(nrays=_rays):
 
     # [0] - Source of light
     FittedSource(
-        beamLine,'DirectedSource',(0,40,0), nrays=nrays,
+        beamLine,'DirectedSource',(0,39.99,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')

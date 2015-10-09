@@ -11,12 +11,12 @@ def add_FittedSource(beamLine):
     E0 = 20000
     # Source parameters
     distx       = 'flat'
-    dx          = 0.006
+    dx          = 0.6
     distxprime  = 'flat'
     dxprime     = 0.03
     # z-direction
     distz       = 'flat'
-    dz          = 0.006
+    dz          = 0.06
     distzprime  = 'flat'
     dzprime     = 0.03
     # [0] - Source of light
