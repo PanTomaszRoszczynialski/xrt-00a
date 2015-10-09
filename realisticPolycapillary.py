@@ -87,7 +87,7 @@ ypin    = 155 - pinlen        # Optical path position
 # for FittedSource as well, and critical angle should not be guessed
 # Source parameters
 _rays       = 300
-_tmp_factor = 0.25
+_tmp_factor = 0.1
 # x-direction
 distx       = 'flat'
 dx          = rIn*1.5
