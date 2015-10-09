@@ -35,7 +35,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 16            # number of ray traycing iterations
+repeats = 64            # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
@@ -91,12 +91,12 @@ _rays       = 300
 distx       = 'flat'
 dx          = rIn*1.5
 distxprime  = 'flat'
-dxprime     = 0.002
+dxprime     = 0.01
 # z-direction
 distz       = 'flat'
 dz          = rIn * 1.5
 distzprime  = 'flat'
-dzprime     = 0.0002
+dzprime     = 0.01
 
 def build_beamline(nrays=_rays):
     # Those parameters should be hel by some Lens object
