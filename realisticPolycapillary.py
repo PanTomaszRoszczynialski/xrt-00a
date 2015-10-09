@@ -113,7 +113,7 @@ def build_beamline(nrays=_rays):
 
     # [0] - Source of light
     FittedSource(
-        beamLine,'DirectedSource',(0,0,0), nrays=nrays,
+        beamLine,'DirectedSource',(0,40,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')
