@@ -54,7 +54,7 @@ if _clear:
 
     # Lower expectations for home computers
     if mp.cpu_count() <= 2:
-        repeats = 100
+        repeats = 8
         processes = 1
         print "Running on a slow machine"
     else:
@@ -89,12 +89,12 @@ ypin    = 155 - pinlen        # Optical path position
 _rays       = 300
 # x-direction
 distx       = 'flat'
-dx          = rIn
+dx          = rIn*1.5
 distxprime  = 'flat'
 dxprime     = 0.02
 # z-direction
 distz       = 'flat'
-dz          = rIn
+dz          = rIn * 1.5
 distzprime  = 'flat'
 dzprime     = 0.02
 
