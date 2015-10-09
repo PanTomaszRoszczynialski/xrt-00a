@@ -96,7 +96,7 @@ dxprime     = 0.002
 distz       = 'flat'
 dz          = rIn * 1.5
 distzprime  = 'flat'
-dzprime     = 0.002
+dzprime     = 0.0002
 
 def build_beamline(nrays=_rays):
     # Those parameters should be hel by some Lens object
