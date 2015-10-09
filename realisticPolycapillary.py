@@ -86,8 +86,8 @@ ypin    = 155 - pinlen        # Optical path position
 # FIXME - source parameters must be tuned for DirectedSource case
 # for FittedSource as well, and critical angle should not be guessed
 # Source parameters
-_rays       = 100
-_tmp_factor = 0.1
+_rays       = 30
+_tmp_factor = 0.05
 # x-direction
 distx       = 'flat'
 dx          = rIn*1.5
