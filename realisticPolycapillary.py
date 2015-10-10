@@ -86,18 +86,20 @@ ypin    = 155 - pinlen        # Optical path position
 # FIXME - source parameters must be tuned for DirectedSource case
 # for FittedSource as well, and critical angle should not be guessed
 # Source parameters
-_rays       = 30
-_tmp_factor = 0.05
+_rays       = 20
+_tmp_factor = 0.00025
 # x-direction
 distx       = 'flat'
 dx          = rIn*1.5
 distxprime  = 'flat'
-dxprime     = 0.01 * _tmp_factor
+dxprime     = _tmp_factor
 # z-direction
 distz       = 'flat'
 dz          = rIn * 1.5
 distzprime  = 'flat'
-dzprime     = 0.01 * _tmp_factor
+dzprime     = _tmp_factor
+
+print 'Divergence: ', _tmp_factor. '[au?]'
 
 def build_beamline(nrays=_rays):
     # This is necessary
