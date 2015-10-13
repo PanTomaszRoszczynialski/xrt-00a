@@ -35,7 +35,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 32            # number of ray traycing iterations
+repeats = 8            # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
@@ -75,8 +75,8 @@ rIn =   0.006     # capillary radius
 wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
-nx_capillary = 15
-ny_bundle = 17
+nx_capillary = 9
+ny_bundle = 7
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
@@ -87,19 +87,18 @@ ypin    = 155 - pinlen        # Optical path position
 # for FittedSource as well, and critical angle should not be guessed
 # Source parameters
 _rays       = 50
-_tmp_factor = 30.0/E0
-# x-direction
+# Source parameters
 distx       = 'flat'
-dx          = rIn*1.5
+dx          = 0.001
 distxprime  = 'flat'
-dxprime     = _tmp_factor
+dxprime     = 0.00025
 # z-direction
 distz       = 'flat'
-dz          = rIn * 1.5
+dz          = 0.001
 distzprime  = 'flat'
-dzprime     = _tmp_factor
+dzprime     = 0.00025
 
-print 'Divergence: ', _tmp_factor, '[au?]'
+print 'Divergence: ', dxprime, '[au?]'
 
 def build_beamline(nrays=_rays):
     # This is necessary
@@ -117,8 +116,8 @@ def build_beamline(nrays=_rays):
     beamLine.nRefl  = nRefl
 
     # [0] - Source of light
-    FittedSource(
-        beamLine,'DirectedSource',(0,39.99,0), nrays=nrays,
+    DirectedSource(
+        beamLine,'DirectedSource',(0,0,0), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')

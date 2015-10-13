@@ -11,14 +11,14 @@ def add_FittedSource(beamLine):
     E0 = 20000
     # Source parameters
     distx       = 'flat'
-    dx          = 0.6
+    dx          = 0.001
     distxprime  = 'flat'
-    dxprime     = 0.03
+    dxprime     = 0.001
     # z-direction
     distz       = 'flat'
-    dz          = 0.06
+    dz          = 0.001
     distzprime  = 'flat'
-    dzprime     = 0.03
+    dzprime     = 0.002
     # [0] - Source of light
     FittedSource(
         beamLine,'FittedSource',(0,40,0), nrays=3000,
@@ -31,14 +31,14 @@ def add_DirectedSource(beamLine):
     E0 = 20000
     # Source parameters
     distx       = 'flat'
-    dx          = 1e-9
+    dx          = 0.001
     distxprime  = 'flat'
-    dxprime     = 0.002
+    dxprime     = 0.00025
     # z-direction
     distz       = 'flat'
-    dz          = 1e-9
+    dz          = 0.001
     distzprime  = 'flat'
-    dzprime     = 0.002
+    dzprime     = 0.00025
     # [0] - Source of light
     DirectedSource(
         beamLine,'DirectedSource',(0,0,0), nrays=3000,
@@ -51,7 +51,7 @@ def view_source():
     # Make beamline
     beamLine = raycing.BeamLine(height=0)
     # [0] - Source of light
-    add_FittedSource(beamLine)
+    add_DirectedSource(beamLine)
     # Screen
     screen = Screen(beamLine, 'dupa', (0,40,0))
     # Multiple hitpoints
