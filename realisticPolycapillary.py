@@ -86,7 +86,7 @@ ypin    = 155 - pinlen        # Optical path position
 # FIXME - source parameters must be tuned for DirectedSource case
 # for FittedSource as well, and critical angle should not be guessed
 # Source parameters
-_rays       = 50
+_rays       = 80
 # Source parameters
 distx       = 'flat'
 dx          = 0.001
@@ -117,7 +117,7 @@ def build_beamline(nrays=_rays):
 
     # [0] - Source of light
     DirectedSource(
-        beamLine,'DirectedSource',(0,0.0,0.01), nrays=nrays,
+        beamLine,'DirectedSource',(0,0.0,0.005), nrays=nrays,
         distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
         distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
         distE='lines', energies=(E0,), polarization='horizontal')
