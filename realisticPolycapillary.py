@@ -35,7 +35,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 8            # number of ray traycing iterations
+repeats = 48            # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
@@ -76,7 +76,7 @@ wall =   0.001 # |*50 make wider walls for structure visibility
 
 # Hex structure parameters
 nx_capillary = 9
-ny_bundle = 7
+ny_bundle = 13
 
 # Pinhole parameters
 pinlen  = 0.01                # Length 
