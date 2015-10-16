@@ -35,7 +35,7 @@ from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
-repeats = 48            # number of ray traycing iterations
+repeats = 128            # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
 E0      = 9000.         # energy in electronoVolts
