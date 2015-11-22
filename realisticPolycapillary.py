@@ -34,12 +34,14 @@ import xrt.backends.raycing.screens as rsc
 from LensPolynomial import getPolyCoeffs
 
 # ray traycing settings (powerful pc defaults)    
-mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 repeats = 8             # number of ray traycing iterations
 processes = 8           # number of processes used
 threads = 8
-E0      = 9000.         # energy in electronoVolts
+
 nRefl   = 125           # number of reflections
+mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
+E0      = 9000.         # energy in electronoVolts
+
 _clear   = True
 save    = True          # save results as pickles?
 _pinholes = False       # put fake object into focus
