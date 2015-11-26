@@ -10,6 +10,7 @@ mGold   = rm.Material('Au', rho=19.3)
 # about separate sections of logic, like
 # radius = {'in' : 0.1}
 class Capillary(roe.OE):
+    """ Shapless abstraction of a single light transmitting pipe """
     def __init__(self, *args, **kwargs):
         # Init parent class (Optical Element )
         roe.OE.__init__(self, *args, **kwargs)

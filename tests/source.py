@@ -30,15 +30,13 @@ class SourceTest(object):
         distzprime  = 'flat'
         dzprime     = 0.02
 
-        # Initialize tested structure with a line of source hitpoints
+        # Initialize tested structure with a line of source hitpoints,
+        # they are used only in the run_process mechanism
         structure = []
         for it in range(-10, 10):
             r = 15
             x = r * it / 5.
             y = 0
-            # phi = 2. * np.pi * it / 40.0
-            # x = r * np.cos(phi)
-            # y = r * np.sin(phi)
             structure.append([x, y])
         self.hitpoints = structure
 
@@ -59,8 +57,8 @@ class SourceTest(object):
                                         (0,400,0))
 
     def set_structure(self, structure):
-        """ Run before make_run_process,
-        akes a list of [x, y] pairs with positions
+        """ Call this method before make_run_process,
+        makes a list of [x, y] pairs with positions
         we wan't to illuminate with the source """
         self.hitpoints = structure
 
@@ -70,7 +68,7 @@ class SourceTest(object):
 
             beamTotal = None
 
-            # TODO this should be settable via some setStrucure
+            # This structure can be re-set
             for hp in self.hitpoints:
 
                 # And this should read hp = structure.next()
