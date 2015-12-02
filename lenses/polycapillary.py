@@ -4,6 +4,7 @@ import numpy as np
 
 # Constant materials
 mGold   = rm.Material('Au', rho=19.3)
+mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 class Capillary(roe.OE):
     """ Single light transmitting pipe """
@@ -27,6 +28,10 @@ class Capillary(roe.OE):
         return self.pr[1] + 2*self.pr[2]*s
 
     def local_r(self, s, phi):
+        # FIXME: this method seems to be generating highly
+        # erroneus behavior -- photons get outside of the
+        # capillary and also bounce more times then allowed
+        # in the xrt.multiple_reflect() method
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
         return self.local_r0(s) / (np.cos(phi)**2/den + np.sin(phi)**2)
 
@@ -35,12 +40,10 @@ class Capillary(roe.OE):
         b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
         c = -np.cos(phi)
         norm = np.sqrt(a**2 + b**2 + c**2)
-        # FIXME: a and c probably should also get minues
-        # but due to symmetry it's not visible for now?
-        return a/norm, -b/norm, c/norm
+        return a/norm, b/norm, c/norm
 
     def xyz_to_param(self, x, y, z):
-        """ *s*, *r*, *phi* are cynindrc-like coordinates of the capillary.
+        """ *s*, *r*, *phi* are cylindrc-like coordinates of the capillary.
         *s* is along y in inverse direction, started at the exit,
         *r* is measured from the capillary axis x0(s)
         *phi* is the polar angle measured from the z (vertical) direction."""
@@ -75,11 +78,12 @@ class StraightCapillary(Capillary):
         self.pr = [self.r_in, 0, 0]
 
         # Add missing parameters
-        kwargs.update({'material' : mGold})
+        # kwargs.update({'material' : mGold})
+        kwargs.update({'material' : mGlass})
 
         # Init parent capillary class
         Capillary.__init__(self, *args, **kwargs)
 
     def entrance_point(self):
         """ Returns cartesian coordinates of element's position """
-        return self.r_in * np.sin(self.phi), self.r_in * np.cos(self.phi)
+        return self.x_in * np.sin(self.phi), self.x_in * np.cos(self.phi)

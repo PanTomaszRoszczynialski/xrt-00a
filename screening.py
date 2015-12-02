@@ -81,7 +81,6 @@ def extract_photons(beam, filename):
 	writer.writerows(zip(x, z, a, b, c))
     print 'B'
     lock.release()
-    
 
 # Prepare plots for raycing
 def createPlots(beamLine, bins=256, save=False):

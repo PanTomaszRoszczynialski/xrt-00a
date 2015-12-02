@@ -105,7 +105,9 @@ class DirectedSource(object):
         return bo
 
 class FittedSource(object):
-    """Implements a geometric source with given direction"""
+    """Implements a geometric source with given direction.
+    Please keep source position outside of limPhysY of the
+    object being lit, as it leads to undefined behavior """
 
     def __init__(
         self, bl, name, center=(0, 0, 0), nrays=raycing.nrays, distx='normal',
@@ -178,7 +180,7 @@ class FittedSource(object):
         yMin, yMax = hitpoint[2] - self.dz, hitpoint[2] + self.dz
         bo.z = np.random.uniform(yMin, yMax, self.nrays)
 
-        # Only momentum distribution is different than in normal
+        # momentum distribution is different than in normal
         # source
         normfactor = np.sqrt(sum([x**2 for x in hitpoint]))
         a0 = 1. * hitpoint[0] / normfactor

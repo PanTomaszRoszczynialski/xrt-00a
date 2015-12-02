@@ -136,7 +136,11 @@ class SourceTest(object):
                 processes=1)
 
 def run_test():
-    source = ss.FittedSource
+    """ Creates circular arangement of illuminated regions
+    and plots xrt histograms right at the source end,
+    and also somewhere far (to observe beam divergence) """
+    # source = ss.FittedSource
+    source = ss.DirectedSource
     test = SourceTest(source)
 
     # Set circular structer, as a test
