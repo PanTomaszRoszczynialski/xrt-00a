@@ -11,19 +11,19 @@ import xrt.backends.raycing as raycing
 from lenses import polycapillary as pl
 from sources import special_sources as ss
 
-
 # Create source
 # Shine on a capillary
 # show on screen
 # done!
 
-class CapillaryTest(object):
+class StraightCapillaryTest(object):
     """ Implement shining through a single pipe-like object """
-    def __init__(self, x_in, r_in):
-        """ Take entrance point and radius of the capillary """
+    def __init__(self):
+        """ Tania przestrzen reklamowa """
 
-        self.x_in = x_in
-        self.r_in = r_in
+        # Default capillary position and radius
+        self.x_in = 0.0
+        self.r_in = 0.5
 
         # Default capillary dimensions:
         # 10cm capillary starting at 40mm
@@ -52,13 +52,14 @@ class CapillaryTest(object):
 
     def make_capillary(self):
         """ Not much here """
+        cap_dims = [self.y_start, self.y_end]
         self.capillary = pl.StraightCapillary(self.beamLine,
                                               'straightcap',
                                               [0, 0, 0],
                                               x_in = self.x_in,
                                               r = self.r_in,
                                               roll = 0/3,
-                                              limPhysY = [40, 142])
+                                              limPhysY = cap_dims)
 
     def make_source(self):
         """ Many source parameters are set here by hand """
@@ -86,8 +87,19 @@ class CapillaryTest(object):
             distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
             distE='lines', energies=(E0,), polarization='horizontal')
 
+    def set_capillary_position(self, pos):
+        """ """
+        self.x_in = pos
+
+    def set_capillary_radius(self, rad):
+        """ This is necessary """
+        self.r_in = rad
+
     def set_capillary_length(self, val):
         """ Can't change the startpoint """
+        if val is 0:
+            print 'Capillary length too short'
+            return
         self.y_end = self.y_start + val
 
     def set_prefix(self, fix):
@@ -117,12 +129,10 @@ class CapillaryTest(object):
 
         rr.run_process = local_process
 
-    def run_test(self):
+    def run_it(self):
         """ Prepares plots """
 
         self.make_it()
-
-        beamLine = self.beamLine
 
         # xrt.Plot constants
         bins = 256
@@ -153,20 +163,21 @@ class CapillaryTest(object):
                                limits=[0,10])
             ) # plot ends here
         plot.title = 'Capillary position'
-        plot.saveName = 'png/tests/' + self.prefix + '_near.png'
+        plot.saveName = 'png/tests/near/' + self.prefix + '_near.png'
         plots.append(plot)
 
         # Plot far after the exit
+        limits_far = [-5, 5]
         plot = xrtp.XYCPlot(
             'FarScreen', (1, 3,),
             xaxis=xrtp.XYCAxis(r'$x$', 'mm',
                                bins=bins,
                                ppb=2,
-                               limits=None),
+                               limits=limits_far),
             yaxis=xrtp.XYCAxis(r'$z$', 'mm',
                                bins=bins,
                                ppb=2,
-                               limits=None),
+                               limits=limits_far),
             beamState='FarScreen',
             # Colorbar and sidebar histogram 
             caxis=xrtp.XYCAxis('Reflections',
@@ -177,21 +188,30 @@ class CapillaryTest(object):
                                limits=[0,10])
             ) # different plot ends here
         plot.title = 'Divergence observations'
-        plot.saveName = 'png/tests/' + self.prefix + '_far.png'
+        plot.saveName = 'png/tests/far/' + self.prefix + '_far.png'
         plots.append(plot)
 
-        xrtr.run_ray_tracing(plots, repeats=20, beamLine=beamLine,\
+        xrtr.run_ray_tracing(plots, repeats=20, beamLine=self.beamLine,\
                 processes=1)
 
 def run_test():
     """ Full test """
-    x_in = 0.1
-    r_in = 0.5
-    test = CapillaryTest(x_in, r_in)
-    for it in range(20):
-        newlen = 10 + 20 * it
-        print 'Current length:', newlen, '[mm]'
-        prefix = 'capillary_length__' + str(1000+newlen)
-        test.set_prefix(prefix)
-        test.set_capillary_length(newlen)
-        test.run_test()
+    test = StraightCapillaryTest()
+
+    # Define values to be tested
+    radiuses  = [0.1, 0.2, 0.5, 0.7, 1.0]
+    positions = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+    lengths   = [10, 30, 50, 80, 100, 120, 150, 200]
+
+    # Run
+    for radius in radiuses:
+        test.set_capillary_radius(radius)
+        for position in positions:
+            test.set_capillary_position(position)
+            for length in lengths:
+                test.set_capillary_length(length)
+                fix = 'rad_' + str(radius)
+                fix += '___pos_' + str(position)
+                fix += '___len_' + str(1000+length)
+                test.set_prefix(fix)
+                test.run_it()
