@@ -1,5 +1,5 @@
 import matplotlib as mpl
-mpl.use('Agg')
+# mpl.use('Agg')
 
 import numpy as np
 import xrt.runner as xrtr
@@ -139,7 +139,10 @@ class StraightCapillaryTest(object):
         plots = []
 
         # Screen at the end of capillary
-        limits_near = [-1.2 * self.r_in, 1.2 * self.r_in]
+        limits_near_x = [self.x_in - 1.2 * self.r_in,
+                         self.x_in + 1.2 * self.r_in]
+        limits_near_z = [-1.2 * self.r_in,
+                         1.2 * self.r_in]
         plot = xrtp.XYCPlot(
             # Using named parameters might be good here TODO
             'ExitScreen', (1, 3,),
@@ -148,12 +151,12 @@ class StraightCapillaryTest(object):
             xaxis=xrtp.XYCAxis(r'$x$', 'mm',
                                bins=bins,
                                ppb=2,
-                               limits=limits_near),
+                               limits=limits_near_x),
             # As is this
             yaxis=xrtp.XYCAxis(r'$z$', 'mm',
                                bins=bins,
                                ppb=2,
-                               limits=limits_near),
+                               limits=limits_near_z),
             # Colorbar and sidebar histogram
             caxis=xrtp.XYCAxis('Reflections',
                                'number',
@@ -202,6 +205,9 @@ def run_test():
     radiuses  = [0.1, 0.2, 0.5, 0.7, 1.0]
     positions = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     lengths   = [10, 30, 50, 80, 100, 120, 150, 200]
+    radiuses = [0.5]
+    positions = [0.6]
+    lengths = [50]
 
     # Run
     for radius in radiuses:

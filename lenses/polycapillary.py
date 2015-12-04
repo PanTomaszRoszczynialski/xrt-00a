@@ -58,12 +58,18 @@ class Capillary(roe.OE):
         z = r * np.cos(phi)
         return x, y, z
 
+    def entrance_point(self):
+        """ Returns cartesian coordinates of element's position """
+        return self.x_in * np.sin(self.phi), self.x_in * np.cos(self.phi)
+
 class StraightCapillary(Capillary):
     """ Implements straight capillary parallel to the beam """
     def __init__(self, *args, **kwargs):
         self.x_in   = kwargs.pop('x_in')
         self.r_in   = kwargs.pop('r')
-        # No need to repeat values at instantiation
+
+        # This should be present only when y-information
+        # are used for shape coefficients calculations
         y = kwargs['limPhysY']
         self.y0 = y[0]
         self.y1 = y[1]
@@ -77,13 +83,31 @@ class StraightCapillary(Capillary):
         # Same concept with radius
         self.pr = [self.r_in, 0, 0]
 
-        # Add missing parameters
+        # This should be settable from the testing module FIXME
         # kwargs.update({'material' : mGold})
         kwargs.update({'material' : mGlass})
 
         # Init parent capillary class
         Capillary.__init__(self, *args, **kwargs)
 
-    def entrance_point(self):
-        """ Returns cartesian coordinates of element's position """
-        return self.x_in * np.sin(self.phi), self.x_in * np.cos(self.phi)
+class LinearlyTapered(Capillary):
+    """ You have to set the radius coefficients yourself """
+    def __init__(self, *args, **kwargs):
+        self.phi = kwargs['roll']
+        self.x_in = kwargs.pop('x_in')
+        self.p = [self.x_in, 0, 0, 0, 0, 0]
+
+        # As a deafault this is a Straight capillary
+        self.pr = [self.r_in, 0, 0]
+
+        # This should be settable from the testing module FIXME
+        # kwargs.update({'material' : mGold})
+        kwargs.update({'material' : mGlass})
+
+        # Init parent capillary class
+        Capillary.__init__(self, *args, **kwargs)
+
+    def set_rin_rout(self, rin, rout):
+        """ Set gradient to the radius """
+        self.rin = rin
+        self.rout = rout

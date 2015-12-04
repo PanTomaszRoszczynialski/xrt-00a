@@ -15,6 +15,8 @@ provided parameters
 
 # Make a picture explaining those
 def getPolyCoeffs(x,y,D):
+    """ Calculates capillary curvature for distance x from
+    the center and other lens properties described in y and D """
     y0 = y['y0']
     y1 = y['y1']
     ym = y['ym']
