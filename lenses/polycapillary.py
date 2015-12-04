@@ -9,6 +9,14 @@ mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 class Capillary(roe.OE):
     """ Single light transmitting pipe """
     def __init__(self, *args, **kwargs):
+        """ Abstract init """
+
+        # This information is plenty useful
+        y = kwargs['limPhysY']
+        self.y0 = y[0]
+        self.y1 = y[1]
+        self.phi = kwargs['roll']
+
         # Init parent class (Optical Element )
         roe.OE.__init__(self, *args, **kwargs)
         self.isParametric = True
@@ -67,13 +75,6 @@ class StraightCapillary(Capillary):
     def __init__(self, *args, **kwargs):
         self.x_in   = kwargs.pop('x_in')
         self.r_in   = kwargs.pop('r')
-
-        # This should be present only when y-information
-        # are used for shape coefficients calculations
-        y = kwargs['limPhysY']
-        self.y0 = y[0]
-        self.y1 = y[1]
-        self.phi = kwargs['roll']
 
         # Set straight line factors of 5 powers 
         # Separation of bent/straight capillaries

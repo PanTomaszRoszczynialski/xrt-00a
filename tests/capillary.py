@@ -1,5 +1,5 @@
 import matplotlib as mpl
-# mpl.use('Agg')
+mpl.use('Agg')
 
 import numpy as np
 import xrt.runner as xrtr
@@ -30,6 +30,8 @@ class StraightCapillaryTest(object):
         self.y_start = 40
         self.y_end   = 140
 
+        # Far screen distance from the end of capillary
+        self.far_screen_dist = 20
         # Savename prefix (colon helps with vim-folding)
         self.prefix = 'dupa';
 
@@ -43,12 +45,12 @@ class StraightCapillaryTest(object):
     def make_screens(self):
         """ One screen at the exit and one somewhere far """
         self.beamLine.exitScreen = rsc.Screen(self.beamLine,
-                                             'Exitscreen',
-                                             (0, self.y_end, 0))
+                                     'Exitscreen',
+                                     (0, self.y_end, 0))
 
         self.beamLine.farScreen = rsc.Screen(self.beamLine,
-                                             'FarScreen',
-                                             (0,self.y_end+100,0))
+                                     'FarScreen',
+                                     (0,self.y_end + self.far_screen_dist,0))
 
     def make_capillary(self):
         """ Not much here """
@@ -87,6 +89,10 @@ class StraightCapillaryTest(object):
             distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
             distE='lines', energies=(E0,), polarization='horizontal')
 
+    def set_far_screen_distance(self, dist):
+        """ """
+        self.far_screen_dist = dist
+
     def set_capillary_position(self, pos):
         """ """
         self.x_in = pos
@@ -105,6 +111,7 @@ class StraightCapillaryTest(object):
     def set_prefix(self, fix):
         """ Przestrzen reklamowa """
         self.prefix = str(fix)
+        print 'new prefix: ', fix
 
     def make_run_process(self):
         """ Overloads xrt method for photon generation """
@@ -206,8 +213,9 @@ def run_test():
     positions = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     lengths   = [10, 30, 50, 80, 100, 120, 150, 200]
     radiuses = [0.5]
-    positions = [0.6]
-    lengths = [50]
+    positions = [0.0]
+    lengths = [10]
+    screen_dsits = [60, 70, 80, 90, 100]
 
     # Run
     for radius in radiuses:
@@ -216,8 +224,26 @@ def run_test():
             test.set_capillary_position(position)
             for length in lengths:
                 test.set_capillary_length(length)
-                fix = 'rad_' + str(radius)
-                fix += '___pos_' + str(position)
-                fix += '___len_' + str(1000+length)
-                test.set_prefix(fix)
-                test.run_it()
+                for dist in screen_dsits:
+                    test.set_far_screen_distance(dist)
+                    fix = 'rad_' + str(radius)
+                    fix += '___pos_' + str(position)
+                    fix += '___len_' + str(1000+length)
+                    fix += '___fsd_' + str(1000+dist)
+                    test.set_prefix(fix)
+                    test.run_it()
+
+class TaperedCapillaryTest(object):
+    """ This class is supposed to help with testing more complex
+    capillary shapes: with straight axis and varying radius """
+    def __init__(self):
+        """ Tania przestrzen reklamowa """
+
+        # Set start and end of a capillary
+        self.y_start = 40
+        self.y_end = 140
+        self.x_in = 0.0
+
+        # Set constant radius
+        self.r_in = 0.5
+        self.r_out = 0.5
