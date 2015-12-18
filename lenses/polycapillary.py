@@ -92,11 +92,11 @@ class Capillary(roe.OE):
         """ Returns cartesian coordinates of element's position """
         return self.x_in * np.sin(self.phi), self.x_in * np.cos(self.phi)
 
-    def start_pos(self):
+    def entrance_y(self):
         """ Returns y-distance from the origin to the beginning """
         return self.y_entrance
 
-    def end_pos(self):
+    def outrance_y(self):
         """ Returns y-distance from the origin to the finish """
         return self.y_outrance
 
@@ -115,26 +115,28 @@ class StraightCapillary(Capillary):
         # Same concept with radius
         self.pr = [self.R_in, 0, 0]
 
-class LinearlyTapered(Capillary):
+class LinearlyTapered(StraightCapillary):
     """ You have to set the radius coefficients yourself """
     def __init__(self, *args, **kwargs):
-        self.phi = kwargs['roll']
-        self.x_in = kwargs.pop('x_in')
-        self.p = [self.x_in, 0, 0, 0, 0, 0]
 
-        # As a default set capillary with outward radius
-        # half of the inward radius
-        self.set_rin_rout(self.rin, self.rin/2.0)
+        self.R_out = kwargs.pop('R_out', 1)
 
         # Init parent capillary class
-        Capillary.__init__(self, *args, **kwargs)
+        StraightCapillary.__init__(self, *args, **kwargs)
+
+        # As a default set capillary with outrance radius
+        # half of the entrance radius
+        self.set_rin_rout(self.R_in, self.R_out)
+
 
     def set_rin_rout(self, rin, rout):
         """ Set gradient to the radius """
-        self.r_in = rin
-        self.r_out = rout
+        self.R_in = rin
+        self.R_out = rout
 
         # Linear equation giving radius of position
-        a = 1.0*(self.r_out - self.r_in) / (self.end_pos() - self.start_pos())
-        b = self.r_out - self.end_pos() * a;
+        dR = self.R_out - self.R_in
+        dY = self.outrance_y() - self.entrance_y()
+        a = 1.0 * dR / dY
+        b = self.R_out - self.outrance_y() * a;
         self.pr = [b, a, 0]

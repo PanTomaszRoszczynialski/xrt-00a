@@ -130,7 +130,7 @@ class StraightCapillaryTest(object):
             beamSource = beamLine.sources[0].shine(hitpoint=hitpoint)
 
             beamTotal, _ = self.capillary.multiple_reflect(beamSource,\
-                                              maxReflections=8)
+                                              maxReflections=50)
 
             # Expose screens
             exitScreen = beamLine.exitScreen.expose(beamTotal)
@@ -181,7 +181,7 @@ class StraightCapillaryTest(object):
                                data=raycing.get_reflection_number,
                                bins=bins,
                                ppb=2,
-                               limits=[0,10])
+                               limits=[0,20])
             ) # plot ends here
         plot.title = 'Capillary position'
         plot.saveName = 'png/tests/near/' + self.prefix + '_near.png'
@@ -206,7 +206,7 @@ class StraightCapillaryTest(object):
                                data=raycing.get_reflection_number,
                                bins=bins,
                                ppb=2,
-                               limits=[0,10])
+                               limits=[0,20])
             ) # different plot ends here
         plot.title = 'Divergence observations'
         plot.saveName = 'png/tests/far/' + self.prefix + '_far.png'
@@ -215,10 +215,40 @@ class StraightCapillaryTest(object):
         xrtr.run_ray_tracing(plots, repeats=20, beamLine=self.beamLine,\
                 processes=1)
 
+class TaperedCapillaryTest(StraightCapillaryTest):
+    """ This class is supposed to help with testing more complex
+    capillary shapes: with straight axis and varying radius """
+
+    def __init__(self):
+        """ Tania przestrzen reklamowa """
+
+        StraightCapillaryTest.__init__(self)
+
+        # Initialize to a straight capillary
+        self.R_out = self.R_in
+
+    def set_rin_rout(self, rin, rout):
+        """ riro setter """
+        self.R_in = rin
+        self.R_out = rout
+
+    def make_capillary(self):
+        """ Single capillary construction """
+        self.capillary = pl.LinearlyTapered(self.beamLine,
+                                      'straightcap',
+                                      x_entrance = self.x_entrance,
+                                      z_entrance = self.z_entrance,
+                                      y_entrance = self.y_entrance,
+                                      y_outrance = self.y_outrance,
+                                      R_in = self.R_in,
+                                      R_out = self.R_out)
+
 # Similar function for each type of test would be great
-def run_test():
+
+def test_straight():
     """ Full test """
-    test = StraightCapillaryTest()
+    # test = StraightCapillaryTest()
+    test = TaperedCapillaryTest()
 
     # Define values to be tested
     radiuses  = [0.1, 0.2, 0.5, 0.7, 1.0]
@@ -226,9 +256,9 @@ def run_test():
     lengths   = [10, 30, 50, 80, 100, 120, 150, 200]
 
     radiuses = [0.5]
-    x_positions = [0.3, 0.5, -0.4, 0.2, -0.3, 0.8]
+    x_positions = [0.0, 0.3, 0.5, -0.4, 0.2, -0.3, 0.8]
     z_positions = [0.0, -0.1, 0.3, 0.2, -0.4]
-    lengths = [50]
+    lengths = [100]
     screen_dsits = [40]
 
     # Run
@@ -249,17 +279,35 @@ def run_test():
                         test.set_prefix(fix)
                         test.run_it()
 
-class TaperedCapillaryTest(StraightCapillaryTest):
-    """ This class is supposed to help with testing more complex
-    capillary shapes: with straight axis and varying radius """
-    def __init__(self):
-        """ Tania przestrzen reklamowa """
+def test_tapered():
+    """ Full test of a tapered capillary class """
+    test = TaperedCapillaryTest()
 
-        # Set start and end of a capillary
-        self.y_entrance = 40
-        self.y_outrance = 140
-        self.x_entrance = 0.0
+    # Define values to be tested
+    radiuses = [0.5]
+    x_positions = [0.0]
+    z_positions = [0.0]
+    lengths = [100]
+    screen_dsits = [40]
+    radius_ratios = [0.5, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5]
 
-        # Set constant radius
-        self.R_in = 0.5
-        self.r_out = 0.5
+    # Run
+    for radius in radiuses:
+        test.set_capillary_radius(radius)
+        for x_position in x_positions:
+            for z_position in z_positions:
+                test.set_capillary_entrance(x_position, z_position)
+                for length in lengths:
+                    test.set_capillary_length(length)
+                    for dist in screen_dsits:
+                        test.set_far_screen_distance(dist)
+                        for ratio in radius_ratios:
+                            test.set_rin_rout(radius, ratio * radius)
+                            fix = 'Rin_' + str(radius)
+                            fix += '___Rout_{0}'.format(ratio * radius)
+                            fix += '___pos_x_{0}_z_{1}_'.format(x_position,
+                                                                z_position)
+                            fix += '___len_' + str(1000+length)
+                            fix += '___fsd_' + str(1000+dist)
+                            test.set_prefix(fix)
+                            test.run_it()
