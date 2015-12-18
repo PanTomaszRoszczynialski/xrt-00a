@@ -1,23 +1,40 @@
 import xrt.backends.raycing.oes as roe
-import xrt.backends.raycing.materials as rm
 import numpy as np
 
-# Constant materials
-mGold   = rm.Material('Au', rho=19.3)
-mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
 
 class Capillary(roe.OE):
     """ Single light transmitting pipe """
     def __init__(self, *args, **kwargs):
         """ Abstract init """
 
-        # This information is plenty useful
-        y = kwargs['limPhysY']
-        self.y0 = y[0]
-        self.y1 = y[1]
-        self.phi = kwargs['roll']
+        # Get y-dimension limits - by default capillary 
+        # stretches from 10 to 100 mm
+        self.y_entrance = kwargs.pop('y_entrance', 10)
+        self.y_outrance = kwargs.pop('y_outrance', 100)
 
-        # Init parent class (Optical Element )
+        # Update kwargs to fit xrt.OpticalElement constructor
+        kwargs.update({'limPhysY' : (self.y_entrance, self.y_outrance)})
+
+        # Get other entrance cooridinatesn
+        self.x_entrance = kwargs.pop('x_entrance', 0)
+        self.z_entrance = kwargs.pop('z_entrance', 0)
+        # x and z outrance are defined by the capillary shape
+        # and should not be of any concern here
+
+        # We also need entrance coordinates
+        # in the polar perspective
+        self.phi_entrance = np.arctan2(self.x_entrance,
+                                       self.z_entrance)-np.pi/2
+        self.r_entrance   = np.sqrt(self.x_entrance**2 + self.z_entrance**2)
+
+        # In xrt phi_entrance is equal to the roll
+        kwargs.update({'roll' : self.phi_entrance})
+
+        # Capital letter R will be denoting capillary 
+        # radius rather then polar coordinate
+        self.R_in = kwargs.pop('R_in', 1)
+
+        # Init parent class 
         roe.OE.__init__(self, *args, **kwargs)
         self.isParametric = True
 
@@ -36,10 +53,7 @@ class Capillary(roe.OE):
         return self.pr[1] + 2*self.pr[2]*s
 
     def local_r(self, s, phi):
-        # FIXME: this method seems to be generating highly
-        # erroneus behavior -- photons get outside of the
-        # capillary and also bounce more times then allowed
-        # in the xrt.multiple_reflect() method
+        # FIXME - i still am not sure what is all of this doing
         den = np.cos(np.arctan(self.local_x0Prime(s)))**2
         return self.local_r0(s) / (np.cos(phi)**2/den + np.sin(phi)**2)
 
@@ -66,30 +80,40 @@ class Capillary(roe.OE):
         z = r * np.cos(phi)
         return x, y, z
 
+    def entrance_x(self):
+        """ Basic getter """
+        return self.x_entrance
+
+    def entrance_z(self):
+        """ Basic getter """
+        return self.z_entrance
+
     def entrance_point(self):
         """ Returns cartesian coordinates of element's position """
         return self.x_in * np.sin(self.phi), self.x_in * np.cos(self.phi)
 
+    def start_pos(self):
+        """ Returns y-distance from the origin to the beginning """
+        return self.y_entrance
+
+    def end_pos(self):
+        """ Returns y-distance from the origin to the finish """
+        return self.y_outrance
+
 class StraightCapillary(Capillary):
     """ Implements straight capillary parallel to the beam """
     def __init__(self, *args, **kwargs):
-        self.x_in   = kwargs.pop('x_in')
-        self.r_in   = kwargs.pop('r')
+
+        # Init parent capillary class
+        Capillary.__init__(self, *args, **kwargs)
 
         # Set straight line factors of 5 powers 
         # Separation of bent/straight capillaries
         # could be cleaner TODO
-        self.p = [self.x_in, 0, 0, 0, 0, 0]
+        self.p = [self.r_entrance, 0, 0, 0, 0, 0]
 
         # Same concept with radius
-        self.pr = [self.r_in, 0, 0]
-
-        # This should be settable from the testing module FIXME
-        # kwargs.update({'material' : mGold})
-        kwargs.update({'material' : mGlass})
-
-        # Init parent capillary class
-        Capillary.__init__(self, *args, **kwargs)
+        self.pr = [self.R_in, 0, 0]
 
 class LinearlyTapered(Capillary):
     """ You have to set the radius coefficients yourself """
@@ -98,17 +122,19 @@ class LinearlyTapered(Capillary):
         self.x_in = kwargs.pop('x_in')
         self.p = [self.x_in, 0, 0, 0, 0, 0]
 
-        # As a deafault this is a Straight capillary
-        self.pr = [self.r_in, 0, 0]
-
-        # This should be settable from the testing module FIXME
-        # kwargs.update({'material' : mGold})
-        kwargs.update({'material' : mGlass})
+        # As a default set capillary with outward radius
+        # half of the inward radius
+        self.set_rin_rout(self.rin, self.rin/2.0)
 
         # Init parent capillary class
         Capillary.__init__(self, *args, **kwargs)
 
     def set_rin_rout(self, rin, rout):
         """ Set gradient to the radius """
-        self.rin = rin
-        self.rout = rout
+        self.r_in = rin
+        self.r_out = rout
+
+        # Linear equation giving radius of position
+        a = 1.0*(self.r_out - self.r_in) / (self.end_pos() - self.start_pos())
+        b = self.r_out - self.end_pos() * a;
+        self.pr = [b, a, 0]

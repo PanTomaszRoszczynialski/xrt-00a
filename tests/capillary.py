@@ -6,6 +6,7 @@ import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 import xrt.plotter as xrtp
 import xrt.backends.raycing.run as rr
+import xrt.backends.raycing.materials as rm
 import xrt.backends.raycing as raycing
 
 from lenses import polycapillary as pl
@@ -16,19 +17,25 @@ from sources import special_sources as ss
 # show on screen
 # done!
 
+# Constant materials FIXME - wrap this up
+mGold   = rm.Material('Au', rho=19.3)
+mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
+
 class StraightCapillaryTest(object):
     """ Implement shining through a single pipe-like object """
     def __init__(self):
         """ Tania przestrzen reklamowa """
 
         # Default capillary position and radius
-        self.x_in = 0.0
-        self.r_in = 0.5
+        # must be held by the test-object
+        self.x_entrance = 0.0
+        self.z_entrance = 0.0
+        self.R_in = 0.5
 
-        # Default capillary dimensions:
+        # Default capillary dimensions: (constant in this test)
         # 10cm capillary starting at 40mm
-        self.y_start = 40
-        self.y_end   = 140
+        self.y_entrance = 40
+        self.y_outrance = 140
 
         # Far screen distance from the end of capillary
         self.far_screen_dist = 20
@@ -46,22 +53,21 @@ class StraightCapillaryTest(object):
         """ One screen at the exit and one somewhere far """
         self.beamLine.exitScreen = rsc.Screen(self.beamLine,
                                      'Exitscreen',
-                                     (0, self.y_end, 0))
+                                     (0, self.y_outrance, 0))
 
         self.beamLine.farScreen = rsc.Screen(self.beamLine,
                                      'FarScreen',
-                                     (0,self.y_end + self.far_screen_dist,0))
+                                     (0, self.far_screen_dist, 0))
 
     def make_capillary(self):
-        """ Not much here """
-        cap_dims = [self.y_start, self.y_end]
+        """ Single capillary construction """
         self.capillary = pl.StraightCapillary(self.beamLine,
-                                              'straightcap',
-                                              [0, 0, 0],
-                                              x_in = self.x_in,
-                                              r = self.r_in,
-                                              roll = 0/3,
-                                              limPhysY = cap_dims)
+                                      'straightcap',
+                                      x_entrance = self.x_entrance,
+                                      z_entrance = self.z_entrance,
+                                      y_entrance = self.y_entrance,
+                                      y_outrance = self.y_outrance,
+                                      R_in = self.R_in)
 
     def make_source(self):
         """ Many source parameters are set here by hand """
@@ -71,12 +77,12 @@ class StraightCapillaryTest(object):
         E0          = 9000
         # x-direction
         distx       = 'flat'
-        dx          = self.r_in * 1.5
+        dx          = self.R_in * 1.5
         distxprime  = 'flat'
         dxprime     = 0.02
         # z-direction
         distz       = 'flat'
-        dz          = self.r_in * 1.5
+        dz          = self.R_in * 1.5
         distzprime  = 'flat'
         dzprime     = 0.02
 
@@ -90,23 +96,24 @@ class StraightCapillaryTest(object):
             distE='lines', energies=(E0,), polarization='horizontal')
 
     def set_far_screen_distance(self, dist):
-        """ """
-        self.far_screen_dist = dist
+        """ Away from outrance """
+        self.far_screen_dist = self.y_outrance + dist
 
-    def set_capillary_position(self, pos):
+    def set_capillary_entrance(self, x, z):
         """ """
-        self.x_in = pos
+        self.x_entrance = x
+        self.z_entrance = z
 
     def set_capillary_radius(self, rad):
         """ This is necessary """
-        self.r_in = rad
+        self.R_in = rad
 
     def set_capillary_length(self, val):
         """ Can't change the startpoint """
         if val is 0:
             print 'Capillary length too short'
             return
-        self.y_end = self.y_start + val
+        self.y_outrance = self.y_entrance + val
 
     def set_prefix(self, fix):
         """ Przestrzen reklamowa """
@@ -117,7 +124,8 @@ class StraightCapillaryTest(object):
         """ Overloads xrt method for photon generation """
         def local_process(beamLine, shineOnly1stSource=False):
             beamTotal = None
-            x, z = self.capillary.entrance_point()
+            x = self.capillary.entrance_x()
+            z = self.capillary.entrance_z()
             hitpoint = (x, 40, z)
             beamSource = beamLine.sources[0].shine(hitpoint=hitpoint)
 
@@ -145,11 +153,14 @@ class StraightCapillaryTest(object):
         bins = 256
         plots = []
 
+        # TODO - wrap this into:
+        # plots = self.prepare_plots()
+
         # Screen at the end of capillary
-        limits_near_x = [self.x_in - 1.2 * self.r_in,
-                         self.x_in + 1.2 * self.r_in]
-        limits_near_z = [-1.2 * self.r_in,
-                         1.2 * self.r_in]
+        limits_near_x = [self.x_entrance - 1.2 * self.R_in,
+                         self.x_entrance + 1.2 * self.R_in]
+        limits_near_z = [self.z_entrance - 1.2 * self.R_in,
+                         self.z_entrance + 1.2 * self.R_in]
         plot = xrtp.XYCPlot(
             # Using named parameters might be good here TODO
             'ExitScreen', (1, 3,),
@@ -204,6 +215,7 @@ class StraightCapillaryTest(object):
         xrtr.run_ray_tracing(plots, repeats=20, beamLine=self.beamLine,\
                 processes=1)
 
+# Similar function for each type of test would be great
 def run_test():
     """ Full test """
     test = StraightCapillaryTest()
@@ -212,38 +224,42 @@ def run_test():
     radiuses  = [0.1, 0.2, 0.5, 0.7, 1.0]
     positions = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
     lengths   = [10, 30, 50, 80, 100, 120, 150, 200]
+
     radiuses = [0.5]
-    positions = [0.0]
-    lengths = [10]
-    screen_dsits = [60, 70, 80, 90, 100]
+    x_positions = [0.3, 0.5, -0.4, 0.2, -0.3, 0.8]
+    z_positions = [0.0, -0.1, 0.3, 0.2, -0.4]
+    lengths = [50]
+    screen_dsits = [40]
 
     # Run
     for radius in radiuses:
         test.set_capillary_radius(radius)
-        for position in positions:
-            test.set_capillary_position(position)
-            for length in lengths:
-                test.set_capillary_length(length)
-                for dist in screen_dsits:
-                    test.set_far_screen_distance(dist)
-                    fix = 'rad_' + str(radius)
-                    fix += '___pos_' + str(position)
-                    fix += '___len_' + str(1000+length)
-                    fix += '___fsd_' + str(1000+dist)
-                    test.set_prefix(fix)
-                    test.run_it()
+        for x_position in x_positions:
+            for z_position in z_positions:
+                test.set_capillary_entrance(x_position, z_position)
+                for length in lengths:
+                    test.set_capillary_length(length)
+                    for dist in screen_dsits:
+                        test.set_far_screen_distance(dist)
+                        fix = 'rad_' + str(radius)
+                        fix += '___pos_x_{0}_z_{1}_'.format(x_position,
+                                                            z_position)
+                        fix += '___len_' + str(1000+length)
+                        fix += '___fsd_' + str(1000+dist)
+                        test.set_prefix(fix)
+                        test.run_it()
 
-class TaperedCapillaryTest(object):
+class TaperedCapillaryTest(StraightCapillaryTest):
     """ This class is supposed to help with testing more complex
     capillary shapes: with straight axis and varying radius """
     def __init__(self):
         """ Tania przestrzen reklamowa """
 
         # Set start and end of a capillary
-        self.y_start = 40
-        self.y_end = 140
-        self.x_in = 0.0
+        self.y_entrance = 40
+        self.y_outrance = 140
+        self.x_entrance = 0.0
 
         # Set constant radius
-        self.r_in = 0.5
+        self.R_in = 0.5
         self.r_out = 0.5
