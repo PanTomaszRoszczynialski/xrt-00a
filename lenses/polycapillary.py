@@ -24,9 +24,9 @@ class Capillary(roe.OE):
 
         # We also need entrance coordinates
         # in the polar perspective
-        self.phi_entrance = np.arctan2(self.x_entrance,
-                                       self.z_entrance)-np.pi/2
-        self.r_entrance   = np.sqrt(self.x_entrance**2 + self.z_entrance**2)
+        self.phi_entrance =\
+        np.arctan2(self.x_entrance, self.z_entrance) - np.pi/2
+        self.r_entrance = np.sqrt(self.x_entrance**2 + self.z_entrance**2)
 
         # In xrt phi_entrance is equal to the roll
         kwargs.update({'roll' : self.phi_entrance})
@@ -63,7 +63,7 @@ class Capillary(roe.OE):
         b = -np.sin(phi)*self.local_x0Prime(s) - self.local_r0Prime(s)
         c = -np.cos(phi)
         norm = np.sqrt(a**2 + b**2 + c**2)
-        return a/norm, b/norm, c/norm
+        return a/norm, -b/norm, c/norm
 
     def xyz_to_param(self, x, y, z):
         """ *s*, *r*, *phi* are cylindrc-like coordinates of the capillary.

@@ -17,6 +17,9 @@ from sources import special_sources as ss
 # show on screen
 # done!
 
+_repeats = 20
+_processes = 1
+
 # Constant materials FIXME - wrap this up
 mGold   = rm.Material('Au', rho=19.3)
 mGlass  = rm.Material(('Si', 'O'), quantities=(1, 2), rho=2.2)
@@ -212,8 +215,10 @@ class StraightCapillaryTest(object):
         plot.saveName = 'png/tests/far/' + self.prefix + '_far.png'
         plots.append(plot)
 
-        xrtr.run_ray_tracing(plots, repeats=20, beamLine=self.beamLine,\
-                processes=1)
+        xrtr.run_ray_tracing(plots,
+                            repeats=_repeats,\
+                            beamLine=self.beamLine,\
+                            processes=_processes)
 
 class TaperedCapillaryTest(StraightCapillaryTest):
     """ This class is supposed to help with testing more complex
@@ -287,9 +292,9 @@ def test_tapered():
     radiuses = [0.5]
     x_positions = [0.0]
     z_positions = [0.0]
-    lengths = [100]
-    screen_dsits = [40]
-    radius_ratios = [0.5, 0.8, 0.9, 1.0, 1.1, 1.2, 1.5]
+    lengths = [10]
+    screen_dsits = [20]
+    radius_ratios = [0.1, 0.15, 0.2, 0.25, 0.3]
 
     # Run
     for radius in radiuses:
