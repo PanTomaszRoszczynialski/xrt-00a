@@ -1,5 +1,6 @@
 import xrt.backends.raycing.oes as roe
 import numpy as np
+import matplotlib.pyplot as plt
 
 
 class Capillary(roe.OE):
@@ -88,6 +89,7 @@ class Capillary(roe.OE):
         """ Basic getter """
         return self.z_entrance
 
+    # OBSOLETE FIXME
     def entrance_point(self):
         """ Returns cartesian coordinates of element's position """
         return self.x_in * np.sin(self.phi), self.x_in * np.cos(self.phi)
@@ -119,7 +121,7 @@ class LinearlyTapered(StraightCapillary):
     """ You have to set the radius coefficients yourself """
     def __init__(self, *args, **kwargs):
 
-        self.R_out = kwargs.pop('R_out', 1)
+        self.R_out = kwargs.pop('R_out', 0.5)
 
         # Init parent capillary class
         StraightCapillary.__init__(self, *args, **kwargs)
@@ -140,3 +142,30 @@ class LinearlyTapered(StraightCapillary):
         a = 1.0 * dR / dY
         b = self.R_out - self.outrance_y() * a;
         self.pr = [b, a, 0]
+
+def plot_capillary(capillary):
+    """ Rather simplistic single capillary plotter """
+
+    # Get positions
+    y0 = capillary.entrance_y()
+    y1 = capillary.outrance_y()
+    y = np.linspace(y0, y1, 200)
+
+    # Capillary curvature
+    x0 = capillary.local_x0(y)
+    # And radius
+    r0 = capillary.local_r0(y)
+
+    # Plot curvature
+    plt.plot(y, x0, 'k--', lw = 0.5)
+    # add visibile width
+    plt.plot(y, x0+r0, 'r-', lw = 1)
+    plt.plot(y, x0-r0, 'r-', lw = 1)
+
+    # Y / X confusion is at height here
+    y_min = x0.min() - 1.3 * r0.max()
+    y_max = x0.max() + 1.3 * r0.max()
+    plt.ylim(y_min, y_max)
+    plt.xlim(0, 1.1 * y1)
+    plt.show()
+
