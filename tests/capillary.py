@@ -92,7 +92,7 @@ class StraightCapillaryTest(object):
         # Sources appends themselves to the beamline
         # so we recreate the beamline to always use bl.sources[0]
         self.beamLine = raycing.BeamLine(height=0)
-        ss.FittedSource(
+        ss.DirectedSource(
             self.beamLine,'DirectedSource',(0,39.9,0), nrays=nrays,
             distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
             distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
@@ -292,9 +292,9 @@ def test_tapered():
     radiuses = [0.5]
     x_positions = [0.0]
     z_positions = [0.0]
-    lengths = [10]
-    screen_dsits = [20]
-    radius_ratios = [0.1, 0.15, 0.2, 0.25, 0.3]
+    lengths = [80]
+    screen_dsits = [5]
+    radius_ratios = [0.2]
 
     # Run
     for radius in radiuses:

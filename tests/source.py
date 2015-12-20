@@ -1,5 +1,9 @@
+import matplotlib as mpl
+mpl.use('Agg')
+
 import numpy as np
 from sources import special_sources as ss
+import xrt.backends.raycing.sources as rs
 import xrt.runner as xrtr
 import xrt.backends.raycing.screens as rsc
 import xrt.plotter as xrtp
@@ -8,6 +12,187 @@ import xrt.backends.raycing as raycing
 
 # TODO Move those 
 rIn = 0.5
+_repeats = 10
+_processes = 1
+
+class GeometricSourceTest(object):
+    """ Implements methods for easy observations of chosen source """
+    def __init__(self):
+        """ Co robi traktor u fryzjera? Warkocze """
+
+        # Physical end of the source
+        self.y_outrance = 1
+
+        # Distant screen
+        self.far_screen_dist = 5
+
+        # Source dimensions
+        self.x_size = 1
+        self.z_size = 1
+
+        # Source divergence
+        self.x_divergence = 0.1
+        self.z_divergence = 0.1
+
+        # Other
+        self.prefix = 'setme'
+
+    def run_it(self):
+        """ Runs the whole operation """
+
+        self.make_it()
+        xrtr.run_ray_tracing(self.plots,
+                            repeats=_repeats,\
+                            beamLine=self.beamLine,\
+                            processes=_processes)
+
+    def make_it(self):
+        """ Re-constructs the object """
+        self.make_source()
+        self.make_screens()
+        self.make_run_process()
+        self.make_plots()
+
+    def make_run_process(self):
+        """ Overloads xrt method for photon generation """
+        def local_process(beamLine, shineOnly1stSource=False):
+            beamTotal = None
+            beamSource = beamLine.sources[0].shine()
+
+            # Expose screens
+            exitScreen = beamLine.exitScreen.expose(beamSource)
+            farScreen = beamLine.farScreen.expose(beamSource)
+
+            # Show beamlines after exposition
+            outDict = {'ExitScreen' : exitScreen}
+            outDict['FarScreen'] = farScreen
+
+            return outDict
+
+        rr.run_process = local_process
+
+    def make_plots(self):
+        """ tania przestrzen reklamowa """
+
+        # Plots' resolution
+        bins = 256
+        self.plots = []
+
+        plot = xrtp.XYCPlot(
+            # Using named parameters might be good here TODO
+            'ExitScreen', (1, 3,),
+            beamState='ExitScreen',
+            # This is still inside plot
+            xaxis=xrtp.XYCAxis(r'$x$', 'mm',
+                               bins=bins,
+                               ppb=2,
+                               limits=None),
+            # As is this
+            yaxis=xrtp.XYCAxis(r'$z$', 'mm',
+                               bins=bins,
+                               ppb=2,
+                               limits=None)#,
+            # # Colorbar and sidebar histogram
+            # caxis=xrtp.XYCAxis('Reflections',
+            #                    'number',
+            #                    data=raycing.get_reflection_number,
+            #                    bins=bins,
+            #                    ppb=2,
+            #                    limits=[0,20])
+            ) # plot ends here
+        plot.title = 'Near source'
+        plot.saveName = 'png/tests/near/' + self.prefix + '_near.png'
+        self.plots.append(plot)
+
+        plot = xrtp.XYCPlot(
+            'FarScreen', (1, 3,),
+            xaxis=xrtp.XYCAxis(r'$x$', 'mm',
+                               bins=bins,
+                               ppb=2,
+                               limits=None),
+            yaxis=xrtp.XYCAxis(r'$z$', 'mm',
+                               bins=bins,
+                               ppb=2,
+                               limits=None),
+            beamState='FarScreen'#,
+            # Colorbar and sidebar histogram 
+            # caxis=xrtp.XYCAxis('Reflections',
+            #                    'number',
+            #                    data=raycing.get_reflection_number,
+            #                    bins=bins,
+            #                    ppb=2,
+            #                    limits=[0,20])
+            ) # different plot ends here
+        plot.title = 'Divergence observations'
+        plot.saveName = 'png/tests/far/' + self.prefix + '_far.png'
+        self.plots.append(plot)
+
+    def make_screens(self):
+        """ One screen at the exit and one somewhere far """
+        self.beamLine.exitScreen = rsc.Screen(self.beamLine,
+                                     'Exitscreen',
+                                     (0, self.y_outrance, 0))
+
+        self.beamLine.farScreen = rsc.Screen(self.beamLine,
+                                     'FarScreen',
+                                     (0, self.far_screen_dist, 0))
+
+    def make_source(self):
+        """ Many source parameters are set here by hand """
+
+        # Source parameters
+        nrays       = 2000
+        E0          = 9000
+        # x-direction
+        distx       = 'flat'
+        dx          = self.x_size
+        distxprime  = 'flat'
+        dxprime     = self.x_divergence
+        # z-direction
+        distz       = 'flat'
+        dz          = self.z_size
+        distzprime  = 'flat'
+        dzprime     = self.z_divergence
+
+        self.polarization = None
+
+        # Sources appends themselves to the beamline
+        # so we recreate the beamline to always use bl.sources[0]
+        self.beamLine = raycing.BeamLine(height=0)
+        rs.GeometricSource(
+            self.beamLine,'DirectedSource',(0,0,0), nrays=nrays,
+            distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
+            distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
+            distE='lines', energies=(E0,),
+            polarization=self.polarization)
+
+    def set_prefix(self, fix):
+        """ This helps multiple file management """
+        self.prefix = fix
+
+    def set_xz_size(self, sizex, sizez):
+        """ don't panic """
+        self.x_size = sizex
+        self.z_size = sizez
+
+    def set_xz_divergence(self, divx, divz):
+        """ Sets photons distribution sigma-parameters """
+        self.x_divergence = divx
+        self.z_divergence = divz
+
+
+def test_geometric():
+    """ Runs any kind of tests on geometric source """
+    gst = GeometricSourceTest()
+
+    gst.set_xz_size(1,1)
+    gst.set_xz_divergence(0.01,0.01)
+    z_divs = [0.1 * x for x in range(1,11)]
+    for div in z_divs:
+        gst.set_xz_divergence(0.01, div)
+        fix = 'zdiv_{0}'.format(div)
+        gst.set_prefix(fix)
+        gst.run_it()
 
 class SourceTest(object):
     """ Class for testing sources (duh..) """
