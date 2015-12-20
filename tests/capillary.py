@@ -119,7 +119,7 @@ class StraightCapillaryTest(object):
         self.y_outrance = self.y_entrance + val
 
     def set_prefix(self, fix):
-        """ Przestrzen reklamowa """
+        """ Tania przestrzen reklamowa """
         self.prefix = str(fix)
         print 'new prefix: ', fix
 
@@ -248,12 +248,9 @@ class TaperedCapillaryTest(StraightCapillaryTest):
                                       R_in = self.R_in,
                                       R_out = self.R_out)
 
-# Similar function for each type of test would be great
-
 def test_straight():
     """ Full test """
-    # test = StraightCapillaryTest()
-    test = TaperedCapillaryTest()
+    test = StraightCapillaryTest()
 
     # Define values to be tested
     radiuses  = [0.1, 0.2, 0.5, 0.7, 1.0]
@@ -265,6 +262,9 @@ def test_straight():
     z_positions = [0.0, -0.1, 0.3, 0.2, -0.4]
     lengths = [100]
     screen_dsits = [40]
+
+    # TODO - source parameters should be under control
+    # of this interface as well 
 
     # Run
     for radius in radiuses:

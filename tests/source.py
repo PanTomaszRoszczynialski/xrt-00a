@@ -12,7 +12,7 @@ import xrt.backends.raycing as raycing
 
 # TODO Move those 
 rIn = 0.5
-_repeats = 10
+_repeats = 20
 _processes = 1
 
 class GeometricSourceTest(object):
@@ -34,6 +34,10 @@ class GeometricSourceTest(object):
         self.x_divergence = 0.1
         self.z_divergence = 0.1
 
+        # Source energy parameters
+        self.distE = 'normal'
+        self.energies = (9000, 100)
+
         # Other
         self.prefix = 'setme'
 
@@ -41,7 +45,7 @@ class GeometricSourceTest(object):
         """ Runs the whole operation """
 
         self.make_it()
-        xrtr.run_ray_tracing(self.plots,
+        xrtr.run_ray_tracing(self.plots,\
                             repeats=_repeats,\
                             beamLine=self.beamLine,\
                             processes=_processes)
@@ -91,14 +95,14 @@ class GeometricSourceTest(object):
             yaxis=xrtp.XYCAxis(r'$z$', 'mm',
                                bins=bins,
                                ppb=2,
-                               limits=None)#,
-            # # Colorbar and sidebar histogram
-            # caxis=xrtp.XYCAxis('Reflections',
-            #                    'number',
-            #                    data=raycing.get_reflection_number,
-            #                    bins=bins,
-            #                    ppb=2,
-            #                    limits=[0,20])
+                               limits=None),
+            # Colorbar and sidebar histogram
+            caxis=xrtp.XYCAxis('Energy',
+                               '[eV]',
+                               data=raycing.get_energy,
+                               bins=bins,
+                               ppb=2,
+                               limits=None)
             ) # plot ends here
         plot.title = 'Near source'
         plot.saveName = 'png/tests/near/' + self.prefix + '_near.png'
@@ -114,14 +118,14 @@ class GeometricSourceTest(object):
                                bins=bins,
                                ppb=2,
                                limits=None),
-            beamState='FarScreen'#,
-            # Colorbar and sidebar histogram 
-            # caxis=xrtp.XYCAxis('Reflections',
-            #                    'number',
-            #                    data=raycing.get_reflection_number,
-            #                    bins=bins,
-            #                    ppb=2,
-            #                    limits=[0,20])
+            beamState='FarScreen',
+            # Colorbar and sidebar histogram
+            caxis=xrtp.XYCAxis('Energy',
+                               '[eV]',
+                               data=raycing.get_energy,
+                               bins=bins,
+                               ppb=2,
+                               limits=None)
             ) # different plot ends here
         plot.title = 'Divergence observations'
         plot.saveName = 'png/tests/far/' + self.prefix + '_far.png'
@@ -141,8 +145,8 @@ class GeometricSourceTest(object):
         """ Many source parameters are set here by hand """
 
         # Source parameters
-        nrays       = 2000
-        E0          = 9000
+        distE       = self.distE
+        energies    = self.energies
         # x-direction
         distx       = 'flat'
         dx          = self.x_size
@@ -163,7 +167,7 @@ class GeometricSourceTest(object):
             self.beamLine,'DirectedSource',(0,0,0), nrays=nrays,
             distx=distx, dx=dx, distxprime=distxprime, dxprime=dxprime,
             distz=distz, dz=dz, distzprime=distzprime, dzprime=dzprime,
-            distE='lines', energies=(E0,),
+            distE=distE, energies=energies,
             polarization=self.polarization)
 
     def set_prefix(self, fix):
@@ -180,19 +184,33 @@ class GeometricSourceTest(object):
         self.x_divergence = divx
         self.z_divergence = divz
 
+    def set_energies(self, E0, sigma):
+        """ In electronovolts please """
+        if sigma is not 0:
+            self.distE = 'normal'
+            self.energies = (E0, sigma)
+        else:
+            self.distE = 'lines'
+            self.energies = (E0,)
 
 def test_geometric():
     """ Runs any kind of tests on geometric source """
-    gst = GeometricSourceTest()
+    test = GeometricSourceTest()
 
-    gst.set_xz_size(1,1)
-    gst.set_xz_divergence(0.01,0.01)
+    test.set_xz_size(1,1)
+    test.set_xz_divergence(0.01,0.01)
     z_divs = [0.1 * x for x in range(1,11)]
+    z_divs = [0.01]
+    E0 = 9000
+    e_sigmas = [10, 20, 30, 40, 50]
     for div in z_divs:
-        gst.set_xz_divergence(0.01, div)
-        fix = 'zdiv_{0}'.format(div)
-        gst.set_prefix(fix)
-        gst.run_it()
+        for sigma in e_sigmas:
+            test.set_energies(E0, sigma)
+            test.set_xz_divergence(0.01, div)
+            fix = 'zdiv_{0}'.format(div)
+            fix += '___e_sigma_{0}'.format(sigma)
+            test.set_prefix(fix)
+            test.run_it()
 
 class SourceTest(object):
     """ Class for testing sources (duh..) """
