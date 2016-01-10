@@ -1,6 +1,23 @@
 # -*- coding: utf-8 -*-
 """
 """
+# FIXME 
+""" bl = beamline
+    
+    # Create source or load photons
+    # This is probably the beamCapillaryGlobalTotal object
+    photons = load_photons()
+
+    # Create object
+    lens = Lens()
+
+    # and interact
+    photons.shine_on(lens)
+
+    # Save photons, and take them to the next stage
+    photons.save_each_photon_properly()
+
+    GOTO FIXME """
 
 import numpy as np
 import matplotlib as mpl
@@ -196,7 +213,12 @@ def run_process(beamLine, shineOnly1stSource=False):
         # FIXME - x,y,z confusion!
         hitpoint = (capillary.xx, y1, capillary.zz)
         # Shine source directly into the capillary
+
+        # TODO beamSource is probably the beamline we
+        # want to start with
         beamSource = beamLine.sources[0].shine(hitpoint=hitpoint)
+        # TODO Save / Load
+
         # Get both types of coordinates (global,local)
         beamCapillaryGlobal, beamCapillaryLocalN =\
             capillary.multiple_reflect(beamSource, maxReflections=nRefl)
@@ -219,6 +241,8 @@ def run_process(beamLine, shineOnly1stSource=False):
                                                                                            datetime.now())
 
     print "run done"
+
+    # TODO Save / Load
 
     # at the entrance | unused
     EntranceScreen = beamLine.entScreen.expose(sourceTotal)

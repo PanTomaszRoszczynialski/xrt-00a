@@ -130,6 +130,9 @@ class StraightCapillaryTest(object):
             x = self.capillary.entrance_x()
             z = self.capillary.entrance_z()
             hitpoint = (x, 40, z)
+
+            # TODO - type of source should determine whether
+            # shine has an argument or not ??
             beamSource = beamLine.sources[0].shine(hitpoint=hitpoint)
 
             beamTotal, _ = self.capillary.multiple_reflect(beamSource,\
